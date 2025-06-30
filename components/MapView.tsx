@@ -38,15 +38,26 @@ export default function MapView({ breeders }: { breeders: any[] }) {
   function clearFilters() {
     setSelectedBreed('All');
     setSearchTerm('');
+    setPopupInfo(null); // ✅ closes the popup when clearing filters
+  }
+
+  function handleSearchChange(value: string) {
+    setSearchTerm(value);
+    setPopupInfo(null); // ✅ closes the popup when searching
+  }
+
+  function handleBreedChange(value: string) {
+    setSelectedBreed(value);
+    setPopupInfo(null); // ✅ closes popup when filtering
   }
 
   return (
     <div className="relative w-full h-[600px]">
     <FilterBar 
+     selectedBreed={selectedBreed}
+     setSelectedBreed={handleBreedChange}
      searchTerm={searchTerm}
-     setSearchTerm={setSearchTerm}
-     selectedBreed={selectedBreed} 
-     setSelectedBreed={setSelectedBreed}
+     setSearchTerm={handleSearchChange}
      clearFilters={clearFilters}
     />
     <Map

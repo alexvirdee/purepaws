@@ -22,6 +22,7 @@ export default function FilterBar({
         <input
           type="text"
           placeholder="Search name or city..."
+          value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="w-full p-2 border rounded mb-2"
         />
