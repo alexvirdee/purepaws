@@ -10,12 +10,10 @@ export default function Home() {
   // const dogs = mockData.dogs;
 
   return (
-    <div className="">
-      <Header></Header>
-     
+    <div>
 
-    {/* Mapbox package testing */}
-    <MapWrapper breeders={breeders} />
+      {/* Mapbox package testing */}
+      <MapWrapper breeders={breeders} />
 
       {/* Breeders */}
       {/* <h2 className="text-2xl font-bold mb-4">Breeders</h2>
