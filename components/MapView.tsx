@@ -72,6 +72,7 @@ export default function MapView({ breeders }: { breeders: any[] }) {
     mapRef.current.fitBounds(bounds, {
       padding: 100,
       duration: 1000,
+      essential: true
     });
   }, [debouncedFilteredBreeders, hasFilter]);
 
@@ -96,9 +97,6 @@ export default function MapView({ breeders }: { breeders: any[] }) {
     <div
       className="relative w-full h-[600px]"
       onClick={(e) => {
-        console.log('clicked on map view', e.target);
-        console.log('showNoResults:', showNoResults);
-
         if (showNoResults) {
           // Prevent clicks inside of the overlay closing it
           const overlay = document.getElementById('no-results-overlay');
@@ -119,6 +117,8 @@ export default function MapView({ breeders }: { breeders: any[] }) {
         clearFilters={clearFilters}
       />
       <Map
+        interactive={true}
+        onMove={(evt) => setViewState(evt.viewState)}
         ref={mapRef}
         mapboxAccessToken={MAPBOX_TOKEN}
         initialViewState={viewState}
