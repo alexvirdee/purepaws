@@ -2,6 +2,7 @@
 import { mockData } from "@/db/mock-data";
 import dynamic from "next/dynamic";
 import MapWrapper from "@/components/MapWrapper";
+import Header from "@/components/shared/header";
 
 
 export default function Home() {
@@ -10,7 +11,8 @@ export default function Home() {
 
   return (
     <div className="">
-      <h1 className="text-3xl">Welcome to purepaws</h1>
+      <Header></Header>
+     
 
     {/* Mapbox package testing */}
     <MapWrapper breeders={breeders} />
