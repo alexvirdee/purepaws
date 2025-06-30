@@ -26,11 +26,17 @@ export default function MapView({ breeders }: { breeders: any[] }) {
     return breeder.breeds.includes(selectedBreed);
   })
 
+  // Clear filters function
+  function clearFilters() {
+    setSelectedBreed('All');
+  }
+
   return (
     <div className="relative w-full h-[600px]">
     <FilterBar 
      selectedBreed={selectedBreed} 
      setSelectedBreed={setSelectedBreed}
+     clearFilters={clearFilters}
     />
     <Map
       mapboxAccessToken={MAPBOX_TOKEN}
