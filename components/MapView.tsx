@@ -7,6 +7,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { APP_NAME } from "@/lib/constants";
 import FilterBar from './FilterBar';
+import { useDebounce } from '@/hooks/useDebounce';
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN!;
 
@@ -36,10 +37,14 @@ export default function MapView({ breeders }: { breeders: any[] }) {
     return matchesBreed && matchesSearch;
   });
 
+  const hasFilter = selectedBreed !== 'All' || searchTerm.trim() !== '';
+  const showNoResults = hasFilter && filteredBreeders.length === 0;
+  const debouncedFilteredBreeders = useDebounce(filteredBreeders, 400);
+
   useEffect(() => {
     if (!mapRef.current) return;
 
-    if (filteredBreeders.length === breeders.length) {
+    if (debouncedFilteredBreeders.length === breeders.length) {
       // If no filters applied, reset to initial view state
       mapRef.current.flyTo({
         center: [viewState.longitude, viewState.latitude],
@@ -49,7 +54,7 @@ export default function MapView({ breeders }: { breeders: any[] }) {
       return;
     }
 
-    if (filteredBreeders.length === 0) return;
+    if (debouncedFilteredBreeders.length === 0) return;
 
     const lats = filteredBreeders.map(breeder => breeder.lat);
     const lngs = filteredBreeders.map(breeder => breeder.lng);
@@ -68,7 +73,7 @@ export default function MapView({ breeders }: { breeders: any[] }) {
       padding: 100,
       duration: 1000,
     });
-  }, [filteredBreeders]);
+  }, [debouncedFilteredBreeders, hasFilter]);
 
   // Clear filters function
   function clearFilters() {
@@ -88,7 +93,24 @@ export default function MapView({ breeders }: { breeders: any[] }) {
   }
 
   return (
-    <div className="relative w-full h-[600px]">
+    <div
+      className="relative w-full h-[600px]"
+      onClick={(e) => {
+        console.log('clicked on map view', e.target);
+        console.log('showNoResults:', showNoResults);
+
+        if (showNoResults) {
+          // Prevent clicks inside of the overlay closing it
+          const overlay = document.getElementById('no-results-overlay');
+          if (overlay && overlay.contains(e.target as Node)) return;
+
+          // Clear your filters to reset map
+          setSearchTerm('');
+          setSelectedBreed('All');
+          setPopupInfo(null);
+        }
+      }}
+    >
       <FilterBar
         selectedBreed={selectedBreed}
         setSelectedBreed={handleBreedChange}
@@ -136,6 +158,26 @@ export default function MapView({ breeders }: { breeders: any[] }) {
           </Popup>
         )}
       </Map>
+      {showNoResults && (
+        <div
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 w-full max-w-md p-6 bg-white border border-gray-300 rounded shadow-lg text-center"
+          id="no-results-overlay"
+        >
+          <button
+            onClick={() => {
+              // Optionally clear filters when manually closing
+              setSearchTerm('');
+              setSelectedBreed('All');
+              setPopupInfo(null);
+            }}
+            className="absolute top-2 right-2 text-gray-500 hover:text-black cursor-pointer"  
+          >&times;</button>
+          <div className="text-center">
+            <h2 className="text-xl font-semibold mb-2">No breeders found</h2>
+            <p className="text-gray-600">Try adjusting your search or filters.</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
