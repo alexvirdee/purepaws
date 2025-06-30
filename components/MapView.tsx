@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { Map, Marker, Popup } from 'react-map-gl/mapbox';
 import Link from 'next/link';
@@ -20,19 +20,55 @@ export default function MapView({ breeders }: { breeders: any[] }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedBreed, setSelectedBreed] = useState('All');
 
+  const mapRef = useRef<any>(null);
+
   // Filter breeders by selected breed
   // TODO: Implement true search functionality once necessary
   const filteredBreeders = breeders.filter((breeder) => {
     const matchesBreed =
-    selectedBreed === 'All' || breeder.breeds.includes(selectedBreed);
+      selectedBreed === 'All' || breeder.breeds.includes(selectedBreed);
 
     const matchesSearch =
-    searchTerm.trim() === '' ||
-    breeder.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    breeder.location.toLowerCase().includes(searchTerm.toLowerCase());
+      searchTerm.trim() === '' ||
+      breeder.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      breeder.location.toLowerCase().includes(searchTerm.toLowerCase());
 
-  return matchesBreed && matchesSearch;
-  })
+    return matchesBreed && matchesSearch;
+  });
+
+  useEffect(() => {
+    if (!mapRef.current) return;
+
+    if (filteredBreeders.length === breeders.length) {
+      // If no filters applied, reset to initial view state
+      mapRef.current.flyTo({
+        center: [viewState.longitude, viewState.latitude],
+        zoom: viewState.zoom,
+        duration: 1000,
+      });
+      return;
+    }
+
+    if (filteredBreeders.length === 0) return;
+
+    const lats = filteredBreeders.map(breeder => breeder.lat);
+    const lngs = filteredBreeders.map(breeder => breeder.lng);
+
+    const minLng = Math.min(...lngs) - 0.1;
+    const minLat = Math.min(...lats) - 0.1;
+    const maxLng = Math.max(...lngs) + 0.1;
+    const maxLat = Math.max(...lats) + 0.1;
+
+    const bounds = [
+      [minLng, minLat],
+      [maxLng, maxLat],
+    ];
+
+    mapRef.current.fitBounds(bounds, {
+      padding: 40,
+      duration: 1000,
+    });
+  }, [filteredBreeders]);
 
   // Clear filters function
   function clearFilters() {
@@ -53,52 +89,53 @@ export default function MapView({ breeders }: { breeders: any[] }) {
 
   return (
     <div className="relative w-full h-[600px]">
-    <FilterBar 
-     selectedBreed={selectedBreed}
-     setSelectedBreed={handleBreedChange}
-     searchTerm={searchTerm}
-     setSearchTerm={handleSearchChange}
-     clearFilters={clearFilters}
-    />
-    <Map
-      mapboxAccessToken={MAPBOX_TOKEN}
-      initialViewState={viewState}
-      mapStyle="mapbox://styles/mapbox/streets-v11"
-      style={{ width: '100%', height: 800 }}
-    >
-      {filteredBreeders.map((breeder) => (
-        <Marker
-          key={breeder.id}
-          longitude={breeder.lng}
-          latitude={breeder.lat}
-          anchor="bottom"
-        >
-          <div onClick={() => setPopupInfo(breeder)} style={{ cursor: 'pointer' }}>
-            <Image src="/images/paw-outline.svg" alt={`${APP_NAME} logo`} width={25} height={25} priority={true} />
-          </div>
-        </Marker>
-      ))}
+      <FilterBar
+        selectedBreed={selectedBreed}
+        setSelectedBreed={handleBreedChange}
+        searchTerm={searchTerm}
+        setSearchTerm={handleSearchChange}
+        clearFilters={clearFilters}
+      />
+      <Map
+        ref={mapRef}
+        mapboxAccessToken={MAPBOX_TOKEN}
+        initialViewState={viewState}
+        mapStyle="mapbox://styles/mapbox/streets-v11"
+        style={{ width: '100%', height: 800 }}
+      >
+        {filteredBreeders.map((breeder) => (
+          <Marker
+            key={breeder.id}
+            longitude={breeder.lng}
+            latitude={breeder.lat}
+            anchor="bottom"
+          >
+            <div onClick={() => setPopupInfo(breeder)} style={{ cursor: 'pointer' }}>
+              <Image src="/images/paw-outline.svg" alt={`${APP_NAME} logo`} width={25} height={25} priority={true} />
+            </div>
+          </Marker>
+        ))}
 
-      {popupInfo && (
-        <Popup
-          longitude={popupInfo.lng}
-          latitude={popupInfo.lat}
-          anchor="top"
-          onClose={() => setPopupInfo(null)}
-          closeOnClick={false}
-        >
-          <div className="p-4 bg-white rounded-lg shadow-lg max-w-xs">
-            <h3 className="text-lg font-bold mb-2">{popupInfo.name}</h3>
-            <p className="text-sm text-gray-600 mb-1">{popupInfo.location}</p>
-            <p className="text-sm text-gray-600 mb-3">Breeds: {popupInfo.breeds.join(', ')}</p>
-            {/* Dynamic link */}
-            <Link href={`/breeders/${popupInfo.id}`}>
-              <span className="text-blue-500 hover:text-blue-700 underline text-sm font-medium">View Details</span>
-            </Link>
-          </div>
-        </Popup>
-      )}
-    </Map>
+        {popupInfo && (
+          <Popup
+            longitude={popupInfo.lng}
+            latitude={popupInfo.lat}
+            anchor="top"
+            onClose={() => setPopupInfo(null)}
+            closeOnClick={false}
+          >
+            <div className="p-4 bg-white rounded-lg shadow-lg max-w-xs">
+              <h3 className="text-lg font-bold mb-2">{popupInfo.name}</h3>
+              <p className="text-sm text-gray-600 mb-1">{popupInfo.location}</p>
+              <p className="text-sm text-gray-600 mb-3">Breeds: {popupInfo.breeds.join(', ')}</p>
+              {/* Dynamic link */}
+              <Link href={`/breeders/${popupInfo.id}`}>
+                <span className="text-blue-500 hover:text-blue-700 underline text-sm font-medium">View Details</span>
+              </Link>
+            </div>
+          </Popup>
+        )}
+      </Map>
     </div>
   );
 }

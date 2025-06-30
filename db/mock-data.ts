@@ -38,7 +38,20 @@ const mockData = {
         "certifications": ["AKC", "PRA Clear", "OFA Elbows"],
         "website": "https://shadypinesspaniels.com",
         "about": "Small home breeder producing English Springer Spaniels with focus on temperament and family fit."
-      }
+      },
+      {
+        "id": "b4",
+        "name": "Golden Cali Retrievers",
+        "location": "Los Angeles, CA",
+        "lat": 34.052235,
+        "lng": -118.243683,
+        "email": "info@goldencaliretrievers.com",
+        "phone": "(213) 111-1234",
+        "breeds": ["Golden Retriever"],
+        "certifications": ["AKC", "OFA Hips & Elbows", "CERF Eyes"],
+        "website": "https://goldencaliretrievers.com",
+        "about": "Family-run kennel specializing in healthy, well-socialized Golden Retrievers with champion bloodlines."
+      },
     ],
     "dogs": [
       {
