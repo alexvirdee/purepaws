@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { Map, Marker, Popup } from 'react-map-gl/mapbox';
+import Link from 'next/link';
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN!;
 
@@ -16,7 +17,7 @@ export default function MapView({ breeders }: { breeders: any[] }) {
 
   return (
     <Map
-    
+
       mapboxAccessToken={MAPBOX_TOKEN}
       initialViewState={viewState}
       mapStyle="mapbox://styles/mapbox/streets-v11"
@@ -52,6 +53,10 @@ export default function MapView({ breeders }: { breeders: any[] }) {
             <h3>{popupInfo.name}</h3>
             <p>{popupInfo.location}</p>
             <p>Breeds: {popupInfo.breeds.join(', ')}</p>
+            {/* Dynamic link */}
+            <Link href={`/breeders/${popupInfo.id}`}>
+              <span style={{ color: 'blue', textDecoration: 'underline' }}>View Details</span>
+            </Link>
           </div>
         </Popup>
       )}
