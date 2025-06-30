@@ -6,6 +6,7 @@ import { Map, Marker, Popup } from 'react-map-gl/mapbox';
 import Link from 'next/link';
 import Image from 'next/image';
 import { APP_NAME } from "@/lib/constants";
+import FilterBar from './FilterBar';
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN!;
 
@@ -16,15 +17,28 @@ export default function MapView({ breeders }: { breeders: any[] }) {
     latitude: 37.0902,
     zoom: 3.5,
   });
+  const [selectedBreed, setSelectedBreed] = useState('All');
+
+  // Filter breeders by selected breed
+  const filteredBreeders = breeders.filter((breeder) => {
+    if (selectedBreed === 'All') return true;
+
+    return breeder.breeds.includes(selectedBreed);
+  })
 
   return (
+    <div className="relative w-full h-[600px]">
+    <FilterBar 
+     selectedBreed={selectedBreed} 
+     setSelectedBreed={setSelectedBreed}
+    />
     <Map
       mapboxAccessToken={MAPBOX_TOKEN}
       initialViewState={viewState}
       mapStyle="mapbox://styles/mapbox/streets-v11"
       style={{ width: '100%', height: 800 }}
     >
-      {breeders.map((breeder) => (
+      {filteredBreeders.map((breeder) => (
         <Marker
           key={breeder.id}
           longitude={breeder.lng}
@@ -57,5 +71,6 @@ export default function MapView({ breeders }: { breeders: any[] }) {
         </Popup>
       )}
     </Map>
+    </div>
   );
 }
