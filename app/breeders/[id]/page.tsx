@@ -1,4 +1,5 @@
 import { mockData } from "@/db/mock-data";
+import Link from "next/link";
 
 const Breeder = ({ params }: { params: { id: string } }) => {
     const { id } = params;
@@ -11,6 +12,11 @@ const Breeder = ({ params }: { params: { id: string } }) => {
 
     return (
         <div>
+            {/* Back to Map Button */}
+            <Link className="text-blue-500 underline mb-4 inline-block" href="/">
+               ← Back to Map
+            </Link>
+
            {/* Display breeder name */}
            <h1 className="text-3xl font-bold mb-4">
                 {breeder ? breeder.name : "Breeder Not Found"}
