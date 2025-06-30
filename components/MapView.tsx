@@ -17,23 +17,34 @@ export default function MapView({ breeders }: { breeders: any[] }) {
     latitude: 37.0902,
     zoom: 3.5,
   });
+  const [searchTerm, setSearchTerm] = useState('');
   const [selectedBreed, setSelectedBreed] = useState('All');
 
   // Filter breeders by selected breed
+  // TODO: Implement true search functionality once necessary
   const filteredBreeders = breeders.filter((breeder) => {
-    if (selectedBreed === 'All') return true;
+    const matchesBreed =
+    selectedBreed === 'All' || breeder.breeds.includes(selectedBreed);
 
-    return breeder.breeds.includes(selectedBreed);
+    const matchesSearch =
+    searchTerm.trim() === '' ||
+    breeder.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    breeder.location.toLowerCase().includes(searchTerm.toLowerCase());
+
+  return matchesBreed && matchesSearch;
   })
 
   // Clear filters function
   function clearFilters() {
     setSelectedBreed('All');
+    setSearchTerm('');
   }
 
   return (
     <div className="relative w-full h-[600px]">
     <FilterBar 
+     searchTerm={searchTerm}
+     setSearchTerm={setSearchTerm}
      selectedBreed={selectedBreed} 
      setSelectedBreed={setSelectedBreed}
      clearFilters={clearFilters}

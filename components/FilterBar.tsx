@@ -1,16 +1,20 @@
 'use client';
 
 export default function FilterBar({
+    searchTerm,
+    setSearchTerm,
     selectedBreed,
     setSelectedBreed,
     clearFilters
 }: {
+    searchTerm: string;
+    setSearchTerm: (value: string) => void;
     selectedBreed: string;
     setSelectedBreed: (value: string) => void;
     clearFilters: () => void;
 }) {
 
-    const hasFilter = selectedBreed !== 'All';
+    const hasFilter = selectedBreed !== 'All' || searchTerm.trim() !== '';
 
     return (
         <div className="absolute top-4 left-4 z-10 bg-white bg-opacity-90 backdrop-blur-md border border-gray-200 rounded shadow p-4 w-64">
@@ -18,6 +22,7 @@ export default function FilterBar({
         <input
           type="text"
           placeholder="Search name or city..."
+          onChange={(e) => setSearchTerm(e.target.value)}
           className="w-full p-2 border rounded mb-2"
         />
         <select 
