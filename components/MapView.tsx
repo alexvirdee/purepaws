@@ -65,7 +65,7 @@ export default function MapView({ breeders }: { breeders: any[] }) {
     ];
 
     mapRef.current.fitBounds(bounds, {
-      padding: 40,
+      padding: 100,
       duration: 1000,
     });
   }, [filteredBreeders]);
