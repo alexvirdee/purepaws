@@ -45,13 +45,13 @@ export default function MapView({ breeders }: { breeders: any[] }) {
           onClose={() => setPopupInfo(null)}
           closeOnClick={false}
         >
-          <div>
-            <h3>{popupInfo.name}</h3>
-            <p>{popupInfo.location}</p>
-            <p>Breeds: {popupInfo.breeds.join(', ')}</p>
+          <div className="p-4 bg-white rounded-lg shadow-lg max-w-xs">
+            <h3 className="text-lg font-bold mb-2">{popupInfo.name}</h3>
+            <p className="text-sm text-gray-600 mb-1">{popupInfo.location}</p>
+            <p className="text-sm text-gray-600 mb-3">Breeds: {popupInfo.breeds.join(', ')}</p>
             {/* Dynamic link */}
             <Link href={`/breeders/${popupInfo.id}`}>
-              <span style={{ color: 'blue', textDecoration: 'underline' }}>View Details</span>
+              <span className="text-blue-500 hover:text-blue-700 underline text-sm font-medium">View Details</span>
             </Link>
           </div>
         </Popup>

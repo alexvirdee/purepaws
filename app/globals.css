@@ -119,3 +119,9 @@
   }
 }
 
+.mapboxgl-popup-content {
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+}
