@@ -1,26 +1,39 @@
-import { mockData } from "@/db/mock-data";
-import Link from "next/link";
+import { ObjectId } from "mongodb";
+import clientPromise from "@/lib/mongodb";
 import Header from "@/components/shared/header";
 
-const Breeder = ({ params }: { params: { id: string } }) => {
-    const { id } = params;
+interface BreederParams {
+    params: {
+        id: string;
+    };
+}
 
-    // Find the breeder by ID
-    const breeder = mockData.breeders.find((breeder) => breeder.id === id);
+const Breeder = async ({ params }: BreederParams) => {
+    const { id } = await params;
+    const breederId = id;
 
-    // Filter dogs by breeder ID
-    const dogs = mockData.dogs.filter((dog) => dog.breederId === id);
+    // Connect to the database
+    const client = await clientPromise;
+    const db = client.db("purepaws");
+
+    // Get the breeder by ID
+    const breeder = await db.collection("breeders").findOne({
+        _id: new ObjectId(breederId)
+    });
+
+    // Get the dogs for this breeder (if using separate dogs collection)
+    const dogs = await db
+        .collection("dogs")
+        .find({ breederId: breederId })
+        .toArray();
 
     return (
         <div>
             <Header></Header>
-            {/* Back to Map Button */}
-            {/* <Link className="text-blue-500 underline mb-4 inline-block" href="/">
-               ← Back to Map
-            </Link> */}
 
-           {/* Display breeder name */}
-           <h1 className="text-3xl font-bold mb-4">
+
+            {/* Display breeder name */}
+            <h1 className="text-3xl font-bold mb-4">
                 {breeder ? breeder.name : "Breeder Not Found"}
             </h1>
 

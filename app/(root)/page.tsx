@@ -38,8 +38,6 @@ export default async function Home() {
       longitude: breeder.longitude || 0,
     }));
 
-    console.log("Breeders Data:", breedersData);
-
   return (
     <div>
       <MapWrapper breeders={breedersData} />

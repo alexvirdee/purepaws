@@ -8,7 +8,7 @@
       "photo": "/images/bella.jpg",
       "description": "Affectionate and calm, perfect for a family with kids.",
       "price": 2800,
-      "breederId": "b1",
+      "breederId": "68633eca804d657e5dd16147",
       "location": "Ocala, FL"
     },
     {
@@ -20,7 +20,7 @@
       "photo": "/images/max.jpg",
       "description": "Playful male, very friendly and loves fetch.",
       "price": 2800,
-      "breederId": "b1",
+      "breederId": "68633eca804d657e5dd16147",
       "location": "Ocala, FL"
     },
     {
@@ -32,7 +32,7 @@
       "photo": "/images/daisy.jpg",
       "description": "Sweet girl with a gentle temperament.",
       "price": 3000,
-      "breederId": "b1",
+      "breederId": "68633eca804d657e5dd16147",
       "location": "Ocala, FL"
     },
     {
@@ -44,7 +44,7 @@
       "photo": "/images/luna.jpg",
       "description": "Intelligent and alert, great for active owners.",
       "price": 3200,
-      "breederId": "b2",
+      "breederId": "68633eca804d657e5dd16148",
       "location": "Asheville, NC"
     },
     {
@@ -56,7 +56,7 @@
       "photo": "/images/rex.jpg",
       "description": "Confident male, great protection instincts.",
       "price": 3200,
-      "breederId": "b2",
+      "breederId": "68633eca804d657e5dd16148",
       "location": "Asheville, NC"
     },
     {
@@ -68,7 +68,7 @@
       "photo": "/images/shadow.jpg",
       "description": "Energetic, loves to learn and train.",
       "price": 3000,
-      "breederId": "b2",
+      "breederId": "68633eca804d657e5dd16148",
       "location": "Asheville, NC"
     },
     {
