@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
 
 export default function SignUp() {
     const router = useRouter();
@@ -35,8 +36,15 @@ export default function SignUp() {
         if (!res.ok) {
             toast.error(data.message || "Something went wrong");
         } else {
-            toast.success("Account created! Please sign in.");
-            router.push("/auth/signin");
+            toast.success("Account created! Logging you in...");
+
+            // Immediately log in the user after signup
+            const result = await signIn("credentials", {
+                redirect: true,
+                email: form.email,
+                password: form.password,
+                callbackUrl: "/",
+            });
         }
     };
 

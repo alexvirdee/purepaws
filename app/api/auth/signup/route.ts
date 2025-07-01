@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
 import bcrypt from "bcrypt";
+import { ObjectId } from "mongodb";
 
 export async function POST(request: NextRequest) {
     try {
@@ -22,12 +23,20 @@ export async function POST(request: NextRequest) {
         //  Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        // Check if email and approved status is in breeders collection and update the role to "breeder"
+        const breeder = await db.db("purepaws").collection("breeders").findOne({ email, status: "approved" });
+
+        const role = breeder ? "breeder" : "viewer"; // Default to viewer if not a breeder
+        
+        const breederId = breeder ? new ObjectId(breeder._id) : null;
+
         // Create new user
         const newUser = {
             name,
             email,
             password: hashedPassword,
-            role: "viewer", // Default role
+            role,
+            breederId,
             createdAt: new Date(),
         };
 

@@ -18,6 +18,7 @@
 - [ ] Set up breeder auth so breeders can edit their listing.
 - [ ] Add admin auth to approve/reject breeders.
 - [ ] Add email notifications when breeders are approved.
+- [x] Auto login after sign up.
 
 ### 🗺️ Map & Listings
 - [ ] Use address geocoding to auto-fill `latitude` and `longitude` fields.
