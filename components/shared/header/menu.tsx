@@ -10,6 +10,11 @@ import { LogOut } from "lucide-react";
 const Menu = () => {
     const { data: session } = useSession();
 
+    const handleSignOut = async () => {
+        localStorage.setItem('signout-success', "true");
+        await signOut({ callbackUrl: '/' })
+    };
+
     return (
         <div className="flex justify-end gap-3 pr-4">
             <nav className="hidden md:flex w-full gap-2 items-center">
@@ -24,8 +29,8 @@ const Menu = () => {
                         <span className="text-sm text-gray-700 truncate">
                             {session.user.email || session.user.name}
                         </span>
-                        <Button onClick={() => signOut()} variant={"outline"} className="text-blue-500">
-                          <LogOut /> Sign Out
+                        <Button onClick={handleSignOut} variant={"outline"} className="text-blue-500">
+                            <LogOut /> Sign Out
                         </Button>
                     </div>
                 ) : (
@@ -56,9 +61,9 @@ const Menu = () => {
                                 <span className="text-sm text-gray-700">
                                     {session.user.email || session.user.name}
                                 </span>
-                                <button className="text-blue-600 underline">
-                                    Sign Out
-                                </button>
+                                <Button onClick={handleSignOut} variant={"outline"} className="text-blue-500">
+                                    <LogOut /> Sign Out
+                                </Button>
                             </div>
                         ) : (
                             <Button asChild>

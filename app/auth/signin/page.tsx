@@ -1,7 +1,7 @@
 'use client';
 
 import { signIn } from 'next-auth/react';
-import React from 'react';
+import { Button } from '@/components/ui/button';
 
 export default function SignIn() {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -23,7 +23,7 @@ export default function SignIn() {
                 <h1 className="text-xl mb-4">Sign In</h1>
                 <input name="email" type="email" placeholder="Email" required className="border mb-2 p-2 w-full" />
                 <input name="password" type="password" placeholder="Password" required className="border mb-2 p-2 w-full" />
-                <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">Sign In</button>
+                <Button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer">Sign In</Button>
             </form>
         </div>
     )

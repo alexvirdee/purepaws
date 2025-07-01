@@ -1,3 +1,6 @@
+
+import SignOutToast from "@/components/SignOutToast";
+
 import clientPromise from "@/lib/mongodb";
 import MapWrapper from "@/components/MapWrapper";
 
@@ -32,6 +35,7 @@ export default async function Home() {
 
   return (
     <div>
+      <SignOutToast />
       <MapWrapper breeders={breedersData} />
     </div>
   );
