@@ -2,6 +2,14 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { US_STATES } from '@/lib/constants/usStates';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
 
 interface FormData {
     name: string;
@@ -36,7 +44,7 @@ const BREEDS = [
     'Dachshund',
     'Boxer',
     'English Springer Spaniel',
-  ];
+];
 
 const ListYourKennel = () => {
     const router = useRouter();
@@ -69,9 +77,9 @@ const ListYourKennel = () => {
             if (exists) {
                 const updatedBreeds = prev.breeds.filter((b) => b !== breed);
                 setBreedError(null);
-                return { 
-                    ...prev, 
-                    breeds: updatedBreeds 
+                return {
+                    ...prev,
+                    breeds: updatedBreeds
                 };
             }
 
@@ -79,7 +87,7 @@ const ListYourKennel = () => {
             if (prev.breeds.length >= 2) {
                 setBreedError('You can only select up to 2 breeds.');
                 return prev;
-            } 
+            }
 
             // Otherwise, update the breeds and clear the error
             setBreedError(null);
@@ -175,13 +183,18 @@ const ListYourKennel = () => {
                 </div>
                 <div>
                     <label className="block mb-1 font-medium">State *</label>
-                    <input
-                        name="state"
-                        value={formData.state}
-                        onChange={handleChange}
-                        required
-                        className="w-full border p-2 rounded"
-                    />
+                    <Select onValueChange={(value) => setFormData((prev) => ({ ...prev, state: value }))}>
+                        <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select a state" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {US_STATES.map((state) => (
+                                <SelectItem key={state.value} value={state.value}>
+                                    {state.label}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                 </div>
                 <div>
                     <label className="block mb-1 font-medium">Zip *</label>

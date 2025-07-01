@@ -3,12 +3,13 @@
 ## 🐾 PurePaws - Features and things to work on
 
 ### ✏️ Breeder Application Improvements
-- [ ] Format certain inputs automatically:
+- [x] Format certain inputs automatically:
   - Capitalize kennel name, contact name, city/state when user types.
   - Ensure email is lowercased.
 - [x] Validate breeds offered:
   - Do not allow selecting more than **2 breeds**.
   - Show a helpful error if the user tries to select a third. 
+- [ ] Adjust state input to be a dropdown
 
 ### ✅ Success Page / Form Flow
 - [ ] Clear form inputs automatically after successful submission.

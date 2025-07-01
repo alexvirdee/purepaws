@@ -1,10 +1,25 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
 
+function formatBreederData(data: any) {
+  return {
+    ...data,
+    name: data.name?.trim(),
+    email: data.email?.trim().toLowerCase(),
+    address: data.address?.trim(),
+    city: data.city?.trim().charAt(0).toUpperCase() +
+          data.city?.trim().slice(1).toLowerCase(),
+    state: data.state?.trim().toUpperCase(),
+    zip: data.zip?.trim(),
+    about: data.about?.trim(),
+    breeds: data.breeds || []
+  };
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, email, breeds, address, city, state, zip, about } = body;
+    const { name, email, breeds, address, city, state, zip, about } = formatBreederData(body);
 
     if (!name || !email || !breeds || !address || !city || !state || !zip || !about) {
       return NextResponse.json(
