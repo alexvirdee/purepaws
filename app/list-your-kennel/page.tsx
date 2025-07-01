@@ -54,6 +54,7 @@ const ListYourKennel = () => {
     }
 
     const [formData, setFormData] = useState<FormData>(initialFormData);
+    const [breedError, setBreedError] = useState<string | null>(null);
 
     const handleChange = (e: { target: HTMLInputElement; }) => {
         const { name, value } = e.target as HTMLInputElement;
@@ -63,11 +64,28 @@ const ListYourKennel = () => {
     const handleBreedChange = (breed: string) => {
         setFormData((prev: FormData) => {
             const exists = prev.breeds.includes(breed);
+
+            // If the breed is already selected, allow unselecting it
+            if (exists) {
+                const updatedBreeds = prev.breeds.filter((b) => b !== breed);
+                setBreedError(null);
+                return { 
+                    ...prev, 
+                    breeds: updatedBreeds 
+                };
+            }
+
+            // Limit to 2 breeds
+            if (prev.breeds.length >= 2) {
+                setBreedError('You can only select up to 2 breeds.');
+                return prev;
+            } 
+
+            // Otherwise, update the breeds and clear the error
+            setBreedError(null);
             return {
                 ...prev,
-                breeds: exists
-                    ? prev.breeds.filter((b) => b !== breed)
-                    : [...prev.breeds, breed],
+                breeds: [...prev.breeds, breed]
             };
         });
     };
@@ -176,7 +194,11 @@ const ListYourKennel = () => {
                     />
                 </div>
                 <div>
+                    {/* Breeds checkboxes - breeder should be limited to 2  */}
                     <label className="block mb-1 font-medium">Breeds Offered *</label>
+                    {breedError && (
+                        <p className="text-red-600 text-sm mb-2">{breedError}</p>
+                    )}
                     <div className="flex flex-wrap gap-2">
                         {BREEDS.map((breed) => (
                             <label key={breed} className="flex items-center space-x-2">
