@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface FormData {
     name: string;
@@ -15,11 +16,13 @@ interface FormData {
     about: string;
 }
 
-interface ChangeEvent {
-    target: {
-        name: string;
-        value: string;
-    };
+
+interface SubmitEvent {
+    preventDefault: () => void;
+}
+
+interface ApiResponse {
+    ok: boolean;
 }
 
 const BREEDS = [
@@ -36,6 +39,7 @@ const BREEDS = [
   ];
 
 const ListYourKennel = () => {
+    const router = useRouter();
     const initialFormData = {
         name: '',
         email: '',
@@ -68,14 +72,6 @@ const ListYourKennel = () => {
         });
     };
 
-    interface SubmitEvent {
-        preventDefault: () => void;
-    }
-
-    interface ApiResponse {
-        ok: boolean;
-    }
-
     const handleSubmit = async (e: SubmitEvent) => {
         e.preventDefault();
 
@@ -93,13 +89,13 @@ const ListYourKennel = () => {
 
             // Reset form data
             setFormData(initialFormData);
+            router.push("/success");
         } else {
             console.error('Error submitting application');
         }
 
         console.log(formData);
     };
-
 
     return (
         <div className="max-w-2xl mx-auto p-8">
