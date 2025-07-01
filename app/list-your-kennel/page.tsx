@@ -2,6 +2,26 @@
 
 import { useState } from 'react';
 
+interface FormData {
+    name: string;
+    email: string;
+    website: string;
+    address: string;
+    city: string;
+    state: string;
+    zip: string;
+    breeds: string[];
+    certifications: string;
+    about: string;
+}
+
+interface ChangeEvent {
+    target: {
+        name: string;
+        value: string;
+    };
+}
+
 const BREEDS = [
     'Golden Retriever',
     'Labrador Retriever',
@@ -16,7 +36,7 @@ const BREEDS = [
   ];
 
 const ListYourKennel = () => {
-    const [formData, setFormData] = useState<FormData>({
+    const initialFormData = {
         name: '',
         email: '',
         website: '',
@@ -27,32 +47,14 @@ const ListYourKennel = () => {
         breeds: [],
         certifications: '',
         about: '',
-    });
+    }
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
+    const [formData, setFormData] = useState<FormData>(initialFormData);
+
+    const handleChange = (e: { target: HTMLInputElement; }) => {
+        const { name, value } = e.target as HTMLInputElement;
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
-
-    interface FormData {
-        name: string;
-        email: string;
-        website: string;
-        address: string;
-        city: string;
-        state: string;
-        zip: string;
-        breeds: string[];
-        certifications: string;
-        about: string;
-    }
-
-    interface ChangeEvent {
-        target: {
-            name: string;
-            value: string;
-        };
-    }
 
     const handleBreedChange = (breed: string) => {
         setFormData((prev: FormData) => {
@@ -88,6 +90,9 @@ const ListYourKennel = () => {
 
         if (response.ok) {
             console.log('Application submitted successfully!');
+
+            // Reset form data
+            setFormData(initialFormData);
         } else {
             console.error('Error submitting application');
         }
