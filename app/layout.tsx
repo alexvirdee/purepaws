@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { APP_NAME, APP_DESCRIPTION } from "@/lib/constants";
+import NextAuthSessionProvider from "@/components/SessionProvider";
 import "./globals.css";
 import { Toaster } from "sonner";
+import Header from "@/components/shared/header";
+import Footer from "@/components/footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,10 +30,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}
       >
+        <NextAuthSessionProvider>
           <Toaster />
-          {children}
+          <Header></Header>
+         <main className="flex-1 wrapper">{children}</main> 
+          <Footer></Footer>
+        </NextAuthSessionProvider>
       </body>
     </html>
   );

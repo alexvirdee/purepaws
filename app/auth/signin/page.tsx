@@ -2,6 +2,9 @@
 
 import { signIn } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from "@/components/ui/label";
+import { toast } from 'sonner';
 
 export default function SignIn() {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -18,13 +21,21 @@ export default function SignIn() {
     };
 
     return (
-        <div>
-            <form onSubmit={handleSubmit} className="max-w-sm mx-auto">
-                <h1 className="text-xl mb-4">Sign In</h1>
-                <input name="email" type="email" placeholder="Email" required className="border mb-2 p-2 w-full" />
-                <input name="password" type="password" placeholder="Password" required className="border mb-2 p-2 w-full" />
-                <Button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer">Sign In</Button>
-            </form>
-        </div>
+        <section className="flex flex-col items-center justify-center min-h-[40vh] px-4">
+            <div className="w-full max-w-sm space-y-6">
+                <h1 className="text-xl font-semibold text-center mb-4">Sign In</h1>
+                <form onSubmit={handleSubmit} className="max-w-sm mx-auto">
+                    <div className="mb-4">
+                        <Label className="pb-2" htmlFor="email">Email</Label>
+                        <Input name="email" type="email" placeholder="you@example.com" required className="border mb-2 p-2 w-full" />
+                    </div>
+                    <div className="mb-4">
+                        <Label className="pb-2" htmlFor="password">Password</Label>
+                        <Input name="password" type="password" placeholder="********" required className="border mb-2 p-2 w-full" />
+                    </div>
+                    <Button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer">Sign In</Button>
+                </form>
+            </div>
+        </section>
     )
 }
