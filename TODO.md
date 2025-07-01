@@ -6,9 +6,9 @@
 - [ ] Format certain inputs automatically:
   - Capitalize kennel name, contact name, city/state when user types.
   - Ensure email is lowercased.
-- [ ] Validate breeds offered:
+- [x] Validate breeds offered:
   - Do not allow selecting more than **2 breeds**.
-  - Show a helpful error if the user tries to select a third.
+  - Show a helpful error if the user tries to select a third. 
 
 ### ✅ Success Page / Form Flow
 - [ ] Clear form inputs automatically after successful submission.
@@ -24,6 +24,7 @@
 - [ ] Add filtering for approved breeders only (done!).
 - [ ] Connect breeder detail pages to the database (done!).
 - [ ] Add an “All Dogs” search view.
+- [ ] If more than 20+ breeders the map can be cluttered on initial landing - remove "All Breeds" default selection 
 
 ---
 

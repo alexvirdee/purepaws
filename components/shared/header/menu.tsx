@@ -1,23 +1,42 @@
+'use client';
+
 import { PawPrint, UserIcon, EllipsisVertical } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { useSession, signIn, signOut } from "next-auth/react";
 
 const Menu = () => {
+    const { data: session } = useSession();
+
     return (
         <div className="flex justify-end gap-3 pr-4">
-            <nav className="hidden md:flex w-full max-w-xs gap-2">
+            <nav className="hidden md:flex w-full gap-2 items-center">
                 <Button asChild variant="ghost">
                     <Link href="/list-your-kennel">
                         <PawPrint /> List your kennel
                     </Link>
                 </Button>
-                <Button asChild>
-                    <Link href="/sign-in">
-                        <UserIcon /> Sign In
-                    </Link>
-                </Button>
+                {/* Session check */}
+                {session?.user ? (
+                    <div className="flex items-center gap-2">
+                        <span className="text-sm text-gray-700 truncate">
+                            {session.user.email || session.user.name}
+                        </span>
+                        <button className="text-blue-600 underline">
+                            Sign Out
+                        </button>
+                    </div>
+                ) : (
+                    <Button asChild>
+                        <Link href="/auth/signin">
+                            <UserIcon /> Sign In
+                        </Link>
+                    </Button>
+                )
+                }
             </nav>
+            {/* Mobile Menu */}
             <nav className="md:hidden">
                 <Sheet>
                     <SheetTrigger className="align-middle">
@@ -30,11 +49,24 @@ const Menu = () => {
                                 <PawPrint /> List your kennel
                             </Link>
                         </Button>
-                        <Button asChild>
-                            <Link href="/sign-in">
-                                <UserIcon /> Sign In
-                            </Link>
-                        </Button>
+                        {/* Session check */}
+                        {session?.user ? (
+                            <div className="flex items-center gap-4">
+                                <span className="text-sm text-gray-700">
+                                    {session.user.email || session.user.name}
+                                </span>
+                                <button className="text-blue-600 underline">
+                                    Sign Out
+                                </button>
+                            </div>
+                        ) : (
+                            <Button asChild>
+                                <Link href="/auth/signin">
+                                    <UserIcon /> Sign In
+                                </Link>
+                            </Button>
+                        )
+                        }
                         <SheetDescription></SheetDescription>
                     </SheetContent>
                 </Sheet>

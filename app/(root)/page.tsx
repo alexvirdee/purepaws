@@ -1,19 +1,11 @@
 import clientPromise from "@/lib/mongodb";
 import MapWrapper from "@/components/MapWrapper";
 
-interface Breeder {
-  _id: string;
-  [key: string]: any; // Add additional fields as needed
-}
-
 interface RawBreeder {
   _id: any; // MongoDB ObjectId
   [key: string]: any; // Add additional fields as needed
 }
 
-interface Breeder {
-  _id: string;
-}
 
 export default async function Home() {
   const client = await clientPromise;
