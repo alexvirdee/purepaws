@@ -1,5 +1,5 @@
 
-import SignOutToast from "@/components/SignOutToast";
+import SignInOutToast from "@/components/SignInOutToast";
 
 import clientPromise from "@/lib/mongodb";
 import MapWrapper from "@/components/MapWrapper";
@@ -35,7 +35,7 @@ export default async function Home() {
 
   return (
     <div>
-      <SignOutToast />
+      <SignInOutToast />
       <MapWrapper breeders={breedersData} />
     </div>
   );

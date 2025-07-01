@@ -13,11 +13,20 @@ export default function SignIn() {
         const email = form.get('email') as string;
         const password = form.get('password') as string;
 
-        await signIn('credentials', {
+       const result = await signIn('credentials', {
             email,
             password,
-            callbackUrl: "/"
+            redirect: false, // Prevent automatic redirect
+            callbackUrl: '/', // Specify the callback URL
         });
+
+        if (result?.error) {
+            toast.error(`Error signing in please try again.`);
+        } else {
+            localStorage.setItem('signin-success', "true");
+            // Redirect to the home page or any other page
+            window.location.href = "/";
+        }
     };
 
     return (
