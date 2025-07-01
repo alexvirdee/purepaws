@@ -8,9 +8,7 @@ export default function SignOutToast() {
     if (typeof window !== "undefined") {
       if (localStorage.getItem("signout-success") === "true") {
         toast.success("You have been signed out successfully.");
-        setTimeout(() => {
-            localStorage.removeItem("signout-success");
-        }, 3000); // Remove the flag after 3 seconds
+        localStorage.removeItem("signout-success");
       }
     }
   }, []);
