@@ -1,4 +1,17 @@
-import type { NextAuthOptions } from "next-auth";
+import type { NextAuthOptions, User, Session, JWT } from "next-auth";
+
+// Extend the User type to include the role property
+declare module "next-auth" {
+  interface User {
+    role?: string;
+    breederId?: string | null;
+  }
+
+  interface JWT {
+    role?: string;
+    breederId?: string | null;
+  }
+}
 import CredentialsProvider from "next-auth/providers/credentials";
 import { MongoClient } from "mongodb";
 import bcrypt from "bcrypt";
@@ -27,9 +40,6 @@ export const authOptions: NextAuthOptions = {
         if (!credentials?.password) {
           throw new Error("Password is required");
         }
-        console.log('credentials password:', credentials.password);
-        console.log('user:', user);
-        console.log('user password:', user.password);
 
         const dbPassword = user.password;
 
@@ -50,16 +60,37 @@ export const authOptions: NextAuthOptions = {
         }
 
         // If everything is fine, return the user object
-        return { id: user._id.toString(), email: user.email };
-
-      }
-    })
+        return { 
+          id: user._id.toString(), 
+          name: user.name,
+          email: user.email, 
+          role: user.role || "viewer",
+          breederId: user.breederId || null, // Optional breederId 
+        };
+      },
+    }),
   ],
   session: {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   pages: {
-    signIn: "/auth/signin",
+    signIn: "/auth/signin"
+  },
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.role = user.role || "viewer"; // Default to viewer if no role is provided
+        token.breederId = user.breederId || null; // Optional breederId
+      }
+      return token;
+    },
+    async session({ session, token }: { session: Session; token: JWT }) {
+      if (token) {
+        (session.user as User).role = token.role || "viewer"; // Default to viewer if no role is provided
+        session.user.breederId = token.breederId || null; // Optional breederId
+      }
+      return session;
+    },
   },
 }

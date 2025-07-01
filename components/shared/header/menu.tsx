@@ -26,9 +26,9 @@ const Menu = () => {
                 {/* Session check */}
                 {session?.user ? (
                     <div className="flex items-center gap-2">
-                        <span className="text-sm text-gray-700 truncate">
+                        <Link href="/profile" className="text-sm text-gray-700 truncate">
                             {session.user.email || session.user.name}
-                        </span>
+                        </Link>
                         <Button onClick={handleSignOut} variant={"outline"} className="text-blue-500">
                             <LogOut /> Sign Out
                         </Button>
@@ -58,9 +58,9 @@ const Menu = () => {
                         {/* Session check */}
                         {session?.user ? (
                             <div className="flex items-center gap-4">
-                                <span className="text-sm text-gray-700">
+                                <Link href="/profile" className="text-sm text-gray-700">
                                     {session.user.email || session.user.name}
-                                </span>
+                                </Link>
                                 <Button onClick={handleSignOut} variant={"outline"} className="text-blue-500">
                                     <LogOut /> Sign Out
                                 </Button>

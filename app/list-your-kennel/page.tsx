@@ -56,8 +56,8 @@ const ListYourKennel = () => {
     const [formData, setFormData] = useState<FormData>(initialFormData);
     const [breedError, setBreedError] = useState<string | null>(null);
 
-    const handleChange = (e: { target: HTMLInputElement; }) => {
-        const { name, value } = e.target as HTMLInputElement;
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 

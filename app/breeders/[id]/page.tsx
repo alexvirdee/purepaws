@@ -29,9 +29,6 @@ const Breeder = async ({ params }: BreederParams) => {
 
     return (
         <div>
-            <Header></Header>
-
-
             {/* Display breeder name */}
             <h1 className="text-3xl font-bold mb-4">
                 {breeder ? breeder.name : "Breeder Not Found"}
