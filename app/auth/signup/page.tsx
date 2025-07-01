@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function SignUp() {
     const router = useRouter();
@@ -102,6 +103,12 @@ export default function SignUp() {
                     </Button>
                 </form>
             </div>
+            <p className="mt-4 text-sm text-center">
+                Already have an account?{" "}
+                <Link href="/auth/signin" className="text-blue-600 hover:underline">
+                    Sign in
+                </Link>
+            </p>
         </section>
     )
 }

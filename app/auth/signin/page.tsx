@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from "@/components/ui/label";
 import { toast } from 'sonner';
+import Link from 'next/link';
 
 export default function SignIn() {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -15,7 +16,7 @@ export default function SignIn() {
 
         console.log(email, password);
 
-       const result = await signIn('credentials', {
+        const result = await signIn('credentials', {
             email,
             password,
             redirect: false, // Prevent automatic redirect
@@ -47,6 +48,12 @@ export default function SignIn() {
                     <Button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer">Sign In</Button>
                 </form>
             </div>
+            <p className="mt-4 text-sm text-center">
+                Don&apos;t have an account yet?{" "}
+                <Link href="/auth/signup" className="text-blue-600 hover:underline">
+                    Sign up here
+                </Link>
+            </p>
         </section>
     )
 }
