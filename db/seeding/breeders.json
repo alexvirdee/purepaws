@@ -1,0 +1,62 @@
+ [
+    {
+      "id": "b1",
+      "name": "Golden Haven Kennels",
+      "location": "Ocala, FL",
+      "latitude": 29.1872,
+      "longitude": -82.1401,
+      "email": "info@goldenhavenkennels.com",
+      "phone": "(352) 555-1234",
+      "breeds": ["Golden Retriever"],
+      "certifications": ["AKC", "OFA Hips & Elbows", "CERF Eyes"],
+      "website": "https://goldenhavenkennels.com",
+      "status": "approved",
+      "about": "Family-run kennel specializing in healthy, well-socialized Golden Retrievers with champion bloodlines.",
+      "submittedAt": "2025-07-01T00:50:12.364Z"
+    },
+    {
+      "id": "b2",
+      "name": "Blue Ridge Shepherds",
+      "location": "Asheville, NC",
+      "latitude": 35.5951,
+      "longitude": -82.5515,
+      "email": "contact@blueridgeshepherds.com",
+      "phone": "(828) 555-5678",
+      "breeds": ["German Shepherd"],
+      "certifications": ["AKC", "DM Clear", "Hip Certified"],
+      "website": "https://blueridgeshepherds.com",
+      "status": "approved",
+      "about": "Responsible breeders of working-line German Shepherds with excellent health and trainability.",
+      "submittedAt": "2025-07-01T00:50:12.364Z"
+    },
+    {
+      "id": "b3",
+      "name": "Shady Pines Spaniels",
+      "location": "Austin, TX",
+      "latitude": 30.2672,
+      "longitude": -97.7431,
+      "email": "hello@shadypinesspaniels.com",
+      "phone": "(512) 555-2468",
+      "breeds": ["English Springer Spaniel"],
+      "certifications": ["AKC", "PRA Clear", "OFA Elbows"],
+      "website": "https://shadypinesspaniels.com",
+      "status": "approved",
+      "about": "Small home breeder producing English Springer Spaniels with focus on temperament and family fit.",
+      "submittedAt": "2025-07-01T00:50:12.364Z"
+    },
+    {
+      "id": "b4",
+      "name": "Golden Cali Retrievers",
+      "location": "Los Angeles, CA",
+      "latitude": 34.052235,
+      "longitude": -118.243683,
+      "email": "info@goldencaliretrievers.com",
+      "phone": "(213) 111-1234",
+      "breeds": ["Golden Retriever"],
+      "certifications": ["AKC", "OFA Hips & Elbows", "CERF Eyes"],
+      "website": "https://goldencaliretrievers.com",
+      "status": "approved",
+      "about": "Family-run kennel specializing in healthy, well-socialized Golden Retrievers with champion bloodlines.",
+      "submittedAt": "2025-07-01T00:50:12.364Z"
+    }
+  ]

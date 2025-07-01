@@ -56,8 +56,8 @@ export default function MapView({ breeders }: { breeders: any[] }) {
 
     if (debouncedFilteredBreeders.length === 0) return;
 
-    const lats = filteredBreeders.map(breeder => breeder.lat);
-    const lngs = filteredBreeders.map(breeder => breeder.lng);
+    const lats = filteredBreeders.map(breeder => breeder.latitude);
+    const lngs = filteredBreeders.map(breeder => breeder.longitude);
 
     const minLng = Math.min(...lngs) - 0.1;
     const minLat = Math.min(...lats) - 0.1;
@@ -128,8 +128,8 @@ export default function MapView({ breeders }: { breeders: any[] }) {
         {filteredBreeders.map((breeder) => (
           <Marker
             key={breeder.id}
-            longitude={breeder.lng}
-            latitude={breeder.lat}
+            longitude={breeder.longitude}
+            latitude={breeder.latitude}
             anchor="bottom"
           >
             <div onClick={() => setPopupInfo(breeder)} style={{ cursor: 'pointer' }}>

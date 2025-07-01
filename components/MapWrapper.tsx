@@ -13,8 +13,8 @@ interface MapWrapperProps {
     name: string;
     location: string;
     breeds: string[];
-    lat: number;
-    lng: number;
+    latitude: number;
+    longitude: number;
   }>; // Replace 'any' with a more specific type
 }
 
