@@ -11,11 +11,14 @@ interface MapWrapperProps {
   breeders: Array<{
     id: string;
     name: string;
-    location: string;
+    address: string;
+    city: string;
+    state: string;
+    zip: string;
     breeds: string[];
     latitude: number;
     longitude: number;
-  }>; // Replace 'any' with a more specific type
+  }>;
 }
 
 export default function MapWrapper({ breeders }: MapWrapperProps) {

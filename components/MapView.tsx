@@ -32,7 +32,10 @@ export default function MapView({ breeders }: { breeders: any[] }) {
     const matchesSearch =
       searchTerm.trim() === '' ||
       breeder.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      breeder.location.toLowerCase().includes(searchTerm.toLowerCase());
+      breeder.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      breeder.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      breeder.state.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      breeder.zip.toLowerCase().includes(searchTerm.toLowerCase());
 
     return matchesBreed && matchesSearch;
   });
@@ -140,8 +143,8 @@ export default function MapView({ breeders }: { breeders: any[] }) {
 
         {popupInfo && (
           <Popup
-            longitude={popupInfo.lng}
-            latitude={popupInfo.lat}
+            longitude={popupInfo.longitude}
+            latitude={popupInfo.latitude}
             anchor="top"
             onClose={() => setPopupInfo(null)}
             closeOnClick={false}
