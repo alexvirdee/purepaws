@@ -4,7 +4,8 @@ import { PawPrint, UserIcon, EllipsisVertical } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { useSession, signIn, signOut } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
+import { LogOut } from "lucide-react";
 
 const Menu = () => {
     const { data: session } = useSession();
@@ -23,9 +24,9 @@ const Menu = () => {
                         <span className="text-sm text-gray-700 truncate">
                             {session.user.email || session.user.name}
                         </span>
-                        <button className="text-blue-600 underline">
-                            Sign Out
-                        </button>
+                        <Button onClick={() => signOut()} variant={"outline"} className="text-blue-500">
+                          <LogOut /> Sign Out
+                        </Button>
                     </div>
                 ) : (
                     <Button asChild>
