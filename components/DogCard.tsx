@@ -10,7 +10,7 @@ import { isValidImage } from "@/utils/isValidImage";
 interface DogCardProps {
     dog: Dog;
     isFavorited: boolean;
-    loggedInUser: string;
+    loggedInUser?: string;
 }
 
 export default function DogCard({ dog, isFavorited, loggedInUser }: DogCardProps) {

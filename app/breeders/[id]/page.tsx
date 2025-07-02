@@ -2,7 +2,9 @@ import { ObjectId } from "mongodb";
 import clientPromise from "@/lib/mongodb";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
+import { getUserFavorites } from "@/lib/db/getUserFavorites";
 import DogCardList from "@/components/DogCardList";
+import { Dog } from "@/interfaces/dog";
 
 interface BreederParams {
     params: {
@@ -13,6 +15,7 @@ interface BreederParams {
 const Breeder = async ({ params }: BreederParams) => {
     const session = await getServerSession(authOptions);
 
+    // The ID in the URL params is the breeder id 
     const { id } = await params;
     const breederId = id;
 
@@ -31,14 +34,15 @@ const Breeder = async ({ params }: BreederParams) => {
 
     console.log('userFromDb', userFromDb?._id)
 
-    let userFavorites: string[] = [];
+    let favoriteDogs: Dog[] = [];
     let loggedInUserBreederId: string = "";
 
     // If logged in check if user has favorites
     if (session?.user?.email) {
         const user = await db.collection("users").findOne({ email: session.user.email });
+        // Store logged in user if they have a breederId attached to their user collection 
         loggedInUserBreederId = userFromDb?.breederId;
-        userFavorites = user?.favorites || [];
+        favoriteDogs = await getUserFavorites(userFromDb?.email);
     }
 
     // Get the dogs for this breeder by id
@@ -72,7 +76,7 @@ const Breeder = async ({ params }: BreederParams) => {
             {/* Available Dogs */}
             <h2 className="text-2xl font-bold mb-4 mx-auto text-center">Available Dogs</h2>
             {dogs.length > 0 ? (
-                <DogCardList dogs={serializedDogs} favorites={userFavorites} loggedInUser={loggedInUserBreederId} />
+                <DogCardList dogs={serializedDogs} favorites={favoriteDogs.map(dog => dog._id)} loggedInUser={loggedInUserBreederId.toString()} />
             ) : (
                 <p className="text-gray-500">No dogs available for this breeder.</p>
             )}

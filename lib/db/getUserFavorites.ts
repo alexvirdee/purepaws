@@ -15,13 +15,21 @@ export async function getUserFavorites(userEmail: string): Promise<Dog[]> {
 
     // Look up favorite dogs by their IDs
     const favorites = await db
-        .collection<Dog>("dogs")
+        .collection("dogs")
         .find({ _id: { $in: user.favorites.map((id: string) => new ObjectId(id)) } })
         .toArray();
 
     // Make sure favorites is plain JSON before returning
     return favorites.map((dog) => ({
-        ...dog,
         _id: dog._id.toString(),
-    })) as Dog[];
+        name: dog.name || "",
+        photo: dog.photo || "",
+        breed: dog.breed || "",
+        location: dog.location || "",
+        status: dog.status || "",
+        price: dog.price || 0,
+        description: dog.description || "",
+        breederId: dog.breederId?.toString?.() ?? null,
+        dob: dog.dob ? dog.dob.toISOString?.() ?? dog.dob : null,
+      }));
 }

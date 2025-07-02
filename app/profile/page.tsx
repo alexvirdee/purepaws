@@ -47,8 +47,7 @@ export default async function ProfilePage() {
             .toArray()
         : [];
 
-    console.log('breederId', breederId)
-    console.log('dogs for this breeder', dogs)
+    const favoriteDogs = await getUserFavorites(email)
 
     // Serialize the dogs to ensure compatibility with client side components
     const serializeDogs = dogs.map((dog) => ({
@@ -60,8 +59,6 @@ export default async function ProfilePage() {
         status: dog.status || "Unknown", // ensure status property exists
         price: dog.price || 0 // ensure price property exists
     }))
-
-    const favorites = userFromDb?.email ? await getUserFavorites(userFromDb.email) : [];
 
     return (
         <main className="max-w-5xl mx-auto p-8 space-y-8">
@@ -172,14 +169,13 @@ export default async function ProfilePage() {
                 </div>
             )}
 
-
             {/* User Favorites */}
-            {favorites.length > 0 ? (
+            {favoriteDogs.length > 0 ? (
                 <div className="bg-white rounded shadow p-6">
                     <h3 className="text-lg font-bold mb-4">Your Favorite Dogs</h3>
                     <DogCardList
-                        dogs={favorites}
-                        favorites={favorites.map((dog) => dog._id.toString())}
+                        dogs={favoriteDogs}
+                        favorites={favoriteDogs.map((dog) => dog._id)}
                     />
                 </div>
             ) : (
