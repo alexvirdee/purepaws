@@ -2,14 +2,15 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 import DogCardList from "@/components/DogCardList";
-import { User } from "@/interfaces/user";
 import { getUserFavorites } from "@/lib/db/getUserFavorites";
-import { Plus, User as UserIcon } from "lucide-react";
+import { User as UserIcon, Dog as DogIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import clientPromise from "@/lib/mongodb";
 import EditProfileDialog from "@/components/EditProfileDialog";
 import AddDogDialog from "@/components/AddDogDialog";
 import { ObjectId } from "mongodb";
+import { isValidImage } from "@/utils/isValidImage";
+
 
 
 export default async function ProfilePage() {
@@ -45,7 +46,7 @@ export default async function ProfilePage() {
             .find({ breederId: ObjectId.isValid(breederId) ? new ObjectId(breederId) : breederId })
             .toArray()
         : [];
-    
+
     console.log('breederId', breederId)
     console.log('dogs for this breeder', dogs)
 
@@ -109,7 +110,7 @@ export default async function ProfilePage() {
                 <div className="bg-white rounded-lg shadow p-6 flex flex-col sm:flex gap-6 relative">
                     <div className="flex justify-between items-center mb-4">
                         <h2 className="text-xl font-bold">My Dogs</h2>
-                         {<AddDogDialog breederId={breederId} />}
+                        {<AddDogDialog breederId={breederId} />}
                     </div>
 
                     {/* List of dogs */}
@@ -117,23 +118,29 @@ export default async function ProfilePage() {
                         <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             {serializeDogs.map((dog) => (
                                 <li key={dog._id} className="border rounded shadow p-4 relative">
-                                    <img
-                                        src={dog.photo}
-                                        alt={dog.name}
-                                        className="w-full h-40 object-cover rounded mb-2"
-                                    />
+                                    {isValidImage(dog.photo) ? (
+                                        <img
+                                            src={dog.photo}
+                                            alt={dog.name}
+                                            className="w-full h-48 object-cover mb-2 rounded"
+                                        />
+                                    ) : (
+                                        <div className="w-full h-48 flex items-center justify-center bg-gray-200 rounded mb-2">
+                                            <DogIcon className="w-16 h-16 text-gray-500" />
+                                        </div>
+                                    )}
                                     <h3 className="text-lg font-semibold">{dog.name}</h3>
                                     <p className="text-gray-600">{dog.breed}</p>
                                     <p className="text-gray-500">{dog.status} - ${dog.price}</p>
 
                                     {/* Actions */}
                                     <div className="flex gap-2 mt-2">
-                                        <button className="text-sm text-blue-600 hover:underline">
+                                        <Button className="text-sm text-blue-600 hover:underline bg-gray-200">
                                             Edit
-                                        </button>
-                                        <button className="text-sm text-red-600 hover:underline">
+                                        </Button>
+                                        <Button className="text-sm hover:underline bg-red-500">
                                             Delete
-                                        </button>
+                                        </Button>
                                     </div>
                                 </li>
                             ))}
@@ -155,13 +162,13 @@ export default async function ProfilePage() {
 
             {/* For breeder profile who are not approved yet display that information in the profile */}
             {breeder && breeder.status !== "approved" && (
-                 <div className="bg-white rounded-lg shadow p-6 flex flex-col sm:flex gap-6 relative">
-                 <div className="flex justify-between items-center mb-4">
-                     <h2 className="text-xl font-bold">Breeder application status is <span className="text-blue-500">{breeder.status}</span></h2>
-                     <p className="text-gray-500">
-                         Team is currently reviewing your breeder application. You will receive an email once approved!
-                    </p>
-                 </div>
+                <div className="bg-white rounded-lg shadow p-6 flex flex-col sm:flex gap-6 relative">
+                    <div className="flex justify-between items-center mb-4">
+                        <h2 className="text-xl font-bold">Breeder application status is <span className="text-blue-500">{breeder.status}</span></h2>
+                        <p className="text-gray-500">
+                            Team is currently reviewing your breeder application. You will receive an email once approved!
+                        </p>
+                    </div>
                 </div>
             )}
 
