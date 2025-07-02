@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import clientPromise from "@/lib/mongodb";
 import EditProfileDialog from "@/components/EditProfileDialog";
 import AddDogDialog from "@/components/AddDogDialog";
+import { ObjectId } from "mongodb";
 
 
 export default async function ProfilePage() {
@@ -32,17 +33,21 @@ export default async function ProfilePage() {
     const name = userFromDb?.name || "";
     const email = userFromDb?.email;
     const role = userFromDb?.role;
+    const breederId = userFromDb?.breederId.toString();
 
     // Fetch the breeder details using user email
     const breeder = await db.collection("breeders").findOne({ email: email });
 
     // Fetch the list of dogs for the breeder if any
-    const dogs = breeder?.breederId
+    const dogs = breederId
         ? await db
             .collection("dogs")
-            .find({ breederId: breeder.breederId })
+            .find({ breederId: ObjectId.isValid(breederId) ? new ObjectId(breederId) : breederId })
             .toArray()
         : [];
+    
+    console.log('breederId', breederId)
+    console.log('dogs for this breeder', dogs)
 
     // Serialize the dogs to ensure compatibility with client side components
     const serializeDogs = dogs.map((dog) => ({
@@ -104,7 +109,7 @@ export default async function ProfilePage() {
                 <div className="bg-white rounded-lg shadow p-6 flex flex-col sm:flex gap-6 relative">
                     <div className="flex justify-between items-center mb-4">
                         <h2 className="text-xl font-bold">My Dogs</h2>
-                         {<AddDogDialog breederId={breeder.breederId} />}
+                         {<AddDogDialog breederId={breederId} />}
                     </div>
 
                     {/* List of dogs */}
