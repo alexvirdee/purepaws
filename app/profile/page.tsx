@@ -1,19 +1,11 @@
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
-
-// Extend the Session type to include the role property
-declare module "next-auth" {
-    interface Session {
-        user: {
-            name?: string | null;
-            email?: string | null;
-            image?: string | null;
-            role?: string | null; // Add role property
-            breederId?: string | null; // Add breederId property
-        };
-    }
-}
+import DogCardList from "@/components/DogCardList";
+import { User } from "@/interfaces/user";
+import { getUserFavorites } from "@/lib/db/getUserFavorites";
+import { Pencil } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 
 export default async function ProfilePage() {
@@ -24,35 +16,48 @@ export default async function ProfilePage() {
         redirect('/auth/signin');
     }
 
-    const user = session?.user;
+    const user = session?.user as User;
+    const favorites = user?.email ? await getUserFavorites(user.email) : [];
 
     return (
-        <main className="max-w-3xl mx-auto p-8">
+        <main className="max-w-5xl mx-auto p-8 space-y-8">
             <h1 className="text-3xl font-bold mb-4">Profile</h1>
+            {/* Profile Card */}
+            <div className="bg-white rounded-lg shadow p-6 flex flex-col sm:flex gap-6 relative">
+                {/* Profile Image Placeholder */}
+                <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center text-2xl font-bold">
+                    {user?.name?.[0] || user?.email?.[0]}
+                </div>
+                <div className="flex-1">
+                    <h2 className="text-xl font-semibold mb-1">
+                        {user?.name || user?.email}
+                    </h2>
+                    <p className="text-sm text-gray-500 mb-1">
+                        {user?.role?.charAt(0).toUpperCase() + user?.role?.slice(1)}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                        {user?.email}
+                    </p>
+                </div>
+                {/* TODO: edit profile feature */}
+                <Button className="absolute top-4 right-4 flex items-center text-sm gap-2 text-white bg-orange-500 hover:bg-orange-600 px-4 py-2 rounded shadow cursor-pointer">
+                    <Pencil />  Edit
+                </Button>
 
-            <div className="space-y-2">
-                {user && (
-                    <>
-                        <p><strong>Email: </strong> {user.email}</p>
-                        <p><strong>Role: </strong> {user.role || "No role assigned"}</p>
-                    </>
-                )}
             </div>
 
-            {user.role === "breeder" && (
-                <div className="mt-8">
-                    <h2 className="text-2xl font-semibold mb-2">Breeder Dashboard</h2>
-                    <p>Breeder ID: {user.breederId || "N/A"}</p>
-                    {/* TODO: Fetch breeder details by ID */}
-                    <p>Manage dogs, update information, etc.</p>
-                </div>
-            )}
 
-            {user.role === "viewer" && (
-                <div className="mt-8">
-                    <h2 className="text-2xl font-semibold mb-2">Viewer Dashboard</h2>
-                    <p>Saved dogs and favorites will show here (coming soon!)</p>
+            {/* User Favorites */}
+            {favorites.length > 0 ? (
+                <div className="bg-white rounded shadow p-6">
+                    <h3 className="text-lg font-bold mb-4">Your Favorite Dogs</h3>
+                    <DogCardList
+                        dogs={favorites}
+                        favorites={favorites.map((dog) => dog._id.toString())}
+                    />
                 </div>
+            ) : (
+                <p className="text-gray-500">You have no favorite dogs yet.</p>
             )}
         </main>
     );

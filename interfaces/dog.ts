@@ -8,4 +8,7 @@ export interface Dog {
     location: string;
     status: string;
     price: number;
+    description: string;
+    breederId?: string;
+    dob?: string;
 }
