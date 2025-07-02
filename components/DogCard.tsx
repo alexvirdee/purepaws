@@ -1,26 +1,18 @@
 'use client';
 
 import Link from "next/link";
-import { Heart } from "lucide-react";
 import { Dog } from "@/interfaces/dog";
+import FavoriteButton from "./FavoriteButton";
 
 
 export default function DogCard({ dog }: { dog: Dog }) {
 
-    const handleFavoriteClick = (e) => {
-        e.stopPropagation();
-        e.preventDefault();
-        console.log(`favorite ${dog.name}`)
-    }
-
     return (
-        <Link href={`/dogs/${dog._id}`} key={dog._id.toString()}>
-            <li className="border p-4 rounded shadow hover:shadow-lg hover:bg-gray-50 transition relative">
-                {/* Favorite icon */}
-                <div onClick={handleFavoriteClick} className="absolute top-2 right-2 bg-white rounded-full p-2 shadow hover:bg-gray-100 transition">
-                    <Heart className="w-5 h-5 text-red-500 cursor-pointer" />
-                </div>
+        <li key={dog._id.toString()} className="border p-4 rounded shadow hover:shadow-lg hover:bg-gray-50 transition relative">
+            {/* Favorite a dog */}
+            <FavoriteButton />
 
+            <Link href={`/dogs/${dog._id}`} >
                 <img
                     src={dog.photo}
                     alt={dog.name}
@@ -32,8 +24,8 @@ export default function DogCard({ dog }: { dog: Dog }) {
                 <p className="text-green-600 font-bold">
                     {dog.status} - ${dog.price}
                 </p>
-            </li>
-        </Link>
+            </Link>
+        </li>
     )
 
 }

@@ -21,13 +21,20 @@ const Breeder = async ({ params }: BreederParams) => {
         _id: new ObjectId(breederId)
     });
 
-    // Get the dogs for this breeder (if using separate dogs collection)
+    // Get the dogs for this breeder by id
     const dogs = (await db
         .collection("dogs")
         .find({ breederId: breederId })
         .toArray()).map(dog => ({
             ...dog,
             _id: dog._id.toString(),
+            name: dog.name || "Unknown Name",
+            photo: dog.photo || "/default-photo.jpg",
+            breed: dog.breed || "Unknown Breed",
+            location: dog.location || "Unknown Location",
+            age: dog.age || "Unknown Age",
+            status: dog.status || "Unknown Status",
+            price: dog.price || "Unknown Price",
         }));
 
     return (
@@ -38,7 +45,7 @@ const Breeder = async ({ params }: BreederParams) => {
             </h1>
 
             {/* Available Dogs */}
-            <h2 className="text-2xl font-bold mb-4">Available Dogs</h2>
+            <h2 className="text-2xl font-bold mb-4 mx-auto text-center">Available Dogs</h2>
             {dogs.length > 0 ? (
                 <DogCardList dogs={dogs} />
             ) : (
