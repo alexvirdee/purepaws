@@ -5,12 +5,12 @@ import { Dog } from "@/interfaces/dog";
 import FavoriteButton from "./FavoriteButton";
 
 
-export default function DogCard({ dog }: { dog: Dog }) {
+export default function DogCard({ dog, isFavorited }: { dog: Dog; isFavorited: boolean }) {
 
     return (
         <li key={dog._id.toString()} className="border p-4 rounded shadow hover:shadow-lg hover:bg-gray-50 transition relative">
             {/* Favorite a dog */}
-            <FavoriteButton />
+            <FavoriteButton dogId={dog._id.toString()} initiallyFavorited={isFavorited} />
 
             <Link href={`/dogs/${dog._id}`} >
                 <img

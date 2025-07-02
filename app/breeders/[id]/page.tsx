@@ -1,5 +1,7 @@
 import { ObjectId } from "mongodb";
 import clientPromise from "@/lib/mongodb";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 import DogCardList from "@/components/DogCardList";
 
 interface BreederParams {
@@ -9,17 +11,27 @@ interface BreederParams {
 }
 
 const Breeder = async ({ params }: BreederParams) => {
+    const session = await getServerSession(authOptions);
+    
     const { id } = await params;
     const breederId = id;
-
+    
     // Connect to the database
     const client = await clientPromise;
     const db = client.db("purepaws");
-
+    
     // Get the breeder by ID
     const breeder = await db.collection("breeders").findOne({
         _id: new ObjectId(breederId)
     });
+
+    let userFavorites: string[] = [];
+
+    // If logged in check if user has favorites
+    if (session?.user?.email) {
+        const user = await db.collection("users").findOne({ email: session.user.email });
+        userFavorites = user?.favorites || [];
+    }
 
     // Get the dogs for this breeder by id
     const dogs = (await db
@@ -47,7 +59,7 @@ const Breeder = async ({ params }: BreederParams) => {
             {/* Available Dogs */}
             <h2 className="text-2xl font-bold mb-4 mx-auto text-center">Available Dogs</h2>
             {dogs.length > 0 ? (
-                <DogCardList dogs={dogs} />
+                <DogCardList dogs={dogs} favorites={userFavorites} />
             ) : (
                 <p className="text-gray-500">No dogs available for this breeder.</p>
             )}

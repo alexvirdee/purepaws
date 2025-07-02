@@ -14,12 +14,17 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-export default function FavoriteButton() {
+interface FavoriteButtonProps {
+    dogId: string;
+    initiallyFavorited?: boolean;
+  }
+
+export default function FavoriteButton({ dogId, initiallyFavorited = false }: FavoriteButtonProps) {
     const { data: session } = useSession();
-    const [isFavorited, setIsFavorited] = useState(false);
+    const [isFavorited, setIsFavorited] = useState(initiallyFavorited);
     const [showDialog, setShowDialog] = useState(false);
 
-    const handleFavoriteClick = (e: React.MouseEvent) => {
+    const handleFavoriteClick = async (e: React.MouseEvent) => {
         e.stopPropagation();
         e.preventDefault();
 
@@ -28,9 +33,22 @@ export default function FavoriteButton() {
             return;
         }
 
-        setIsFavorited((prev) => !prev);
+        try {
+            const res = await fetch("/api/favorites", {
+                method: "POST",
+                headers: { "Content-type": "application/json" },
+                body: JSON.stringify({ dogId })
+            });
 
-        // TODO: Persist to DB
+            if (res.ok) {
+                const data = await res.json();
+                setIsFavorited(data.favorites.includes(dogId));
+            } else {
+                console.error("failed to toggle favorite");
+            }
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     return (
