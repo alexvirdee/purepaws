@@ -7,6 +7,7 @@ import { getUserFavorites } from "@/lib/db/getUserFavorites";
 import { Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import clientPromise from "@/lib/mongodb";
+import EditProfileDialog from "@/components/EditProfileDialog";
 
 
 export default async function ProfilePage() {
@@ -48,16 +49,13 @@ export default async function ProfilePage() {
                         {user?.email}
                     </p>
                     {user.role === 'breeder' && (
-                    <p className="text-sm text-gray-500">
-                        {breeder?.about}
-                    </p>
+                        <p className="text-sm text-gray-500">
+                            {breeder?.about}
+                        </p>
                     )}
                 </div>
-                {/* TODO: edit profile feature */}
-                <Button className="absolute top-4 right-4 flex items-center text-sm gap-2 text-white bg-orange-500 hover:bg-orange-600 px-4 py-2 rounded shadow cursor-pointer">
-                    <Pencil />  Edit
-                </Button>
-
+                {/* Edit Profile */}
+                <EditProfileDialog user={{ name: user.name || "", email: user.email, role: user.role  }} />
             </div>
 
 
