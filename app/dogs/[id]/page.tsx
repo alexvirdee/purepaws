@@ -3,19 +3,8 @@ import clientPromise from "@/lib/mongodb";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { Dog } from "@/interfaces/dog";
 
-interface Dog {
-    _id: ObjectId | string;
-    name: string;
-    breed: string;
-    dob: string;
-    status: string;
-    description: string;
-    price: number;
-    photo: string;
-    breederId: string;
-    location: string;
-}
 
 export default async function DogDetailsPage({ params }: { params: { id: string } }) {
     const { id } = await params;

@@ -1,11 +1,7 @@
 'use client';
 
-import DogCard from "./DogCard";
-
-interface Dog {
-  _id: string;
-  // Add other properties of the Dog object here
-}
+import DogCard from "@/components/DogCard";
+import { Dog } from "@/interfaces/dog";
 
 export default function DogCardList({ dogs }: { dogs: Dog[] }) {
     return (

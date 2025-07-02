@@ -2,16 +2,8 @@
 
 import Link from "next/link";
 import { Heart } from "lucide-react";
+import { Dog } from "@/interfaces/dog";
 
-interface Dog {
-    _id: string;
-    name: string;
-    photo: string;
-    breed: string;
-    location: string;
-    status: string;
-    price: number;
-}
 
 export default function DogCard({ dog }: { dog: Dog }) {
 
