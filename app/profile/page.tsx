@@ -100,7 +100,7 @@ export default async function ProfilePage() {
                         - Expected dogs/breeds 
                         - Contact interest form (on breeder detail page)
             */}
-            {breeder && (
+            {breeder && breeder.status === "approved" && (
                 <div className="bg-white rounded-lg shadow p-6 flex flex-col sm:flex gap-6 relative">
                     <div className="flex justify-between items-center mb-4">
                         <h2 className="text-xl font-bold">My Dogs</h2>
@@ -147,6 +147,18 @@ export default async function ProfilePage() {
                 </div>
             )
             }
+
+            {/* For breeder profile who are not approved yet display that information in the profile */}
+            {breeder && breeder.status !== "approved" && (
+                 <div className="bg-white rounded-lg shadow p-6 flex flex-col sm:flex gap-6 relative">
+                 <div className="flex justify-between items-center mb-4">
+                     <h2 className="text-xl font-bold">Breeder application status is <span className="text-blue-500">{breeder.status}</span></h2>
+                     <p className="text-gray-500">
+                         Team is currently reviewing your breeder application. You will receive an email once approved!
+                    </p>
+                 </div>
+                </div>
+            )}
 
 
             {/* User Favorites */}
