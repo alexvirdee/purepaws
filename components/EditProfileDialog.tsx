@@ -8,10 +8,13 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
+import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
+import { Label } from "./ui/label";
 import { Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export default function EditProfileDialog({ user }: { user: { name: string; email: string; role: string } }) {
+export default function EditProfileDialog({ user }: { user: { name: string; email: string; about: string; role: string } }) {
     return (
         <Dialog>
             <DialogTrigger asChild>
@@ -28,24 +31,34 @@ export default function EditProfileDialog({ user }: { user: { name: string; emai
                 </DialogHeader>
                 <form className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium mb-1">Name</label>
-                        <input
+                        <Label className="block text-sm font-medium mb-1">Name</Label>
+                        <Input
                             type="text"
                             defaultValue={user.name}
                             className="w-full border rounded p-2"
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium mb-1">Email</label>
-                        <input
+                        <Label className="block text-sm font-medium mb-1">Email</Label>
+                        <Input
                             type="email"
                             defaultValue={user.email}
                             className="w-full border rounded p-2"
+                            disabled
                         />
                     </div>
+                    {user.about !== null && (
+                        <div>
+                            <Label className="block text-sm font-medium mb-1">About</Label>
+                            <Textarea
+                                defaultValue={user.about}
+                                className="w-full border rounded p-2"
+                            />
+                        </div>
+                    )}
                     <div>
-                        <label className="block text-sm font-medium mb-1">Role</label>
-                        <input
+                        <Label className="block text-sm font-medium mb-1">Role</Label>
+                        <Input
                             type="text"
                             defaultValue={user.role}
                             className="w-full border rounded p-2"

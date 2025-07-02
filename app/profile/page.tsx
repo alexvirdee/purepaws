@@ -55,7 +55,7 @@ export default async function ProfilePage() {
                     )}
                 </div>
                 {/* Edit Profile */}
-                <EditProfileDialog user={{ name: user.name || "", email: user.email, role: user.role  }} />
+                <EditProfileDialog user={{ name: user.name || "", email: user.email, about: breeder ? breeder.about : null, role: user.role  }} />
             </div>
 
 
