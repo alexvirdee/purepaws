@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        const { name } = await req.json();
+        const { name, about } = await req.json();
 
         if (!name || name.trim().length === 0) {
             return NextResponse.json({ error: "Name is required" }, { status: 400 });
@@ -40,10 +40,11 @@ export async function POST(req: NextRequest) {
         )
 
         // If the user is a breeder, also update the breeders collection
+        // Handle about update for breeders
         if (session.user.role === "breeder" && session.user.breederId) {
             await db.collection("breeders").updateOne(
                 { _id: new ObjectId(session.user.breederId) },
-                { $set: { name } }  
+                { $set: { name, about: about?.trim() || "" } }  
             )
         }
 

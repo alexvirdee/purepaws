@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 
 export default function EditProfileDialog({ user }: { user: { name: string; email: string; about: string; role: string } }) {
     const [name, setName] = useState(user.name);
+    const [about, setAbout] = useState(user.about);
     const [open, setOpen] = useState(false);
 
     const router = useRouter();
@@ -29,7 +30,7 @@ export default function EditProfileDialog({ user }: { user: { name: string; emai
         const response = await fetch('/api/profile/update', {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name })
+            body: JSON.stringify({ name, about })
         });
 
         if (response.ok) {
@@ -63,7 +64,6 @@ export default function EditProfileDialog({ user }: { user: { name: string; emai
                             type="text"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
-                            defaultValue={user.name}
                             className="w-full border rounded p-2"
                         />
                     </div>
@@ -80,7 +80,8 @@ export default function EditProfileDialog({ user }: { user: { name: string; emai
                         <div>
                             <Label className="block text-sm font-medium mb-1">About</Label>
                             <Textarea
-                                defaultValue={user.about}
+                                value={about}
+                                onChange={(e) => setAbout(e.target.value)}
                                 className="w-full border rounded p-2"
                             />
                         </div>

@@ -18,8 +18,6 @@ export default async function ProfilePage() {
         redirect('/auth/signin');
     }
 
-    const user = session?.user as User;
-
     // connect to the db
     const client = await clientPromise;
     const db = client.db("purepaws");
@@ -35,9 +33,9 @@ export default async function ProfilePage() {
     const role = userFromDb?.role
 
     // Fetch the breeder details using user email
-    const breeder = await db.collection("breeders").findOne({ email: user.email })
+    const breeder = await db.collection("breeders").findOne({ email: email })
 
-    const favorites = user?.email ? await getUserFavorites(user.email) : [];
+    const favorites = userFromDb?.email ? await getUserFavorites(userFromDb.email) : [];
 
     return (
         <main className="max-w-5xl mx-auto p-8 space-y-8">
@@ -65,7 +63,7 @@ export default async function ProfilePage() {
                     )}
                 </div>
                 {/* Edit Profile */}
-                <EditProfileDialog user={{ name: user.name || "", email: user.email, about: breeder ? breeder.about : null, role: user.role  }} />
+                <EditProfileDialog user={{ name: name || "", email: email, about: breeder ? breeder.about : null, role: role  }} />
             </div>
 
 
