@@ -7,12 +7,20 @@ import FavoriteButton from "./FavoriteButton";
 import { isValidImage } from "@/utils/isValidImage";
 
 
-export default function DogCard({ dog, isFavorited }: { dog: Dog; isFavorited: boolean }) {
+interface DogCardProps {
+    dog: Dog;
+    isFavorited: boolean;
+    loggedInUser: string;
+}
+
+export default function DogCard({ dog, isFavorited, loggedInUser }: DogCardProps) {
 
     return (
         <li key={dog._id.toString()} className="border p-4 rounded shadow hover:shadow-lg hover:bg-gray-50 transition relative">
             {/* Favorite a dog */}
-            <FavoriteButton dogId={dog._id.toString()} initiallyFavorited={isFavorited} />
+            {loggedInUser !== dog.breederId && (
+                <FavoriteButton dogId={dog._id.toString()} initiallyFavorited={isFavorited} />
+            )}
 
             <Link href={`/dogs/${dog._id}`} >
                 {isValidImage(dog.photo) ? (
