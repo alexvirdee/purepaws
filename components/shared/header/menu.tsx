@@ -18,11 +18,13 @@ const Menu = () => {
     return (
         <div className="flex justify-end gap-3 pr-4">
             <nav className="hidden md:flex w-full gap-2 items-center">
-                <Button asChild variant="ghost">
-                    <Link href="/list-your-kennel">
-                        <PawPrint /> List your kennel
-                    </Link>
-                </Button>
+                {session?.user?.role !== 'breeder' && (
+                    <Button asChild variant="ghost">
+                        <Link href="/list-your-kennel">
+                            <PawPrint /> List your kennel
+                        </Link>
+                    </Button>
+                )}
                 {/* Session check */}
                 {session?.user ? (
                     <div className="flex items-center gap-2">
@@ -50,11 +52,13 @@ const Menu = () => {
                     </SheetTrigger>
                     <SheetContent className="flex flex-col items-start">
                         <SheetTitle>Menu</SheetTitle>
-                        <Button asChild variant='ghost'>
-                            <Link href='/list-your-kennel'>
-                                <PawPrint /> List your kennel
-                            </Link>
-                        </Button>
+                        {session?.user?.role !== 'breeder' && (
+                            <Button asChild variant="ghost">
+                                <Link href="/list-your-kennel">
+                                    <PawPrint /> List your kennel
+                                </Link>
+                            </Button>
+                        )}
                         {/* Session check */}
                         {session?.user ? (
                             <div className="flex items-center gap-4">
