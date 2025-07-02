@@ -24,6 +24,16 @@ export default async function ProfilePage() {
     const client = await clientPromise;
     const db = client.db("purepaws");
 
+    // Resolve name not updating on edit since session token doesn't change on profile updates
+    const userFromDb = await db.collection("users").findOne({
+        email: session?.user?.email
+    })
+
+    // User details fresh from the database
+    const name = userFromDb?.name || ""; 
+    const email = userFromDb?.email;
+    const role = userFromDb?.role
+
     // Fetch the breeder details using user email
     const breeder = await db.collection("breeders").findOne({ email: user.email })
 
@@ -36,19 +46,19 @@ export default async function ProfilePage() {
             <div className="bg-white rounded-lg shadow p-6 flex flex-col sm:flex gap-6 relative">
                 {/* Profile Image Placeholder */}
                 <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center text-2xl font-bold">
-                    {user?.name?.[0] || user?.email?.[0]}
+                    {name?.[0] || email?.[0]}
                 </div>
                 <div className="flex-1">
                     <h2 className="text-xl font-semibold mb-1">
-                        {user?.name || user?.email}
+                       {name}
                     </h2>
                     <p className="text-sm text-gray-500 mb-1">
-                        {user?.role?.charAt(0).toUpperCase() + user?.role?.slice(1)}
+                        {role?.charAt(0).toUpperCase() + role?.slice(1)}
                     </p>
                     <p className="text-sm text-gray-500 mb-1">
-                        {user?.email}
+                        {email}
                     </p>
-                    {user.role === 'breeder' && (
+                    {role === 'breeder' && (
                         <p className="text-sm text-gray-500">
                             {breeder?.about}
                         </p>
