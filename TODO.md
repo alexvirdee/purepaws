@@ -9,10 +9,10 @@
 - [x] Validate breeds offered:
   - Do not allow selecting more than **2 breeds**.
   - Show a helpful error if the user tries to select a third. 
-- [ ] Adjust state input to be a dropdown
+- [x] Adjust state input to be a dropdown
 
 ### ✅ Success Page / Form Flow
-- [ ] Clear form inputs automatically after successful submission.
+- [x] Clear form inputs automatically after successful submission.
 - [ ] Consider adding a localStorage guard so `/success` is only accessible if they just submitted.
 
 ### 🔑 Authentication (Future)

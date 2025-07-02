@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
 import clientPromise from "@/lib/mongodb";
-import Header from "@/components/shared/header";
+import DogCardList from "@/components/DogCardList";
 
 interface BreederParams {
     params: {
@@ -22,10 +22,13 @@ const Breeder = async ({ params }: BreederParams) => {
     });
 
     // Get the dogs for this breeder (if using separate dogs collection)
-    const dogs = await db
+    const dogs = (await db
         .collection("dogs")
         .find({ breederId: breederId })
-        .toArray();
+        .toArray()).map(dog => ({
+            ...dog,
+            _id: dog._id.toString(),
+        }));
 
     return (
         <div>
@@ -37,23 +40,7 @@ const Breeder = async ({ params }: BreederParams) => {
             {/* Available Dogs */}
             <h2 className="text-2xl font-bold mb-4">Available Dogs</h2>
             {dogs.length > 0 ? (
-                <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {dogs.map((dog) => (
-                        <li key={dog.id} className="border p-4 rounded shadow">
-                            <img
-                                src={dog.photo}
-                                alt={dog.name}
-                                className="w-full h-48 object-cover mb-2 rounded"
-                            />
-                            <h2 className="text-xl font-semibold">{dog.name}</h2>
-                            <p className="text-gray-600">{dog.breed}</p>
-                            <p className="text-gray-500">{dog.location}</p>
-                            <p className="text-green-600 font-bold">
-                                {dog.status} - ${dog.price}
-                            </p>
-                        </li>
-                    ))}
-                </ul>
+                <DogCardList dogs={dogs} />
             ) : (
                 <p className="text-gray-500">No dogs available for this breeder.</p>
             )}
