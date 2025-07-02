@@ -8,5 +8,6 @@ export interface User {
     role: "viewer" | "breeder" | "admin";
     breederId?: ObjectId | string | null;
     favorites?: string[]; // Or ObjectId[] if you prefer
+    about?: string;
     createdAt?: Date;
 }

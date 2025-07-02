@@ -6,6 +6,7 @@ import { User } from "@/interfaces/user";
 import { getUserFavorites } from "@/lib/db/getUserFavorites";
 import { Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import clientPromise from "@/lib/mongodb";
 
 
 export default async function ProfilePage() {
@@ -17,6 +18,14 @@ export default async function ProfilePage() {
     }
 
     const user = session?.user as User;
+
+    // connect to the db
+    const client = await clientPromise;
+    const db = client.db("purepaws");
+
+    // Fetch the breeder details using user email
+    const breeder = await db.collection("breeders").findOne({ email: user.email })
+
     const favorites = user?.email ? await getUserFavorites(user.email) : [];
 
     return (
@@ -35,9 +44,14 @@ export default async function ProfilePage() {
                     <p className="text-sm text-gray-500 mb-1">
                         {user?.role?.charAt(0).toUpperCase() + user?.role?.slice(1)}
                     </p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-gray-500 mb-1">
                         {user?.email}
                     </p>
+                    {user.role === 'breeder' && (
+                    <p className="text-sm text-gray-500">
+                        {breeder?.about}
+                    </p>
+                    )}
                 </div>
                 {/* TODO: edit profile feature */}
                 <Button className="absolute top-4 right-4 flex items-center text-sm gap-2 text-white bg-orange-500 hover:bg-orange-600 px-4 py-2 rounded shadow cursor-pointer">
