@@ -29,6 +29,7 @@ export async function PUT(
             name,
             breed,
             dob,
+            gender,
             photo,
             description,
             price: rawPrice,
@@ -42,6 +43,7 @@ export async function PUT(
         console.log('name', name);
         console.log('breed', breed);
         console.log('dob', dob);
+        console.log('gender', gender);
         console.log('photo', photo);
         console.log('price', price);
         console.log('status', status);
@@ -62,6 +64,12 @@ export async function PUT(
             console.log('issue with the dob');
 
             return NextResponse.json({ error: "Invalid date of birth" }, { status: 400 });
+        }
+
+        if (!gender || gender.trim().length === 0) {
+            console.log('issue with the gender edit');
+
+            return NextResponse.json({ error: "Gender is required" }, { status: 400 });
         }
 
         // TODO: Handle issues with photo updates 
@@ -95,6 +103,7 @@ export async function PUT(
             name: name.trim(),
             breed: breed.trim(),
             dob: dob || null,
+            gender: gender.trim(),
             photo: photo || "",
             description: description?.trim() || "",
             price: price || 0,

@@ -99,7 +99,7 @@ export default function AddEditDogDialog({
         });
 
         if (res.ok) {
-            toast.success('Dog added successfully');
+            toast.success(`Dog ${mode === 'edit' ? 'edited' : 'added'} successfully`);
             setOpen(false);
 
             router.refresh();
@@ -177,8 +177,6 @@ export default function AddEditDogDialog({
                                 </SelectGroup>
                             </SelectContent>
                         </Select>
-
-
                     </div>
 
                     <div>

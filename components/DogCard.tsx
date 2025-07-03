@@ -43,6 +43,7 @@ export default function DogCard({ dog, isFavorited, onUnfavorite, loggedInUser }
                 <h2 className="text-xl font-semibold">{dog.name}</h2>
                 <p className="text-gray-600">{dog.breed}</p>
                 <p className="text-gray-500">dob: {dog.dob}</p>
+                <p className="text-gray-500">{dog.gender}</p>
                 {/* TODO: Add location once data is available */}
                 {/* <p className="text-gray-500">{dog.location}</p> */}
                 <p className="text-green-600 font-bold">
