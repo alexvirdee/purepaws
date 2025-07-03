@@ -80,9 +80,14 @@ export default function AddEditDogDialog({
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        const addEndpoint = `/api/dogs/add`;
+        const editEndpoint = `/api/dogs/${initialData?._id}`;
+
         const endpoint = mode === 'edit'
-            ? `/api/dogs/${initialData?._id}`
-            : `/api/dogs/add`
+            ? editEndpoint
+            : addEndpoint
+
+        console.log('editEndpoint', editEndpoint)
 
         const res = await fetch(endpoint, {
             method: mode === 'edit' ? 'PUT' : 'POST',
