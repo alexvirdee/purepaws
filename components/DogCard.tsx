@@ -5,6 +5,7 @@ import { IDog } from "@/interfaces/dog";
 import { Dog as DogIcon } from "lucide-react";
 import FavoriteButton from "./FavoriteButton";
 import { isValidImage } from "@/utils/isValidImage";
+import { Button } from "@/components/ui/button";
 
 
 interface DogCardProps {
@@ -18,6 +19,10 @@ export default function DogCard({ dog, isFavorited, loggedInUser }: DogCardProps
     return (
         <li key={dog._id.toString()} className="border p-4 rounded shadow hover:shadow-lg hover:bg-gray-50 transition relative">
             {/* Favorite a dog */}
+            {/* Only show favorite button for either
+                1. Guests on application
+                2. Users logged in who are not the breeders who currently own the dogs
+            */}
             {loggedInUser !== dog.breederId && (
                 <FavoriteButton dogId={dog._id.toString()} initiallyFavorited={isFavorited} />
             )}
@@ -40,6 +45,18 @@ export default function DogCard({ dog, isFavorited, loggedInUser }: DogCardProps
                 <p className="text-green-600 font-bold">
                     {dog.status} - ${dog.price}
                 </p>
+
+                {/* Breeder actions for dogs i.e Edit/Delete */}
+                {loggedInUser === dog.breederId && (
+                    <div className="flex gap-2 mt-2">
+                        <Button className="text-sm text-blue-600 hover:underline bg-gray-200">
+                            Edit
+                        </Button>
+                        <Button className="text-sm hover:underline bg-red-500">
+                            Delete
+                        </Button>
+                    </div>
+                )}
             </Link>
         </li>
     )

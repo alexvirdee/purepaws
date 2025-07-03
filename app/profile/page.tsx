@@ -137,32 +137,6 @@ export default async function ProfilePage() {
                                <div key={index}>
                                    <DogCard key={index} dog={dog} loggedInUser={breederId} />
                                </div>
-                                // <li key={dog._id} className="border rounded shadow p-4 relative">
-                                //     {isValidImage(dog.photo) ? (
-                                //         <img
-                                //             src={dog.photo}
-                                //             alt={dog.name}
-                                //             className="w-full h-48 object-cover mb-2 rounded"
-                                //         />
-                                //     ) : (
-                                //         <div className="w-full h-48 flex items-center justify-center bg-gray-200 rounded mb-2">
-                                //             <DogIcon className="w-16 h-16 text-gray-500" />
-                                //         </div>
-                                //     )}
-                                //     <h3 className="text-lg font-semibold">{dog.name}</h3>
-                                //     <p className="text-gray-600">{dog.breed}</p>
-                                //     <p className="text-gray-500">{dog.status} - ${dog.price}</p>
-
-                                //     {/* Actions */}
-                                //     <div className="flex gap-2 mt-2">
-                                //         <Button className="text-sm text-blue-600 hover:underline bg-gray-200">
-                                //             Edit
-                                //         </Button>
-                                //         <Button className="text-sm hover:underline bg-red-500">
-                                //             Delete
-                                //         </Button>
-                                //     </div>
-                                // </li>
                             ))}
                         </ul>
                     ) : (
