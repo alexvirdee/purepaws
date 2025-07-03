@@ -87,7 +87,7 @@ export default function AddEditDogDialog({
             ? editEndpoint
             : addEndpoint
 
-        console.log('editEndpoint', editEndpoint)
+        console.log('formData', formData)
 
         const res = await fetch(endpoint, {
             method: mode === 'edit' ? 'PUT' : 'POST',
@@ -210,7 +210,6 @@ export default function AddEditDogDialog({
                             type="number"
                             value={formData.price}
                             onChange={handleChange}
-                            placeholder="3000"
                         />
                     </div>
 

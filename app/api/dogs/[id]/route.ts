@@ -31,10 +31,12 @@ export async function PUT(
             dob,
             photo,
             description,
-            price,
+            price: rawPrice,
             status,
             location
         } = await req.json();
+
+        const price = Number(rawPrice);
 
         console.log('dog details');
         console.log('name', name);
@@ -71,6 +73,9 @@ export async function PUT(
 
         if (price && (typeof price !== "number" || price < 0)) {
             console.log('issue with the price');
+
+            console.log('price', price);
+            console.log('price type', typeof price);
 
             return NextResponse.json({ error: "Price must be a positive number" }, { status: 400 });
         }

@@ -60,6 +60,8 @@ const Breeder = async ({ params }: BreederParams) => {
         photo: dog.photo || "/default-photo.jpg",
         breed: dog.breed || "Unknown Breed",
         location: dog.location || "Unknown Location",
+        dob: dog.dob || "Unknown", // ensure dob property exists
+        gender: dog.gender || "Unknown", // ensure gender property exists
         age: dog.age || "Unknown Age",
         status: dog.status || "Unknown Status",
         price: dog.price || "Unknown Price",

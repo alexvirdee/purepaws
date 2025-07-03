@@ -74,6 +74,8 @@ export default async function ProfilePage() {
         status: dog.status || "Unknown", // ensure status property exists
         price: dog.price || 0, // ensure price property exists
         location: dog.location || "Unknown", // ensure location property exists
+        dob: dog.dob || "Unknown", // ensure dob property exists
+        gender: dog.gender || "Unknown", // ensure gender property exists
         description: dog.description || "No description available", // ensure description property exists
         createdAt: dog.createdAt ? dog.createdAt.toString() : null,
         updatedAt: dog.updatedAt ? dog.updatedAt.toString() : null
