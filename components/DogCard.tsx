@@ -6,6 +6,7 @@ import { Dog as DogIcon } from "lucide-react";
 import FavoriteButton from "./FavoriteButton";
 import { isValidImage } from "@/utils/isValidImage";
 import { Button } from "@/components/ui/button";
+import AddEditDogDialog from "./AddEditDogDialog";
 
 
 interface DogCardProps {
@@ -44,19 +45,20 @@ export default function DogCard({ dog, isFavorited, loggedInUser }: DogCardProps
                 <p className="text-green-600 font-bold">
                     {dog.status} - ${dog.price}
                 </p>
+            </Link>
 
-                {/* Breeder actions for dogs i.e Edit/Delete */}
+              {/* Breeder actions for dogs i.e Edit/Delete */}
                 {loggedInUser === dog.breederId && (
                     <div className="flex gap-2 mt-2">
-                        <Button className="text-sm text-blue-600 bg-gray-200 hover:bg-gray-300 cursor-pointer">
+                        <AddEditDogDialog mode="edit" initialData={dog} />
+                        {/* <Button className="text-sm text-blue-600 bg-gray-200 hover:bg-gray-300 cursor-pointer">
                             Edit
-                        </Button>
+                        </Button> */}
                         <Button className="text-sm bg-red-500 hover:bg-red-600 cursor-pointer">
                             Delete
                         </Button>
                     </div>
                 )}
-            </Link>
         </li>
     )
 

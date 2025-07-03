@@ -7,9 +7,8 @@ import { User as UserIcon, Dog as DogIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import clientPromise from "@/lib/mongodb";
 import EditProfileDialog from "@/components/EditProfileDialog";
-import AddDogDialog from "@/components/AddDogDialog";
+import AddEditDogDialog from "@/components/AddEditDogDialog";
 import { ObjectId } from "mongodb";
-import { isValidImage } from "@/utils/isValidImage";
 import DogCard from "@/components/DogCard";
 import { IDog } from "@/interfaces/dog";
 
@@ -127,7 +126,7 @@ export default async function ProfilePage() {
                 <div className="bg-white rounded-lg shadow p-6 flex flex-col sm:flex gap-6 relative">
                     <div className="flex justify-between items-center mb-4">
                         <h2 className="text-xl font-bold">My Dogs</h2>
-                        {<AddDogDialog breederId={breederId} />}
+                        {<AddEditDogDialog mode="add" breederId={breederId} />}
                     </div>
 
                     {/* List of dogs */}

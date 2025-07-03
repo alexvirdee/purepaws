@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -16,21 +16,61 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import { Plus } from "lucide-react";
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+import { Plus, Pencil } from "lucide-react";
 
-export default function AddDogDialog({ breederId }: { breederId: string }) {
+type AddEditDogDialogProps = {
+    mode: "add" | "edit";
+    breederId?: string; // required to add a dog
+    initialData?: IDog;
+    triggerButton?: React.ReactNode;
+    onSubmitSuccess?: () => void;
+}
+
+export default function AddEditDogDialog({
+    mode,
+    breederId,
+    initialData,
+    onSubmitSuccess
+}: AddEditDogDialogProps) {
     const [formData, setFormData] = useState<Omit<IDog, '_id'>>({
         name: '',
         breed: '',
         dob: '',
+        gender: '',
         status: 'Available',
         photo: '',
         description: '',
         price: 0,
         location: ''
     });
+    const [open, setOpen] = useState(false);
 
     const router = useRouter();
+
+    useEffect(() => {
+        if (mode === 'edit' && initialData) {
+            setFormData({
+                name: initialData.name || '',
+                breed: initialData.breed || '',
+                dob: initialData.dob || '',
+                gender: initialData.gender || '',
+                status: initialData.status || 'Available',
+                photo: initialData.photo || '',
+                description: initialData.description || '',
+                price: initialData.price || 0,
+                location: initialData.location || ''
+            });
+        }
+    }, [initialData, mode, open])
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -40,33 +80,46 @@ export default function AddDogDialog({ breederId }: { breederId: string }) {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const res = await fetch('/api/dogs/add', {
-            method: 'POST',
+        const endpoint = mode === 'edit'
+            ? `/api/dogs/${initialData?._id}`
+            : `/api/dogs/add`
+
+        const res = await fetch(endpoint, {
+            method: mode === 'edit' ? 'PUT' : 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ...formData, breederId })
+            body: JSON.stringify({
+                ...formData,
+                breederId: mode === 'add' ? breederId : undefined
+            })
         });
 
         if (res.ok) {
             toast.success('Dog added successfully');
+            setOpen(false);
+
             router.refresh();
+            onSubmitSuccess?.();
         } else {
-            toast.error('Failed to add dog. Please try again')
+            toast.error(`Failed to ${mode === 'edit' ? 'update' : 'add'} dog. Please try again`);
         }
     };
 
     return (
 
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 <Button className="bg-green-500 text-white">
-                    <Plus /> Add Dog
+                    {mode === 'edit' ? <Pencil /> : <Plus />}
+                    {mode === 'edit' ? 'Edit Dog' : 'Add Dog'}
                 </Button>
             </DialogTrigger>
             <DialogContent>
-            <DialogHeader>
-                    <DialogTitle>Add Dog</DialogTitle>
+                <DialogHeader>
+                    <DialogTitle>{mode === 'edit' ? 'Edit Dog' : 'Add Dog'}</DialogTitle>
                     <DialogDescription>
-                        Add new dogs to breeder profile
+                        {mode === 'edit'
+                            ? 'Update this dog’s details.'
+                            : 'Add a new dog to the breeder profile.'}
                     </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -104,6 +157,27 @@ export default function AddDogDialog({ breederId }: { breederId: string }) {
                     </div>
 
                     <div>
+                        <Label className="block text-sm font-medium mb-1">Gender</Label>
+                        <Select
+                            value={formData.gender}
+                            onValueChange={(value) => setFormData(prev => ({ ...prev, gender: value }))}
+                        >
+                            <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Select a gender" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectGroup>
+                                    <SelectLabel>Select gender</SelectLabel>
+                                    <SelectItem value="male">Male</SelectItem>
+                                    <SelectItem value="female">Female</SelectItem>
+                                </SelectGroup>
+                            </SelectContent>
+                        </Select>
+
+
+                    </div>
+
+                    <div>
                         <Label className="block text-sm font-medium mb-1">Photo URL</Label>
                         <Input
                             name="photo"
@@ -136,7 +210,7 @@ export default function AddDogDialog({ breederId }: { breederId: string }) {
                     </div>
 
                     <Button type="submit" className="bg-green-600 text-white">
-                        Save Dog
+                        {mode === 'edit' ? 'Update Dog' : 'Save Dog'}
                     </Button>
                 </form>
             </DialogContent>
