@@ -1,10 +1,11 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import LoadingPage from '@/app/loading';
 
 const MapView = dynamic(() => import('./MapView'), { 
   ssr: false, // Disable SSR for MapView
-  loading: () => <p>Loading map...</p>, // Optional: Add a loading fallback
+  loading: () => <LoadingPage />, // Optional: Add a loading fallback
 });
 
 interface MapWrapperProps {

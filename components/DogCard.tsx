@@ -15,7 +15,6 @@ interface DogCardProps {
 }
 
 export default function DogCard({ dog, isFavorited, loggedInUser }: DogCardProps) {
-
     return (
         <li key={dog._id.toString()} className="border p-4 rounded shadow hover:shadow-lg hover:bg-gray-50 transition relative">
             {/* Favorite a dog */}
