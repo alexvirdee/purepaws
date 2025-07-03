@@ -14,7 +14,6 @@ import { IDog } from "@/interfaces/dog";
 import FavoriteDogsSection from "@/components/FavoriteDogsSection";
 
 
-
 export default async function ProfilePage() {
     const session = await getServerSession(authOptions);
 
@@ -171,10 +170,6 @@ export default async function ProfilePage() {
                 <div className="bg-white rounded shadow p-6">
                     <h3 className="text-lg font-bold mb-4">Your Favorite Dogs</h3>
                     <FavoriteDogsSection initialDogs={favoriteDogs} favorites={favoriteDogs} />
-                    {/* <DogCardList
-                        dogs={favoriteDogs}
-                        favorites={favoriteDogs.map((dog) => dog._id)}
-                    /> */}
                 </div>
             ) : (
                 <p className="text-gray-500">You have no favorite dogs yet.</p>

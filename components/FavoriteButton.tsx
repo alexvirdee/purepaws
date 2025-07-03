@@ -13,12 +13,13 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { toast } from "sonner";
 
 interface FavoriteButtonProps {
     dogId: string;
     initiallyFavorited?: boolean;
     onUnfavorite?: (dogId: string) => void; // allow the parent to update local UI
-  }
+}
 
 export default function FavoriteButton({ dogId, initiallyFavorited = false, onUnfavorite }: FavoriteButtonProps) {
     const { data: session } = useSession();
@@ -43,8 +44,19 @@ export default function FavoriteButton({ dogId, initiallyFavorited = false, onUn
 
             if (res.ok) {
                 const data = await res.json();
-                setIsFavorited(data.favorites.includes(dogId));
-                onUnfavorite?.(dogId); // Notify parent to remove it!
+                const nowFavorited = data.favorites.includes(dogId);
+                setIsFavorited(nowFavorited);
+
+                // Show toast
+                if (nowFavorited) {
+                    toast.success("Added to favorites!")
+                } else {
+                    toast("Removed from favorites.", {
+                        description: "You can favorite this dog again anytime.",
+                    });
+                    onUnfavorite?.(dogId); // Notify parent to remove it!
+                }
+
             } else {
                 console.error("failed to toggle favorite");
             }

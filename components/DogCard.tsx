@@ -1,6 +1,5 @@
 'use client';
 
-
 import Link from "next/link";
 import { IDog } from "@/interfaces/dog";
 import { Dog as DogIcon } from "lucide-react";
