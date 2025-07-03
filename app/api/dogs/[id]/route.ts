@@ -121,3 +121,34 @@ export async function PUT(
         )
     }
 }
+
+export async function DELETE(
+    req: NextRequest,
+    context: { params: { id: string } }
+) {
+    try {
+        const dogId = context.params.id;
+
+        if (!ObjectId.isValid(dogId)) {
+            return NextResponse.json({ error: "Invalid dog ID" }, { status: 400 });
+        }
+
+        const client = await clientPromise;
+        const db = client.db("purepaws");
+        const dogs = db.collection("dogs");
+
+        const result = await dogs.deleteOne({ _id: new ObjectId(dogId) });
+
+        if (result.deletedCount === 0) {
+            return NextResponse.json({ error: "Dog not found." }, { status: 404 })
+        }
+
+        return NextResponse.json({
+            success: true,
+            message: "Dog deleted successfully"
+        });
+    } catch (error) {
+        console.error("Error deleting dog:", error);
+        return NextResponse.json({ error: "Something went wrong." }, { status: 500 })
+    }
+}

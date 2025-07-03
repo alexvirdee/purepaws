@@ -115,9 +115,9 @@ export default async function ProfilePage() {
 
             {/* Breeder Dashboard */}
             {/* TODO: Breeder CRUD functionality
-                1. Add dogs
-                2. Edit dogs
-                3. Remove dogs
+                1. Add dogs - Done
+                2. Edit dogs - Mostly done
+                3. Remove dogs - in-progress
                 4. Display dogs added to db 
                 5. Add "Upcoming Litters" section with following details
                         - Estimated Due Date

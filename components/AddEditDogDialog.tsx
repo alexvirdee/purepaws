@@ -110,10 +110,9 @@ export default function AddEditDogDialog({
     };
 
     return (
-
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button className="bg-green-500 text-white">
+                <Button className="bg-green-500 hover:bg-green-600 text-white cursor-pointer">
                     {mode === 'edit' ? <Pencil /> : <Plus />}
                     {mode === 'edit' ? 'Edit Dog' : 'Add Dog'}
                 </Button>

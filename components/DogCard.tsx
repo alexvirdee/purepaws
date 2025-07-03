@@ -7,7 +7,7 @@ import FavoriteButton from "./FavoriteButton";
 import { isValidImage } from "@/utils/isValidImage";
 import { Button } from "@/components/ui/button";
 import AddEditDogDialog from "./AddEditDogDialog";
-
+import DeleteDogDialog from "./DeleteDogDialog";
 
 interface DogCardProps {
     dog: IDog;
@@ -54,12 +54,7 @@ export default function DogCard({ dog, isFavorited, onUnfavorite, loggedInUser }
                 {loggedInUser === dog.breederId && (
                     <div className="flex gap-2 mt-2">
                         <AddEditDogDialog mode="edit" initialData={dog} />
-                        {/* <Button className="text-sm text-blue-600 bg-gray-200 hover:bg-gray-300 cursor-pointer">
-                            Edit
-                        </Button> */}
-                        <Button className="text-sm bg-red-500 hover:bg-red-600 cursor-pointer">
-                            Delete
-                        </Button>
+                        <DeleteDogDialog  dogId={dog._id} dogName={dog.name} />
                     </div>
                 )}
         </li>
