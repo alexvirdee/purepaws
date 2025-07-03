@@ -10,6 +10,8 @@ import EditProfileDialog from "@/components/EditProfileDialog";
 import AddDogDialog from "@/components/AddDogDialog";
 import { ObjectId } from "mongodb";
 import { isValidImage } from "@/utils/isValidImage";
+import DogCard from "@/components/DogCard";
+import { IDog } from "@/interfaces/dog";
 
 
 
@@ -50,15 +52,33 @@ export default async function ProfilePage() {
     const favoriteDogs = await getUserFavorites(email);
 
     // Serialize the dogs to ensure compatibility with client side components
-    const serializeDogs = dogs.map((dog) => ({
+    interface SerializedDog {
+        _id: string;
+        photo: string;
+        name: string;
+        breed: string;
+        status: string;
+        price: number;
+        location: string;
+        description: string;
+        createdAt: string | null;
+        updatedAt: string | null;
+        [key: string]: any;
+    }
+
+    const serializeDogs: SerializedDog[] = JSON.parse(JSON.stringify(dogs)).map((dog: IDog): SerializedDog => ({
         ...dog,
         _id: dog._id.toString(), // convert ObjectId to a string
         photo: dog.photo || "", // ensure photo property exists
         name: dog.name || "Unknown", // ensure name property exists
         breed: dog.breed || "Unknown", // ensure breed property exists
         status: dog.status || "Unknown", // ensure status property exists
-        price: dog.price || 0 // ensure price property exists
-    }))
+        price: dog.price || 0, // ensure price property exists
+        location: dog.location || "Unknown", // ensure location property exists
+        description: dog.description || "No description available", // ensure description property exists
+        createdAt: dog.createdAt ? dog.createdAt.toString() : null,
+        updatedAt: dog.updatedAt ? dog.updatedAt.toString() : null
+    }));
 
     return (
         <main className="max-w-5xl mx-auto p-8 space-y-8">
@@ -113,33 +133,36 @@ export default async function ProfilePage() {
                     {/* List of dogs */}
                     {serializeDogs.length > 0 ? (
                         <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {serializeDogs.map((dog) => (
-                                <li key={dog._id} className="border rounded shadow p-4 relative">
-                                    {isValidImage(dog.photo) ? (
-                                        <img
-                                            src={dog.photo}
-                                            alt={dog.name}
-                                            className="w-full h-48 object-cover mb-2 rounded"
-                                        />
-                                    ) : (
-                                        <div className="w-full h-48 flex items-center justify-center bg-gray-200 rounded mb-2">
-                                            <DogIcon className="w-16 h-16 text-gray-500" />
-                                        </div>
-                                    )}
-                                    <h3 className="text-lg font-semibold">{dog.name}</h3>
-                                    <p className="text-gray-600">{dog.breed}</p>
-                                    <p className="text-gray-500">{dog.status} - ${dog.price}</p>
+                            {serializeDogs.map((dog, index) => (
+                               <div key={index}>
+                                   <DogCard key={index} dog={dog} loggedInUser={breederId} />
+                               </div>
+                                // <li key={dog._id} className="border rounded shadow p-4 relative">
+                                //     {isValidImage(dog.photo) ? (
+                                //         <img
+                                //             src={dog.photo}
+                                //             alt={dog.name}
+                                //             className="w-full h-48 object-cover mb-2 rounded"
+                                //         />
+                                //     ) : (
+                                //         <div className="w-full h-48 flex items-center justify-center bg-gray-200 rounded mb-2">
+                                //             <DogIcon className="w-16 h-16 text-gray-500" />
+                                //         </div>
+                                //     )}
+                                //     <h3 className="text-lg font-semibold">{dog.name}</h3>
+                                //     <p className="text-gray-600">{dog.breed}</p>
+                                //     <p className="text-gray-500">{dog.status} - ${dog.price}</p>
 
-                                    {/* Actions */}
-                                    <div className="flex gap-2 mt-2">
-                                        <Button className="text-sm text-blue-600 hover:underline bg-gray-200">
-                                            Edit
-                                        </Button>
-                                        <Button className="text-sm hover:underline bg-red-500">
-                                            Delete
-                                        </Button>
-                                    </div>
-                                </li>
+                                //     {/* Actions */}
+                                //     <div className="flex gap-2 mt-2">
+                                //         <Button className="text-sm text-blue-600 hover:underline bg-gray-200">
+                                //             Edit
+                                //         </Button>
+                                //         <Button className="text-sm hover:underline bg-red-500">
+                                //             Delete
+                                //         </Button>
+                                //     </div>
+                                // </li>
                             ))}
                         </ul>
                     ) : (

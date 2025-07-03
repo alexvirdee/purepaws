@@ -9,4 +9,6 @@ export interface IDog {
     description: string;
     breederId?: string;
     dob?: string;
+    createdAt?: string | null;
+    updatedAt?: string | null;
 }

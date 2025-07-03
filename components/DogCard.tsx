@@ -9,7 +9,7 @@ import { isValidImage } from "@/utils/isValidImage";
 
 interface DogCardProps {
     dog: IDog;
-    isFavorited: boolean;
+    isFavorited?: boolean;
     loggedInUser?: string;
 }
 

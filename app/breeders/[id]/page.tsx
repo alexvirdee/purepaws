@@ -41,7 +41,7 @@ const Breeder = async ({ params }: BreederParams) => {
     if (session?.user?.email) {
         const user = await db.collection("users").findOne({ email: session.user.email });
         // Store logged in user if they have a breederId attached to their user collection 
-        loggedInUserBreederId = userFromDb?.breederId;
+        loggedInUserBreederId = userFromDb?.breederId ? userFromDb?.breederId.toString() : null;
         favoriteDogs = await getUserFavorites(userFromDb?.email);
     }
 
@@ -76,7 +76,7 @@ const Breeder = async ({ params }: BreederParams) => {
             {/* Available Dogs */}
             <h2 className="text-2xl font-bold mb-4 mx-auto text-center">Available Dogs</h2>
             {dogs.length > 0 ? (
-                <DogCardList dogs={serializedDogs} favorites={favoriteDogs.map(dog => dog._id)} loggedInUser={loggedInUserBreederId.toString()} />
+                <DogCardList dogs={serializedDogs} favorites={favoriteDogs.map(dog => dog._id)} loggedInUser={loggedInUserBreederId} />
             ) : (
                 <p className="text-gray-500">No dogs available for this breeder.</p>
             )}

@@ -1,17 +1,16 @@
 import type { NextAuthOptions, User, Session, JWT } from "next-auth";
+import { IUser } from "@/interfaces/user";
 
 // Extend the User type to include the role property
 declare module "next-auth" {
-  interface User {
-    role?: string;
-    breederId?: string | null;
-  }
+  interface User extends IUser {}
 
   interface JWT {
     role?: string;
     breederId?: string | null;
   }
 }
+
 import CredentialsProvider from "next-auth/providers/credentials";
 import { MongoClient } from "mongodb";
 import bcrypt from "bcrypt";
