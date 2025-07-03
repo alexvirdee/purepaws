@@ -17,9 +17,10 @@ import {
 interface FavoriteButtonProps {
     dogId: string;
     initiallyFavorited?: boolean;
+    onUnfavorite?: (dogId: string) => void; // allow the parent to update local UI
   }
 
-export default function FavoriteButton({ dogId, initiallyFavorited = false }: FavoriteButtonProps) {
+export default function FavoriteButton({ dogId, initiallyFavorited = false, onUnfavorite }: FavoriteButtonProps) {
     const { data: session } = useSession();
     const [isFavorited, setIsFavorited] = useState(initiallyFavorited);
     const [showDialog, setShowDialog] = useState(false);
@@ -43,6 +44,7 @@ export default function FavoriteButton({ dogId, initiallyFavorited = false }: Fa
             if (res.ok) {
                 const data = await res.json();
                 setIsFavorited(data.favorites.includes(dogId));
+                onUnfavorite?.(dogId); // Notify parent to remove it!
             } else {
                 console.error("failed to toggle favorite");
             }

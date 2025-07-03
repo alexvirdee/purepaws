@@ -1,5 +1,6 @@
 'use client';
 
+
 import Link from "next/link";
 import { IDog } from "@/interfaces/dog";
 import { Dog as DogIcon } from "lucide-react";
@@ -12,10 +13,11 @@ import AddEditDogDialog from "./AddEditDogDialog";
 interface DogCardProps {
     dog: IDog;
     isFavorited?: boolean;
+    onUnfavorite?: (dogId: string) => void;
     loggedInUser?: string;
 }
 
-export default function DogCard({ dog, isFavorited, loggedInUser }: DogCardProps) {
+export default function DogCard({ dog, isFavorited, onUnfavorite, loggedInUser }: DogCardProps) {
     return (
         <li key={dog._id.toString()} className="border p-4 rounded shadow hover:shadow-lg hover:bg-gray-50 transition relative">
             {/* Favorite a dog */}
@@ -24,7 +26,7 @@ export default function DogCard({ dog, isFavorited, loggedInUser }: DogCardProps
                 2. Users logged in who are not the breeders who currently own the dogs
             */}
             {loggedInUser !== dog.breederId && (
-                <FavoriteButton dogId={dog._id.toString()} initiallyFavorited={isFavorited} />
+                <FavoriteButton dogId={dog._id.toString()} initiallyFavorited={isFavorited} onUnfavorite={onUnfavorite} />
             )}
 
             <Link href={`/dogs/${dog._id}`} >

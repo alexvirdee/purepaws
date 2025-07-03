@@ -11,6 +11,7 @@ import AddEditDogDialog from "@/components/AddEditDogDialog";
 import { ObjectId } from "mongodb";
 import DogCard from "@/components/DogCard";
 import { IDog } from "@/interfaces/dog";
+import FavoriteDogsSection from "@/components/FavoriteDogsSection";
 
 
 
@@ -169,10 +170,11 @@ export default async function ProfilePage() {
             {favoriteDogs.length > 0 ? (
                 <div className="bg-white rounded shadow p-6">
                     <h3 className="text-lg font-bold mb-4">Your Favorite Dogs</h3>
-                    <DogCardList
+                    <FavoriteDogsSection initialDogs={favoriteDogs} favorites={favoriteDogs} />
+                    {/* <DogCardList
                         dogs={favoriteDogs}
                         favorites={favoriteDogs.map((dog) => dog._id)}
-                    />
+                    /> */}
                 </div>
             ) : (
                 <p className="text-gray-500">You have no favorite dogs yet.</p>
