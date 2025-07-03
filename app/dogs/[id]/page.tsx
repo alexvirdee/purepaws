@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { IDog } from "@/interfaces/dog";
+import { isValidImage } from "@/utils/isValidImage";
 
 
 export default async function DogDetailsPage({ params }: { params: { id: string } }) {
@@ -28,7 +29,7 @@ export default async function DogDetailsPage({ params }: { params: { id: string 
         <div className="max-w-4xl mx-auto p-8">
             <h1 className="text-3xl font-bold mb-4">{dog.name}</h1>
             <Image
-                src={dog.photo || "/placeholder.jpg"}
+                src={dog.photo && isValidImage(dog.photo) ? dog.photo : "/images/purepaws-placeholder.jpg"}
                 alt={dog.name}
                 width={600}
                 height={400}
