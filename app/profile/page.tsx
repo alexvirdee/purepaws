@@ -34,7 +34,7 @@ export default async function ProfilePage() {
     const name = userFromDb?.name || "";
     const email = userFromDb?.email;
     const role = userFromDb?.role;
-    const breederId = userFromDb?.breederId.toString();
+    const breederId = userFromDb?.breederId ? userFromDb?.breederId.toString() : null;
 
     // Fetch the breeder details using user email
     const breeder = await db.collection("breeders").findOne({ email: email });
@@ -47,7 +47,7 @@ export default async function ProfilePage() {
             .toArray()
         : [];
 
-    const favoriteDogs = await getUserFavorites(email)
+    const favoriteDogs = await getUserFavorites(email);
 
     // Serialize the dogs to ensure compatibility with client side components
     const serializeDogs = dogs.map((dog) => ({

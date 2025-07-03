@@ -4,7 +4,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 import { getUserFavorites } from "@/lib/db/getUserFavorites";
 import DogCardList from "@/components/DogCardList";
-import { Dog } from "@/interfaces/dog";
+import { IDog } from "@/interfaces/dog";
 
 interface BreederParams {
     params: {
@@ -34,7 +34,7 @@ const Breeder = async ({ params }: BreederParams) => {
 
     console.log('userFromDb', userFromDb?._id)
 
-    let favoriteDogs: Dog[] = [];
+    let favoriteDogs: IDog[] = [];
     let loggedInUserBreederId: string = "";
 
     // If logged in check if user has favorites

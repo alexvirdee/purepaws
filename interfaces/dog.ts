@@ -1,6 +1,4 @@
-import { ObjectId } from "mongodb";
-
-export interface Dog {
+export interface IDog {
     _id: string;
     name: string;
     photo: string;

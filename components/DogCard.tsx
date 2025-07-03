@@ -1,14 +1,14 @@
 'use client';
 
 import Link from "next/link";
-import { Dog } from "@/interfaces/dog";
+import { IDog } from "@/interfaces/dog";
 import { Dog as DogIcon } from "lucide-react";
 import FavoriteButton from "./FavoriteButton";
 import { isValidImage } from "@/utils/isValidImage";
 
 
 interface DogCardProps {
-    dog: Dog;
+    dog: IDog;
     isFavorited: boolean;
     loggedInUser?: string;
 }

@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Dog } from "@/interfaces/dog";
+import { IDog } from "@/interfaces/dog";
 import {
     Dialog,
     DialogContent,
@@ -19,7 +19,7 @@ import {
 import { Plus } from "lucide-react";
 
 export default function AddDogDialog({ breederId }: { breederId: string }) {
-    const [formData, setFormData] = useState<Omit<Dog, '_id'>>({
+    const [formData, setFormData] = useState<Omit<IDog, '_id'>>({
         name: '',
         breed: '',
         dob: '',

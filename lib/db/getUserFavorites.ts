@@ -1,8 +1,8 @@
 import clientPromise from "../mongodb";
 import { ObjectId } from "mongodb";
-import { Dog } from "@/interfaces/dog";
+import { IDog } from "@/interfaces/dog";
 
-export async function getUserFavorites(userEmail: string): Promise<Dog[]> {
+export async function getUserFavorites(userEmail: string): Promise<IDog[]> {
     const client = await clientPromise;
     const db = client.db("purepaws");
 

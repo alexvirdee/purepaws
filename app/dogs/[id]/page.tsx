@@ -3,7 +3,7 @@ import clientPromise from "@/lib/mongodb";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Dog } from "@/interfaces/dog";
+import { IDog } from "@/interfaces/dog";
 
 
 export default async function DogDetailsPage({ params }: { params: { id: string } }) {
@@ -13,7 +13,7 @@ export default async function DogDetailsPage({ params }: { params: { id: string 
     const db = client.db("purepaws");
 
     // Fetch the dog by _id
-    const dog = await db.collection("dogs").findOne<Dog>({
+    const dog = await db.collection("dogs").findOne<IDog>({
         _id: new ObjectId(id),
     });
 
