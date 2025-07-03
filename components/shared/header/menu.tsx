@@ -28,7 +28,7 @@ const Menu = () => {
                 {/* Session check */}
                 {session?.user ? (
                     <div className="flex items-center gap-2">
-                        <Link href="/profile" className="text-sm text-gray-700 truncate">
+                        <Link href="/profile" className="text-sm text-gray-700 truncate hover:text-blue-600">
                             {session.user.email || session.user.name}
                         </Link>
                         <Button onClick={handleSignOut} variant={"outline"} className="text-blue-500">
