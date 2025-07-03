@@ -49,10 +49,10 @@ export default function DogCard({ dog, isFavorited, loggedInUser }: DogCardProps
                 {/* Breeder actions for dogs i.e Edit/Delete */}
                 {loggedInUser === dog.breederId && (
                     <div className="flex gap-2 mt-2">
-                        <Button className="text-sm text-blue-600 hover:underline bg-gray-200">
+                        <Button className="text-sm text-blue-600 bg-gray-200 hover:bg-gray-300 cursor-pointer">
                             Edit
                         </Button>
-                        <Button className="text-sm hover:underline bg-red-500">
+                        <Button className="text-sm bg-red-500 hover:bg-red-600 cursor-pointer">
                             Delete
                         </Button>
                     </div>
