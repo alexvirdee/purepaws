@@ -126,7 +126,7 @@ export default function MapView({ breeders }: { breeders: any[] }) {
         mapboxAccessToken={MAPBOX_TOKEN}
         initialViewState={viewState}
         mapStyle="mapbox://styles/mapbox/streets-v11"
-        style={{ width: '100%', height: 800 }}
+        style={{ width: '100%', height: '100%' }}
       >
         {filteredBreeders.map((breeder) => (
           <Marker
