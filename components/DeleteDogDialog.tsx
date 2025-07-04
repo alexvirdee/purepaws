@@ -3,15 +3,15 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
-    Dialog,
-    DialogClose,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog"
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { CircleX } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -57,26 +57,26 @@ export default function DeleteDogDialog({
 
     return (
 
-        <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
+        <AlertDialog open={open} onOpenChange={setOpen}>
+            <AlertDialogTrigger asChild>
                 <Button className="text-sm bg-red-500 hover:bg-red-600 cursor-pointer">
                     <CircleX /> Delete Dog
                 </Button>
-            </DialogTrigger>
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Are you sure?</DialogTitle>
-                    <DialogDescription>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
                         This action cannot be undone
-                    </DialogDescription>
-                </DialogHeader>
-                <DialogFooter>
-                    <DialogClose asChild>
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel asChild>
                         <Button variant="outline">Cancel</Button>
-                    </DialogClose>
+                    </AlertDialogCancel>
                     <Button onClick={handleDelete} className="bg-red-500">Confirm</Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
     )
 }

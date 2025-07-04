@@ -88,7 +88,7 @@ export async function PUT(
             return NextResponse.json({ error: "Price must be a positive number" }, { status: 400 });
         }
 
-        if (status && !["Available", "Pending", "Sold"].includes(status)) {
+        if (status && !["available", "pending", "sold"].includes(status)) {
             console.log('issue with the status');
 
             return NextResponse.json({ error: "Invalid status value" }, { status: 400 });
@@ -107,7 +107,7 @@ export async function PUT(
             photo: photo || "",
             description: description?.trim() || "",
             price: price || 0,
-            status: status || "Available",
+            status: status || "",
             location: location?.trim() || ""
         }
 

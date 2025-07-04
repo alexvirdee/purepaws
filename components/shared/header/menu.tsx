@@ -1,29 +1,61 @@
 'use client';
 
-import { PawPrint, UserIcon, EllipsisVertical } from "lucide-react";
+import { useState } from "react";
+import { PawPrint, UserIcon, EllipsisVertical, Dog } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useSession, signOut } from "next-auth/react";
 import { LogOut } from "lucide-react";
+import SignInRequiredDialog from "@/components/SignInRequiredDialog";
 
-const Menu = () => {
+interface MenuProps {}
+
+interface SessionUser {
+    email?: string;
+    name?: string;
+    role?: string;
+}
+
+interface SessionData {
+    user?: SessionUser;
+}
+
+const Menu: React.FC<MenuProps> = () => {
+    const [showDialog, setShowDialog] = useState<boolean>(false);
     const { data: session } = useSession();
 
-    const handleSignOut = async () => {
+    const handleSignOut = async (): Promise<void> => {
         localStorage.setItem('signout-success', "true");
         await signOut({ callbackUrl: '/' })
     };
 
+    const handlePuppyApplicationClick = (e: { preventDefault: () => void; }): void => {
+        if (!session) {
+            e.preventDefault();
+            
+            setShowDialog(true);
+            return
+        }
+    }
+
     return (
-        <div className="flex justify-end gap-3 pr-4">
+        <>
+         <div className="flex justify-end gap-3 pr-4">
             <nav className="hidden md:flex w-full gap-2 items-center">
                 {session?.user?.role !== 'breeder' && (
-                    <Button asChild variant="ghost">
-                        <Link href="/list-your-kennel">
-                            <PawPrint /> List your kennel
-                        </Link>
-                    </Button>
+                    <>
+                        <Button onClick={handlePuppyApplicationClick} asChild variant="ghost">
+                            <Link href="/puppy-application">
+                                <Dog /> Puppy Application
+                            </Link>
+                        </Button>
+                        <Button asChild variant="ghost">
+                            <Link href="/list-your-kennel">
+                                <PawPrint /> List your kennel
+                            </Link>
+                        </Button>
+                    </>
                 )}
                 {/* Session check */}
                 {session?.user ? (
@@ -53,11 +85,18 @@ const Menu = () => {
                     <SheetContent className="flex flex-col items-start">
                         <SheetTitle>Menu</SheetTitle>
                         {session?.user?.role !== 'breeder' && (
-                            <Button asChild variant="ghost">
-                                <Link href="/list-your-kennel">
-                                    <PawPrint /> List your kennel
-                                </Link>
-                            </Button>
+                            <>
+                                <Button asChild variant="ghost">
+                                    <Link href="/puppy-application">
+                                        <Dog /> Puppy Application
+                                    </Link>
+                                </Button>
+                                <Button asChild variant="ghost">
+                                    <Link href="/list-your-kennel">
+                                        <PawPrint /> List your kennel
+                                    </Link>
+                                </Button>
+                            </>
                         )}
                         {/* Session check */}
                         {session?.user ? (
@@ -82,6 +121,9 @@ const Menu = () => {
                 </Sheet>
             </nav>
         </div>
+         <SignInRequiredDialog open={showDialog} onOpenChange={setShowDialog} description="Create your puppy adoption application once and share it with reputable breeders instantly. Sign in to get started!" />
+        </>
+       
     )
 }
 

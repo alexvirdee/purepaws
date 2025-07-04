@@ -14,6 +14,7 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
+import SignInRequiredDialog from "./SignInRequiredDialog";
 
 interface FavoriteButtonProps {
     dogId: string;
@@ -77,27 +78,7 @@ export default function FavoriteButton({ dogId, initiallyFavorited = false, onUn
                 />
             </div>
 
-            <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Sign In Required</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            You need to sign in to favorite a dog. Please log in to save your favorites!
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction
-                            onClick={() => {
-                                signIn();
-                                setShowDialog(false);
-                            }}
-                        >
-                            Sign In
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
+            <SignInRequiredDialog open={showDialog} onOpenChange={setShowDialog} description="You need to sign in to favorite a dog. Please log in to save your favorites!" />
         </>
     )
 }

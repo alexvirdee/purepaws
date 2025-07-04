@@ -5,9 +5,9 @@ import { IDog } from "@/interfaces/dog";
 import { Dog as DogIcon } from "lucide-react";
 import FavoriteButton from "./FavoriteButton";
 import { isValidImage } from "@/utils/isValidImage";
-import { Button } from "@/components/ui/button";
 import AddEditDogDialog from "./AddEditDogDialog";
 import DeleteDogDialog from "./DeleteDogDialog";
+import { Badge } from "@/components/ui/badge";
 
 interface DogCardProps {
     dog: IDog;
@@ -16,7 +16,29 @@ interface DogCardProps {
     loggedInUser?: string;
 }
 
+type BadgeVariant = "default" | "secondary" | "destructive" | "outline";
+
+const STATUS_STYLES: Record<
+  string,
+  { label: string; variant: BadgeVariant }
+> = {
+  Available: {
+    label: "Available",
+    variant: "secondary", // or "secondary" if you prefer
+  },
+  Pending: {
+    label: "Pending",
+    variant: "outline",
+  },
+  Sold: {
+    label: "Sold",
+    variant: "destructive",
+  },
+};
+
 export default function DogCard({ dog, isFavorited, onUnfavorite, loggedInUser }: DogCardProps) {
+    const statusKey = dog.status?.charAt(0).toUpperCase() + dog.status?.slice(1).toLowerCase();
+
     return (
         <li key={dog._id.toString()} className="border p-4 rounded shadow hover:shadow-lg hover:bg-gray-50 transition relative">
             {/* Favorite a dog */}
@@ -44,11 +66,13 @@ export default function DogCard({ dog, isFavorited, onUnfavorite, loggedInUser }
                 <p className="text-gray-600">{dog.breed}</p>
                 <p className="text-gray-500">dob: {dog.dob}</p>
                 <p className="text-gray-500">{dog.gender}</p>
-                {/* TODO: Add location once data is available */}
+                {/* TODO: Add location once data is available
+                    Can sync this up with the map in the main route
+                */}
                 {/* <p className="text-gray-500">{dog.location}</p> */}
-                <p className="text-green-600 font-bold">
+                <Badge variant={STATUS_STYLES[statusKey]?.variant}>
                     {dog.status} - ${dog.price}
-                </p>
+                </Badge>
             </Link>
 
               {/* Breeder actions for dogs i.e Edit/Delete */}

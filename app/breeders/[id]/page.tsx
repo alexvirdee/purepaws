@@ -70,14 +70,22 @@ const Breeder = async ({ params }: BreederParams) => {
 
     return (
         <div>
-            {/* Display breeder name */}
-            <h1 className="text-3xl font-bold mb-4">
-                {breeder ? breeder.name : "Breeder Not Found"}
-            </h1>
-
+            {/* Breeder information */}
+            {breeder ? (
+                <div className="my-4 pl-4">
+                    <h1 className="text-3xl font-bold mb-4">{breeder.name}</h1>
+                    <p className="text-gray-600 mb-1">Breeds focused on: {breeder.breeds}</p>
+                    <p className="text-gray-600">{breeder.about}</p>
+                    {/* TODO: Add breeder website */}
+                    {/* <p className="text-blue-600">{breeder.website}</p> */}
+                </div>
+            ) : (
+                <h1 className="text-3xl font-bold mb-4">Breeder Not Found</h1>
+            )}
             {/* Available Dogs */}
             <h2 className="text-2xl font-bold mb-4 mx-auto text-center">Available Dogs</h2>
             {dogs.length > 0 ? (
+                // Note to future self - I am passing in the loggedInUser here so I don't show the favorite button if it's the breeder on the page
                 <DogCardList dogs={serializedDogs} favorites={favoriteDogs.map(dog => dog._id)} loggedInUser={loggedInUserBreederId} />
             ) : (
                 <p className="text-gray-500">No dogs available for this breeder.</p>

@@ -46,7 +46,7 @@ export default function AddEditDogDialog({
         breed: '',
         dob: '',
         gender: '',
-        status: 'Available',
+        status: '',
         photo: '',
         description: '',
         price: 0,
@@ -63,7 +63,7 @@ export default function AddEditDogDialog({
                 breed: initialData.breed || '',
                 dob: initialData.dob || '',
                 gender: initialData.gender || '',
-                status: initialData.status || 'Available',
+                status: initialData.status || '',
                 photo: initialData.photo || '',
                 description: initialData.description || '',
                 price: initialData.price || 0,
@@ -171,9 +171,30 @@ export default function AddEditDogDialog({
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectGroup>
-                                    <SelectLabel>Select gender</SelectLabel>
+                                    <SelectLabel>Select a gender</SelectLabel>
                                     <SelectItem value="male">Male</SelectItem>
                                     <SelectItem value="female">Female</SelectItem>
+                                </SelectGroup>
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    <div>
+                        <Label className="block text-sm font-medium mb-1">Status</Label>
+                        <Select
+                            value={formData.status}
+                            onValueChange={(value) => setFormData(prev => ({ ...prev, status: value }))}
+                        >
+                            <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Select a status" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectGroup>
+                                    <SelectLabel>Select dogs status</SelectLabel>
+                                    <SelectItem value="available">Available</SelectItem>
+                                    <SelectItem value="pending">Pending</SelectItem>
+                                    <SelectItem value="sold">Sold</SelectItem>
+                                    {/* TODO: Add a draft status state to not show the public */}
                                 </SelectGroup>
                             </SelectContent>
                         </Select>
