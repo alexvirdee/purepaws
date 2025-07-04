@@ -2,6 +2,13 @@
 
 import { useState } from "react";
 import { US_STATES } from "@/lib/constants/usStates";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 
 const PuppyApplicationForm = () => {
     return (
@@ -50,17 +57,21 @@ const PuppyApplicationForm = () => {
         </div>
 
         {/* State */}
-        <div>
-          <label className="block mb-1 font-medium">State *</label>
-          <input
-            name="state"
-            // value={formData.state}
-            // onChange={handleChange}
-            required
-            className="w-full border p-2 rounded"
-          />
-          {/* Optional: use a <Select> like your breeder form for US states */}
-        </div>
+          <div>
+                <label className="block mb-1 font-medium">State *</label>
+                <Select>
+                    <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select a state" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {US_STATES.map((state) => (
+                            <SelectItem key={state.value} value={state.value}>
+                                {state.label}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            </div>
 
         {/* Zip */}
         <div>
