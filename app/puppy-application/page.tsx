@@ -1,8 +1,8 @@
+import PuppyApplicationForm from "@/components/PuppyApplicationForm";
+
 const PuppyApplication = async () => {
     return (
-        <div>
-            Future puppy application form here
-        </div>
+        <PuppyApplicationForm />
     );
 };
 
