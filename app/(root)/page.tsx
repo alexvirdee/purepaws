@@ -38,12 +38,11 @@ export default async function Home() {
     <>
       <div>
         <SignInOutToast />
-        <div className="relative w-full h-[500px]">
+        <div className="relative w-full">
           <MapWrapper breeders={breedersData} />
         </div>
       </div>
-      <div className="px-4 py-8">
-
+      <div className="p-4">
         <FeaturedBreedersSection />
       </div>
     </>

@@ -2,7 +2,7 @@
 
 export default function FeaturedBreedersSection() {
     return (
-        <div className="mt-8 px-4">
+        <div className="mt-4">
             <h2 className="text-2xl font-bold mb-4">Featured Breeders</h2>
             <p className="text-gray-600 mb-4">
                 Meet our trusted breeders. New litters, verified reviews, and more!
