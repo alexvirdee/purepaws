@@ -100,3 +100,33 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
     }
 }
+
+export async function GET(req: NextRequest) {
+    try {
+        const session = await getServerSession(authOptions);
+
+          if (!session?.user?.email) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const client = await clientPromise;
+    const db = client.db("purepaws");
+
+    // Lookup user by email to get their _id
+    const user = await db.collection("users").findOne({ email: session.user.email });
+
+    if (!user) {
+        return NextResponse.json({ error: "User not found." }, { status: 404 });
+    }
+
+    const application = await db.collection("puppyApplications").findOne({
+        userId: user._id
+    })
+
+    return NextResponse.json({ application });
+
+    } catch (error) {
+        console.error("[GET_PUPPY_APPLICATION_ERROR]", error);
+        return NextResponse.json({ error: "Something went wrong." }, { status: 500 });
+    }
+}

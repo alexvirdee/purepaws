@@ -22,6 +22,8 @@ export default async function ProfilePage() {
         redirect('/auth/signin');
     }
 
+    let puppyApplication = null;
+
     // connect to the db
     const client = await clientPromise;
     const db = client.db("purepaws");
@@ -29,7 +31,7 @@ export default async function ProfilePage() {
     // Resolve name not updating on edit since session token doesn't change on profile updates
     const userFromDb = await db.collection("users").findOne({
         email: session?.user?.email
-    })
+    });
 
     // User details fresh from the database
     const name = userFromDb?.name || "";
@@ -49,6 +51,11 @@ export default async function ProfilePage() {
         : [];
 
     const favoriteDogs = await getUserFavorites(email);
+
+    // Get the users puppy application (TODO: Check if can avoid looking for this collection if it does not exist)
+    puppyApplication = await db.collection("puppyApplications").findOne({
+        userId: userFromDb?._id
+    })
 
     // Serialize the dogs to ensure compatibility with client side components
     interface SerializedDog {
@@ -113,6 +120,32 @@ export default async function ProfilePage() {
                 <EditProfileDialog user={{ name: name || "", email: email, about: breeder ? breeder.about : null, role: role }} />
             </div>
 
+            {/* Puppy Application Details */}
+            <div className="bg-white rounded-lg shadow p-6 flex flex-col sm:flex gap-6 relative">
+                {puppyApplication ? (
+                    <div className="p-2">
+                        <h2 className="text-xl font-semibold mb-4">Your Puppy Application</h2>
+                        <p><strong>Name:</strong> {puppyApplication.name}</p>
+                        <p><strong>City:</strong> {puppyApplication.city}</p>
+                        <p><strong>State:</strong> {puppyApplication.state}</p>
+                        <p><strong>Zip:</strong> {puppyApplication.zip}</p>
+                        <p><strong>Age:</strong> {puppyApplication.age}</p>
+                        <p><strong>Pets Owned:</strong> {puppyApplication.petsOwned}</p>
+                        <p><strong>Has Children:</strong>{puppyApplication.hasChildren === true ? 'Yes' : 'No'}</p>
+                        <p><strong>Puppy Preference:</strong>{puppyApplication.puppyPreference}</p>
+                        <p><strong>Training Planned:</strong>{puppyApplication.trainingPlanned === true ? 'Yes' : 'No'}</p>
+                        <p><strong>Desired Traits:</strong>{puppyApplication.desiredTraits}</p>
+                        <p><strong>Additional Comments:</strong>{puppyApplication.additionalComments}</p>
+                        <p><strong>Approvals:</strong> {puppyApplication.approvals?.length || 0}</p>
+                        {/* Add more fields as needed */}
+                        {/* TODO: Edit button for puppy application */}
+                    </div>
+                ) : (
+                    <p>You have not submitted a puppy application yet.</p>
+                )}
+            </div>
+
+
             {/* Breeder Dashboard */}
             {/* TODO: Breeder CRUD functionality
                 1. Add dogs - Done
@@ -135,9 +168,9 @@ export default async function ProfilePage() {
                     {serializeDogs.length > 0 ? (
                         <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             {serializeDogs.map((dog, index) => (
-                               <div key={index}>
-                                   <DogCard key={index} dog={dog} loggedInUser={breederId} />
-                               </div>
+                                <div key={index}>
+                                    <DogCard key={index} dog={dog} loggedInUser={breederId} />
+                                </div>
                             ))}
                         </ul>
                     ) : (
