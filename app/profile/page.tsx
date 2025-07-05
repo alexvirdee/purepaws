@@ -1,10 +1,8 @@
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
-import DogCardList from "@/components/DogCardList";
 import { getUserFavorites } from "@/lib/db/getUserFavorites";
 import { User as UserIcon, Dog as DogIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import clientPromise from "@/lib/mongodb";
 import EditProfileDialog from "@/components/EditProfileDialog";
 import AddEditDogDialog from "@/components/AddEditDogDialog";
