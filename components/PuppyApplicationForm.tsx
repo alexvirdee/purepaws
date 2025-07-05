@@ -11,6 +11,39 @@ import {
 } from "@/components/ui/select";
 
 const PuppyApplicationForm = () => {
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        city: '',
+        state: '',
+        zip: '',
+        age: '',
+        petsOwned: '',
+        hasChildren: false,
+        puppyPreference: '',
+        genderPreference: '',
+        trainingPlanned: false,
+        desiredTraits: '',
+        additionalComments: ''
+    });
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value, type } = e.target;
+        setFormData((prev) => ({
+            ...prev,
+            [name]: type === 'checkbox'
+                ? (e.target instanceof HTMLInputElement ? e.target.checked : false)
+                : value
+        }))
+    }
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        // TODO: Send to api route for puppy application
+        console.log('Puppy application Form Data: ', formData)
+    }
+
     return (
          <div className="max-w-2xl mx-auto p-8">
       <h1 className="text-2xl font-bold mb-4">Puppy Application</h1>
@@ -18,14 +51,14 @@ const PuppyApplicationForm = () => {
         Fill out your preferences once — send to breeders with one click.
       </p>
 
-      <form  className="space-y-4">
+      <form onSubmit={handleSubmit}  className="space-y-4">
         {/* Name */}
         <div>
           <label className="block mb-1 font-medium">Name *</label>
           <input
             name="name"
-            // value={formData.name}
-            // onChange={handleChange}
+            value={formData.name}
+            onChange={handleChange}
             required
             className="w-full border p-2 rounded"
           />
@@ -37,8 +70,8 @@ const PuppyApplicationForm = () => {
           <input
             name="email"
             type="email"
-            // value={formData.email}
-            // onChange={handleChange}
+            value={formData.email}
+            onChange={handleChange}
             required
             className="w-full border p-2 rounded"
           />
@@ -49,8 +82,8 @@ const PuppyApplicationForm = () => {
           <label className="block mb-1 font-medium">City *</label>
           <input
             name="city"
-            // value={formData.city}
-            // onChange={handleChange}
+            value={formData.city}
+            onChange={handleChange}
             required
             className="w-full border p-2 rounded"
           />
@@ -59,7 +92,7 @@ const PuppyApplicationForm = () => {
         {/* State */}
           <div>
                 <label className="block mb-1 font-medium">State *</label>
-                <Select>
+                <Select  onValueChange={(value) => setFormData((prev) => ({ ...prev, state: value }))}>
                     <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select a state" />
                     </SelectTrigger>
@@ -79,8 +112,8 @@ const PuppyApplicationForm = () => {
           <input
             name="zip"
             type="number"
-            // value={formData.zip}
-            // onChange={handleChange}
+            value={formData.zip}
+            onChange={handleChange}
             required
             className="w-full border p-2 rounded"
           />
@@ -92,8 +125,8 @@ const PuppyApplicationForm = () => {
           <input
             name="age"
             type="number"
-            // value={formData.age}
-            // onChange={handleChange}
+            value={formData.age}
+            onChange={handleChange}
             required
             className="w-full border p-2 rounded"
           />
@@ -105,8 +138,8 @@ const PuppyApplicationForm = () => {
           <input
             name="petsOwned"
             type="number"
-            // value={formData.petsOwned}
-            // onChange={handleChange}
+            value={formData.petsOwned}
+            onChange={handleChange}
             required
             className="w-full border p-2 rounded"
           />
@@ -118,8 +151,8 @@ const PuppyApplicationForm = () => {
           <input
             name="hasChildren"
             type="checkbox"
-            // checked={formData.hasChildren}
-            // onChange={handleChange}
+            checked={formData.hasChildren}
+            onChange={handleChange}
             className="mr-2"
           /> Yes
         </div>
@@ -133,8 +166,8 @@ const PuppyApplicationForm = () => {
                 type="radio"
                 name="puppyPreference"
                 value="8-week"
-                // checked={formData.puppyPreference === "8-week"}
-                // onChange={handleChange}
+                checked={formData.puppyPreference === "8-week"}
+                onChange={handleChange}
               />
               <span>8 week puppy</span>
             </label>
@@ -143,8 +176,8 @@ const PuppyApplicationForm = () => {
                 type="radio"
                 name="puppyPreference"
                 value="16-week"
-                // checked={formData.puppyPreference === "16-week"}
-                // onChange={handleChange}
+                checked={formData.puppyPreference === "16-week"}
+                onChange={handleChange}
               />
               <span>16 week trained puppy</span>
             </label>
@@ -160,8 +193,8 @@ const PuppyApplicationForm = () => {
                 type="radio"
                 name="genderPreference"
                 value="male"
-                // checked={formData.genderPreference === "male"}
-                // onChange={handleChange}
+                checked={formData.genderPreference === "male"}
+                onChange={handleChange}
               />
               <span>Male</span>
             </label>
@@ -170,8 +203,8 @@ const PuppyApplicationForm = () => {
                 type="radio"
                 name="genderPreference"
                 value="female"
-                // checked={formData.genderPreference === "female"}
-                // onChange={handleChange}
+                checked={formData.genderPreference === "female"}
+                onChange={handleChange}
               />
               <span>Female</span>
             </label>
@@ -186,8 +219,8 @@ const PuppyApplicationForm = () => {
           <input
             name="trainingPlanned"
             type="checkbox"
-            // checked={formData.trainingPlanned}
-            // onChange={handleChange}
+            checked={formData.trainingPlanned}
+            onChange={handleChange}
             className="mr-2"
           /> Yes
         </div>
@@ -199,8 +232,8 @@ const PuppyApplicationForm = () => {
           </label>
           <textarea
             name="desiredTraits"
-            // value={formData.desiredTraits}
-            // onChange={handleChange}
+            value={formData.desiredTraits}
+            onChange={handleChange}
             className="w-full border p-2 rounded"
             rows={4}
           />
@@ -211,8 +244,8 @@ const PuppyApplicationForm = () => {
           <label className="block mb-1 font-medium">Additional comments</label>
           <textarea
             name="additionalComments"
-            // value={formData.additionalComments}
-            // onChange={handleChange}
+            value={formData.additionalComments}
+            onChange={handleChange}
             className="w-full border p-2 rounded"
             rows={4}
           />
