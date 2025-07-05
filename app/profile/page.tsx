@@ -120,30 +120,42 @@ export default async function ProfilePage() {
                 <EditProfileDialog user={{ name: name || "", email: email, about: breeder ? breeder.about : null, role: role }} />
             </div>
 
-            {/* Puppy Application Details */}
-            <div className="bg-white rounded-lg shadow p-6 flex flex-col sm:flex gap-6 relative">
-                {puppyApplication ? (
-                    <div className="p-2">
-                        <h2 className="text-xl font-semibold mb-4">Your Puppy Application</h2>
-                        <p><strong>Name:</strong> {puppyApplication.name}</p>
-                        <p><strong>City:</strong> {puppyApplication.city}</p>
-                        <p><strong>State:</strong> {puppyApplication.state}</p>
-                        <p><strong>Zip:</strong> {puppyApplication.zip}</p>
-                        <p><strong>Age:</strong> {puppyApplication.age}</p>
-                        <p><strong>Pets Owned:</strong> {puppyApplication.petsOwned}</p>
-                        <p><strong>Has Children:</strong>{puppyApplication.hasChildren === true ? 'Yes' : 'No'}</p>
-                        <p><strong>Puppy Preference:</strong>{puppyApplication.puppyPreference}</p>
-                        <p><strong>Training Planned:</strong>{puppyApplication.trainingPlanned === true ? 'Yes' : 'No'}</p>
-                        <p><strong>Desired Traits:</strong>{puppyApplication.desiredTraits}</p>
-                        <p><strong>Additional Comments:</strong>{puppyApplication.additionalComments}</p>
-                        <p><strong>Approvals:</strong> {puppyApplication.approvals?.length || 0}</p>
-                        {/* Add more fields as needed */}
-                        {/* TODO: Edit button for puppy application */}
+            {/* Puppy Application Details
+                Note - Only showing this section for regular users i.e. not breeders since they won't be submitting puppy applications
+            */}
+            {session?.user?.role !== "breeder" ? (
+                puppyApplication ? (
+                    <div className="bg-white rounded-lg shadow p-6 flex flex-col sm:flex gap-6 relative">
+                        <div className="p-2">
+                            <h2 className="text-xl font-semibold mb-4">Your Puppy Application</h2>
+                            <p><strong>Name:</strong> {puppyApplication.name}</p>
+                            <p><strong>City:</strong> {puppyApplication.city}</p>
+                            <p><strong>State:</strong> {puppyApplication.state}</p>
+                            <p><strong>Zip:</strong> {puppyApplication.zip}</p>
+                            <p><strong>Age:</strong> {puppyApplication.age}</p>
+                            <p><strong>Pets Owned:</strong> {puppyApplication.petsOwned}</p>
+                            <p><strong>Has Children:</strong>{puppyApplication.hasChildren === true ? 'Yes' : 'No'}</p>
+                            <p><strong>Puppy Preference:</strong>{puppyApplication.puppyPreference}</p>
+                            <p><strong>Training Planned:</strong>{puppyApplication.trainingPlanned === true ? 'Yes' : 'No'}</p>
+                            <p><strong>Desired Traits:</strong>{puppyApplication.desiredTraits}</p>
+                            <p><strong>Additional Comments:</strong>{puppyApplication.additionalComments}</p>
+                            <p><strong>Approvals:</strong> {puppyApplication.approvals?.length || 0}</p>
+                            {/* Add more fields as needed */}
+                            {/* TODO: Edit button for puppy application */}
+                        </div>
                     </div>
                 ) : (
-                    <p>You have not submitted a puppy application yet.</p>
-                )}
-            </div>
+                    <div className="p-2">
+                        <p className="mb-4">You have not submitted a puppy application yet.</p>
+                        <a
+                            href="/puppy-application"
+                            className="inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+                        >
+                            Submit Puppy Application
+                        </a>
+                    </div>
+                )
+            ) : null}
 
 
             {/* Breeder Dashboard */}
