@@ -21,8 +21,6 @@ export default async function LitterDetailPage({ params }: Params) {
 
     const litterName = decodeURIComponent(id).trim();
 
-    console.log('litterName', litterName)
-
     const client = await clientPromise;
     const db = client.db("purepaws");
 
@@ -31,8 +29,6 @@ export default async function LitterDetailPage({ params }: Params) {
     });
 
     const breederId = userFromDb?.breederId ? userFromDb?.breederId.toString() : null;
-
-    console.log('breederId', breederId)
 
     // Find the dogs with this litter name and breederId
     // Fetch the list of dogs for the breeder if any
