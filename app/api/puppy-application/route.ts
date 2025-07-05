@@ -35,6 +35,30 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
         }
 
+        // Validate number fields
+        if (Number(petsOwned) < 0) {
+            return NextResponse.json({ error: "Pets owned cannot be negative" }, { status: 400 });
+        }
+
+        if (!Number.isInteger(Number(petsOwned))) {
+             return NextResponse.json({ error: "Pets owned must be an integer" }, { status: 400 });
+        }
+
+        // Age validation
+        const applicantAge = Number(age);
+
+        if (applicantAge < 0) {
+            return NextResponse.json({ error: "Age must be a positive number" }, { status: 400 });
+        }
+
+        if (isNaN(applicantAge) || applicantAge < 18 || applicantAge > 90) {
+            return NextResponse.json({ error: "Please enter a valid age" }, { status: 400 });
+        }
+
+        if (Number(zip) < 0) {
+            return NextResponse.json({ error: "Invalid zip code" }, { status: 400 });
+        }
+
         const client = await clientPromise;
         const db = client.db("purepaws");
 
