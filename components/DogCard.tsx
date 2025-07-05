@@ -18,13 +18,17 @@ interface DogCardProps {
 
 type BadgeVariant = "default" | "secondary" | "destructive" | "outline";
 
-const STATUS_STYLES: Record<
-  string,
-  { label: string; variant: BadgeVariant }
-> = {
+type StatusStyle = {
+  label: string;
+  variant: BadgeVariant;
+  className?: string;
+};
+
+const STATUS_STYLES: Record<string, StatusStyle> = {
   Available: {
     label: "Available",
-    variant: "secondary", // or "secondary" if you prefer
+    variant: "secondary", 
+    className: "bg-green-300 border border-green-300"
   },
   Pending: {
     label: "Pending",
@@ -71,7 +75,7 @@ export default function DogCard({ dog, isFavorited, onUnfavorite, loggedInUser }
                     Can sync this up with the map in the main route
                 */}
                 {/* <p className="text-gray-500">{dog.location}</p> */}
-                <Badge variant={STATUS_STYLES[statusKey]?.variant}>
+                <Badge className={STATUS_STYLES[statusKey]?.className} variant={STATUS_STYLES[statusKey]?.variant}>
                     {dog.status} - ${dog.price}
                 </Badge>
             </Link>
