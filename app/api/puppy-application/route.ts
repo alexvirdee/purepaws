@@ -1,0 +1,78 @@
+import { NextRequest, NextResponse } from "next/server";
+import clientPromise from "@/lib/mongodb";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../auth/[...nextauth]/authOptions";
+
+export async function POST(req: NextRequest) {
+    try {
+        const session = await getServerSession(authOptions);
+
+        // Only logged in users should be able to submit a puppy application form
+        if (!session || !session.user || !session.user.email) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+        }
+
+        const body = await req.json();
+
+        const {
+            name,
+            email,
+            city,
+            state,
+            zip,
+            age,
+            petsOwned,
+            hasChildren,
+            puppyPreference,
+            genderPreference,
+            trainingPlanned,
+            desiredTraits,
+            additionalComments,
+        } = body;
+
+        // Basic validation
+        if (!name || !email || !city || !state || !zip || !age || !petsOwned || !puppyPreference || !genderPreference) {
+            return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+        }
+
+        const client = await clientPromise;
+        const db = client.db("purepaws");
+
+        // Lookup user ID from the session email
+        const user = await db.collection("users").findOne({ email: session.user.email });
+
+        if (!user) {
+            return NextResponse.json({ error: "User not found." }, { status: 404 })
+        }
+
+        const result = await db.collection("puppyApplications").insertOne({
+            userId: user._id, 
+            name: name.trim(),
+            email: email.trim().toLowerCase(),
+            city: city.trim(),
+            state: state.trim(),
+            zip: zip.trim(),
+            age: Number(age),
+            petsOwned: Number(petsOwned),
+            hasChildren: Boolean(hasChildren),
+            puppyPreference,
+            genderPreference,
+            trainingPlanned: Boolean(trainingPlanned),
+            desiredTraits: desiredTraits?.trim() || "",
+            additionalComments: additionalComments?.trim() || "",
+            createdAt: new Date(),
+            status: "pending", // can use status for admin approvals in the future
+        });
+
+        return NextResponse.json({
+            success: true,
+            message: "Puppy application submitted!",
+            applicationId: result.insertedId
+        })
+
+
+    } catch (error) {
+        console.error("[PUPPY_APPLICATION_ERROR]", error);
+        return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
+    }
+}

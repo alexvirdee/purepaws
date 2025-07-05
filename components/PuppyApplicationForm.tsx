@@ -42,6 +42,23 @@ const PuppyApplicationForm = () => {
 
         // TODO: Send to api route for puppy application
         console.log('Puppy application Form Data: ', formData)
+
+        try {
+            const res = await fetch('/api/puppy-application', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+
+            if (res.ok) {
+                // TODO: Show success toast and route user to profile page so they can view their application details
+                console.log("Puppy application submitted successfully");
+            } else {
+                console.error("Failed to submit puppy application");
+            }
+        } catch (error) {
+            console.error('Error:', error)
+        }
     }
 
     return (
