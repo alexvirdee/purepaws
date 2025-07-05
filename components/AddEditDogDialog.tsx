@@ -43,6 +43,7 @@ export default function AddEditDogDialog({
 }: AddEditDogDialogProps) {
     const [formData, setFormData] = useState<Omit<IDog, '_id'>>({
         name: '',
+        litter: '',
         breed: '',
         dob: '',
         gender: '',
@@ -60,6 +61,7 @@ export default function AddEditDogDialog({
         if (mode === 'edit' && initialData) {
             setFormData({
                 name: initialData.name || '',
+                litter: initialData.litter || '',
                 breed: initialData.breed || '',
                 dob: initialData.dob || '',
                 gender: initialData.gender || '',
@@ -135,6 +137,17 @@ export default function AddEditDogDialog({
                             onChange={handleChange}
                             required
                             placeholder="Bella"
+                        />
+                    </div>
+
+                    <div>
+                        <Label className="block text-sm font-medium mb-1">Litter</Label>
+                        <Input
+                            name="litter"
+                            value={formData.litter}
+                            onChange={handleChange}
+                            required
+                            placeholder="Spring 2026 Litter"
                         />
                     </div>
 

@@ -27,6 +27,7 @@ export async function PUT(
         // Validate dog JSON structure 
         const {
             name,
+            litter,
             breed,
             dob,
             gender,
@@ -38,15 +39,6 @@ export async function PUT(
         } = await req.json();
 
         const price = Number(rawPrice);
-
-        console.log('dog details');
-        console.log('name', name);
-        console.log('breed', breed);
-        console.log('dob', dob);
-        console.log('gender', gender);
-        console.log('photo', photo);
-        console.log('price', price);
-        console.log('status', status);
 
         if (!name || name.trim().length === 0) {
             console.log('issue with the name');
@@ -101,6 +93,7 @@ export async function PUT(
 
         const updateFields: any = {
             name: name.trim(),
+            litter: litter.trim(),
             breed: breed.trim(),
             dob: dob || null,
             gender: gender.trim(),

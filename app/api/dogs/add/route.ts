@@ -5,18 +5,9 @@ import { ObjectId } from "mongodb";
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { name, breed, dob, gender, status, price, photo, breederId } = body;
+        const { name, litter, breed, dob, gender, status, price, photo, breederId } = body;
 
-        console.log('did we get all the details')
-        console.log('name', name)
-        console.log('breed', breed)
-        console.log('dob', dob)
-        console.log('gender', gender)
-        console.log('status', status)
-        console.log('price', price)
-        console.log('photo', photo)
-        console.log('breederId', breederId)
-
+        // Note - litter name is not required 
         if (!name || !breed || !dob || !gender || !status || !price || !breederId) {
             return NextResponse.json({ error: "Missing required fields." }, { status: 400 });
         }
@@ -28,6 +19,7 @@ export async function POST(request: Request) {
         // Insert a new dog
         const result = await dogs.insertOne({
             name: name.trim(),
+            litter: litter.trim(),
             breed: breed.trim(),
             dob: dob || null,
             gender: gender || "",

@@ -63,6 +63,7 @@ export default function DogCard({ dog, isFavorited, onUnfavorite, loggedInUser }
                     </div>
                 )}
                 <h2 className="text-xl font-semibold">{dog.name}</h2>
+                <p className="text-gray-600">{dog.litter}</p>
                 <p className="text-gray-600">{dog.breed}</p>
                 <p className="text-gray-500">dob: {dog.dob}</p>
                 <p className="text-gray-500">{dog.gender}</p>
