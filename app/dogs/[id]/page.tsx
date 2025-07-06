@@ -8,13 +8,19 @@ import { isValidImage } from "@/utils/isValidImage";
 import { Dog as DogIcon } from "lucide-react";
 import { DB_NAME } from "@/lib/constants";
 import FavoriteButton from "@/components/FavoriteButton";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 
 
 export default async function DogDetailsPage({ params }: { params: { id: string } }) {
+    const session = await getServerSession(authOptions);
+
     const { id } = await params;
 
     const client = await clientPromise;
     const db = client.db(DB_NAME);
+
+    let isFavorited = false;
 
     // Fetch the dog by _id
     const dog = await db.collection("dogs").findOne<IDog>({
@@ -25,29 +31,40 @@ export default async function DogDetailsPage({ params }: { params: { id: string 
         notFound(); // 404 if no dog found
     }
 
+    if (session?.user?.email) {
+        const user = await db.collection("users").findOne({ email: session.user.email });
+
+        if (user?.favorites && Array.isArray(user.favorites)) {
+            isFavorited = user.favorites.includes(dog._id.toString())
+        }
+    }
+
     // Optionally fetch breeder details if needed
     const breeder = await db.collection("breeders").findOne({ _id: new ObjectId(dog.breederId) });
 
     return (
         <div className="max-w-4xl mx-auto p-8">
-     
-            <h1 className="text-3xl font-bold mb-4">{dog.name}</h1>
-            <FavoriteButton dogId={dog._id.toString()} />
-   
+            <div className="flex justify-between mb-4">
+                <div className="flex items-center gap-2">
+                    <h1 className="text-3xl font-bold">{dog.name}</h1>
+                    <FavoriteButton dogId={dog._id.toString()} initiallyFavorited={isFavorited} />
+                </div>
+            </div>
+
 
             {dog.photos && dog.photos.length > 0 && isValidImage(dog.photos[0].path) ? (
-                    <Image
-                        src={dog.photos[0].path}
-                        alt={dog.name}
-                        className="rounded mb-4"
-                         width={600}
-                     height={400}
-                    />
-                ) : (
-                    <div className="w-full h-48 flex items-center justify-center bg-gray-200 rounded mb-2">
-                        <DogIcon className="w-16 h-16 text-gray-500" />
-                    </div>
-                )}
+                <Image
+                    src={dog.photos[0].path}
+                    alt={dog.name}
+                    className="rounded mb-4"
+                    width={600}
+                    height={400}
+                />
+            ) : (
+                <div className="w-full h-48 flex items-center justify-center bg-gray-200 rounded mb-2">
+                    <DogIcon className="w-16 h-16 text-gray-500" />
+                </div>
+            )}
 
             <p className="mb-2 text-lg">
                 <strong>Breed:</strong> {dog.breed}
