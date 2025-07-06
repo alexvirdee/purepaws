@@ -26,6 +26,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { Plus, Pencil } from "lucide-react";
+import FileDropzone from "./FileDropzone";
 
 type AddEditDogDialogProps = {
     mode: "add" | "edit";
@@ -48,7 +49,7 @@ export default function AddEditDogDialog({
         dob: '',
         gender: '',
         status: '',
-        photo: '',
+        photos: [],
         description: '',
         price: 0,
         location: ''
@@ -66,7 +67,7 @@ export default function AddEditDogDialog({
                 dob: initialData.dob || '',
                 gender: initialData.gender || '',
                 status: initialData.status || '',
-                photo: initialData.photo || '',
+                photos: initialData.photos || [],
                 description: initialData.description || '',
                 price: initialData.price || 0,
                 location: initialData.location || ''
@@ -119,7 +120,7 @@ export default function AddEditDogDialog({
                     {mode === 'edit' ? 'Edit Dog' : 'Add Dog'}
                 </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="max-h-[80vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>{mode === 'edit' ? 'Edit Dog' : 'Add Dog'}</DialogTitle>
                     <DialogDescription>
@@ -213,15 +214,19 @@ export default function AddEditDogDialog({
                         </Select>
                     </div>
 
+                    {/* React DropZone for multiple image upload  */}
                     <div>
-                        <Label className="block text-sm font-medium mb-1">Photo URL</Label>
-                        <Input
-                            name="photo"
-                            value={formData.photo}
-                            onChange={handleChange}
-                            placeholder="https://..."
+                        <Label className="block text-sm font-medium mb-1">Photos</Label>
+                        <FileDropzone
+                            formData={formData}
+                            setFormData={setFormData}
+                            field="photos"
+                            label="Add dog photos"
+                            accept={{ 'image/*': [] }}
+                            multiple
                         />
                     </div>
+
 
                     <div>
                         <Label className="block text-sm font-medium mb-1">Description</Label>

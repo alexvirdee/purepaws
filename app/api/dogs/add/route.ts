@@ -5,7 +5,7 @@ import { ObjectId } from "mongodb";
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { name, litter, breed, dob, gender, status, price, photo, breederId } = body;
+        const { name, litter, breed, dob, gender, status, price, photos, breederId } = body;
 
         // Note - litter name is not required 
         if (!name || !breed || !dob || !gender || !status || !price || !breederId) {
@@ -25,7 +25,7 @@ export async function POST(request: Request) {
             gender: gender || "",
             status: status.trim(),
             price: Number(price),
-            photo: photo || "",
+            photos: photos || [],
             breederId: new ObjectId(breederId),
             createdAt: new Date(),
         });

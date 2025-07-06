@@ -1,8 +1,8 @@
 export interface IDog {
     _id: string;
     name: string;
-    litter: string;
-    photo: string;
+    litter?: string;
+    photos: { path: string; [key: string]: any }[];
     breed: string;
     location: string;
     status: string;

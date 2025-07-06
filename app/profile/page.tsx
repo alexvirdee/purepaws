@@ -59,7 +59,7 @@ export default async function ProfilePage() {
     // Serialize the dogs to ensure compatibility with client side components
     interface SerializedDog {
         _id: string;
-        photo: string;
+        photos: { path: string; [key: string]: any }[];
         name: string;
         breed: string;
         status: string;
@@ -74,7 +74,7 @@ export default async function ProfilePage() {
     const serializeDogs: SerializedDog[] = JSON.parse(JSON.stringify(dogs)).map((dog: IDog): SerializedDog => ({
         ...dog,
         _id: dog._id.toString(), // convert ObjectId to a string
-        photo: dog.photo || "", // ensure photo property exists
+        photos: dog.photos || [], // ensure photos property exists
         name: dog.name || "Unknown", // ensure name property exists
         breed: dog.breed || "Unknown", // ensure breed property exists
         status: dog.status || "Unknown", // ensure status property exists

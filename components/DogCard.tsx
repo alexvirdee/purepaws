@@ -20,29 +20,30 @@ interface DogCardProps {
 type BadgeVariant = "default" | "secondary" | "destructive" | "outline";
 
 type StatusStyle = {
-  label: string;
-  variant: BadgeVariant;
-  className?: string;
+    label: string;
+    variant: BadgeVariant;
+    className?: string;
 };
 
 const STATUS_STYLES: Record<string, StatusStyle> = {
-  Available: {
-    label: "Available",
-    variant: "secondary", 
-    className: "bg-green-300 border border-green-300"
-  },
-  Pending: {
-    label: "Pending",
-    variant: "outline",
-  },
-  Sold: {
-    label: "Sold",
-    variant: "destructive",
-  },
+    Available: {
+        label: "Available",
+        variant: "secondary",
+        className: "bg-green-300 border border-green-300"
+    },
+    Pending: {
+        label: "Pending",
+        variant: "outline",
+    },
+    Sold: {
+        label: "Sold",
+        variant: "destructive",
+    },
 };
 
 export default function DogCard({ dog, isFavorited, onUnfavorite, loggedInUser }: DogCardProps) {
     const statusKey = dog.status?.charAt(0).toUpperCase() + dog.status?.slice(1).toLowerCase();
+
 
     return (
         <li key={dog._id.toString()} className="border p-4 rounded shadow hover:shadow-lg hover:bg-gray-50 transition relative">
@@ -56,9 +57,9 @@ export default function DogCard({ dog, isFavorited, onUnfavorite, loggedInUser }
             )}
 
             <Link href={`/dogs/${dog._id}`} >
-                {isValidImage(dog.photo) ? (
+                {dog.photos && dog.photos.length > 0 && isValidImage(dog.photos[0]) ? (
                     <img
-                        src={dog.photo}
+                        src={dog.photos[0].path}
                         alt={dog.name}
                         className="w-full h-48 object-cover mb-2 rounded"
                     />
@@ -82,13 +83,13 @@ export default function DogCard({ dog, isFavorited, onUnfavorite, loggedInUser }
                 <p className="text-green-700 font-semibold">{formatPrice(dog.price)}</p>
             </Link>
 
-              {/* Breeder actions for dogs i.e Edit/Delete */}
-                {loggedInUser === dog.breederId && (
-                    <div className="flex gap-2 mt-2">
-                        <AddEditDogDialog mode="edit" initialData={dog} />
-                        <DeleteDogDialog  dogId={dog._id} dogName={dog.name} />
-                    </div>
-                )}
+            {/* Breeder actions for dogs i.e Edit/Delete */}
+            {loggedInUser === dog.breederId && (
+                <div className="flex gap-2 mt-2">
+                    <AddEditDogDialog mode="edit" initialData={dog} />
+                    <DeleteDogDialog dogId={dog._id} dogName={dog.name} />
+                </div>
+            )}
         </li>
     )
 

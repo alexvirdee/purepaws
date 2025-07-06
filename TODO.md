@@ -2,32 +2,48 @@
 
 ## 🐾 PurePaws - Features and things to work on
 
-### ✏️ Breeder Application Improvements
-- [x] Format certain inputs automatically:
-  - Capitalize kennel name, contact name, city/state when user types.
-  - Ensure email is lowercased.
-- [x] Validate breeds offered:
-  - Do not allow selecting more than **2 breeds**.
-  - Show a helpful error if the user tries to select a third. 
-- [x] Adjust state input to be a dropdown
+## 1️⃣ Core Functionality
 
-### ✅ Success Page / Form Flow
-- [x] Clear form inputs automatically after successful submission.
-- [ ] Consider adding a localStorage guard so `/success` is only accessible if they just submitted.
+- [ ] **Add Litter Name Field**
+  - Add “litter name” input to *Add Dog* form
+  - Group dogs by litter in breeder profile
+  - Display litter detail page with dogs listed properly
 
-### 🔑 Authentication (Future)
-- [ ] Set up breeder auth so breeders can edit their listing.
-- [ ] Add admin auth to approve/reject breeders.
-- [ ] Add email notifications when breeders are approved.
-- [x] Auto login after sign up.
+- [ ] **Image Storage**
+  - Choose & configure **Cloudinary** or **S3**
+  - Test uploading images for dogs
+  - Confirm images render properly in production (not local `/public` only)
 
-### 🗺️ Map & Listings
-- [ ] Use address geocoding to auto-fill `latitude` and `longitude` fields.
-- [ ] Add filtering for approved breeders only (done!).
-- [ ] Connect breeder detail pages to the database (done!).
-- [ ] Add an “All Dogs” search view.
-- [ ] If more than 20+ breeders the map can be cluttered on initial landing - remove "All Breeds" default selection 
+- [ ] **Puppy Application**
+  - Ensure users can submit a puppy application
+  - Save puppy application with `userId` in MongoDB
+  - Display application on user’s profile page
+  - Add ability to update application (optional)
 
 ---
+
+## 2️⃣ Admin Dashboard (Stretch)
+
+- [ ] Create `/admin` protected route
+- [ ] Fetch & display all breeder applications
+- [ ] Add **Approve** / **Deny** buttons
+- [ ] Trigger *SendGrid* email when breeder status changes
+
+---
+
+## 3️⃣ Light Design Polish (Optional)
+
+- [ ] Improve **Puppy Detail View**
+  - Add placeholder for multiple images or photo slider
+  - Add share/copy link button with Sonner toast
+  - Clean up spacing, fonts, and general UI clarity
+
+---
+
+## 💡 Notes
+
+- Focus on **core features first**, polish later
+- No need for fancy forgot password flow yet
+- Once these work, you’re *MVP-ready* for breeders & puppy parents!
 
 Keep building! 🐕✨

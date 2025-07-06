@@ -57,7 +57,7 @@ const Breeder = async ({ params }: BreederParams) => {
         _id: dog._id.toString(), // Convert ObjectId to string
         breederId: dog.breederId.toString(), // Convert breederId to string
         name: dog.name || "Unknown Name",
-        photo: dog.photo || "/default-photo.jpg",
+        photos: dog.photos || ["/default-photo.jpg"],
         breed: dog.breed || "Unknown Breed",
         location: dog.location || "Unknown Location",
         dob: dog.dob || "Unknown", // ensure dob property exists

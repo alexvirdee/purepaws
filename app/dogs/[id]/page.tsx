@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { IDog } from "@/interfaces/dog";
 import { isValidImage } from "@/utils/isValidImage";
+import { Dog as DogIcon } from "lucide-react";
 
 
 export default async function DogDetailsPage({ params }: { params: { id: string } }) {
@@ -28,13 +29,20 @@ export default async function DogDetailsPage({ params }: { params: { id: string 
     return (
         <div className="max-w-4xl mx-auto p-8">
             <h1 className="text-3xl font-bold mb-4">{dog.name}</h1>
-            <Image
-                src={dog.photo && isValidImage(dog.photo) ? dog.photo : "/images/purepaws-placeholder.jpg"}
-                alt={dog.name}
-                width={600}
-                height={400}
-                className="rounded mb-4"
-            />
+
+            {dog.photos && dog.photos.length > 0 && isValidImage(dog.photos[0]) ? (
+                    <Image
+                        src={dog.photos[0].path}
+                        alt={dog.name}
+                        className="rounded mb-4"
+                         width={600}
+                     height={400}
+                    />
+                ) : (
+                    <div className="w-full h-48 flex items-center justify-center bg-gray-200 rounded mb-2">
+                        <DogIcon className="w-16 h-16 text-gray-500" />
+                    </div>
+                )}
 
             <p className="mb-2 text-lg">
                 <strong>Breed:</strong> {dog.breed}
