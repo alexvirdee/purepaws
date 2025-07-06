@@ -1,10 +1,41 @@
+// Note - keep this as a server rendered component
 import Image from 'next/image';
 import Link from 'next/link';
-import { APP_NAME } from '@/lib/constants';
+import { APP_NAME, DB_NAME } from '@/lib/constants';
 import Menu from './menu';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/authOptions';
+import clientPromise from '@/lib/mongodb';
 
 
-const Header = () => {
+const Header = async () => {
+    const session = await getServerSession(authOptions);
+
+    // Connect to the database
+    const client = await clientPromise;
+    const db = client.db(DB_NAME);
+
+    let puppyApplication = null;
+
+    // Check if logged in user has a puppy application
+    if (session?.user?.email) {
+        puppyApplication = await db.collection("puppyApplications").findOne({
+            email: session.user.email
+        })
+    }
+
+    // Serialize puppyApplication if user has one
+    if (puppyApplication) {
+        puppyApplication = {
+            ...puppyApplication,
+            _id: puppyApplication._id.toString(),
+            userId: puppyApplication.userId?.toString() || null,
+            createdAt: puppyApplication.createdAt?.toISOString() || null,
+            updatedAt: puppyApplication.updatedAt?.toISOString() || null
+        }
+    }
+
+
     return (
         <header className="w-full border-b">
             <div className="wrapper flex justify-between items-center py-2">
@@ -16,7 +47,7 @@ const Header = () => {
                         </span>
                     </Link>
                 </div>
-                <Menu />
+                <Menu puppyApplication={puppyApplication} />
             </div>
         </header>);
 }
