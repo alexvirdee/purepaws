@@ -8,6 +8,7 @@ import { isValidImage } from "@/utils/isValidImage";
 import AddEditDogDialog from "./AddEditDogDialog";
 import DeleteDogDialog from "./DeleteDogDialog";
 import { Badge } from "@/components/ui/badge";
+import { formatPrice } from "@/utils/formatPrice";
 
 interface DogCardProps {
     dog: IDog;
@@ -75,9 +76,10 @@ export default function DogCard({ dog, isFavorited, onUnfavorite, loggedInUser }
                     Can sync this up with the map in the main route
                 */}
                 {/* <p className="text-gray-500">{dog.location}</p> */}
-                <Badge className={STATUS_STYLES[statusKey]?.className} variant={STATUS_STYLES[statusKey]?.variant}>
-                    {dog.status} - ${dog.price}
+                <Badge className={`${STATUS_STYLES[statusKey]?.className} mb-2`} variant={STATUS_STYLES[statusKey]?.variant}>
+                    {dog.status}
                 </Badge>
+                <p className="text-green-700 font-semibold">{formatPrice(dog.price)}</p>
             </Link>
 
               {/* Breeder actions for dogs i.e Edit/Delete */}
