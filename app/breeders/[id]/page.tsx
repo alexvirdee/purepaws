@@ -5,6 +5,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 import { getUserFavorites } from "@/lib/db/getUserFavorites";
 import DogCardList from "@/components/DogCardList";
 import { IDog } from "@/interfaces/dog";
+import { DB_NAME } from "@/lib/constants";
 
 interface BreederParams {
     params: {
@@ -21,7 +22,7 @@ const Breeder = async ({ params }: BreederParams) => {
 
     // Connect to the database
     const client = await clientPromise;
-    const db = client.db("purepaws");
+    const db = client.db(DB_NAME);
 
     // Get the breeder by ID
     const breeder = await db.collection("breeders").findOne({

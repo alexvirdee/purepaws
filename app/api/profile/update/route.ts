@@ -3,6 +3,7 @@ import { getServerSession, DefaultSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/authOptions";
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
+import { DB_NAME } from "@/lib/constants";
 
 declare module "next-auth" {
     interface Session {
@@ -31,7 +32,7 @@ export async function POST(req: NextRequest) {
         } 
 
         const client = await clientPromise;
-        const db = client.db("purepaws");
+        const db = client.db(DB_NAME);
 
         // Update the user name in the 'users' collection in the db]
         await db.collection("users").updateOne(

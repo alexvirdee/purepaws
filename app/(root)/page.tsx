@@ -4,6 +4,7 @@ import SignInOutToast from "@/components/SignInOutToast";
 import clientPromise from "@/lib/mongodb";
 import MapWrapper from "@/components/MapWrapper";
 import FeaturedBreedersSection from "@/components/FeaturedBreedersSection";
+import { DB_NAME } from "@/lib/constants";
 
 interface RawBreeder {
   _id: any; // MongoDB ObjectId
@@ -13,7 +14,7 @@ interface RawBreeder {
 
 export default async function Home() {
   const client = await clientPromise;
-  const db = client.db("purepaws");
+  const db = client.db(DB_NAME);
 
   // Retrieve approved breeders from the database
   const breeders = await db.

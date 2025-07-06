@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
 import bcrypt from "bcrypt";
 import { ObjectId } from "mongodb";
+import { DB_NAME } from "@/lib/constants";
 
 export async function POST(request: NextRequest) {
     try {
@@ -12,7 +13,7 @@ export async function POST(request: NextRequest) {
         }
 
         const db = await clientPromise;
-        const users = db.db("purepaws").collection("users");
+        const users = db.db(DB_NAME).collection("users");
 
         // Check if user already exists
         const existingUser = await users.findOne({ email });
@@ -24,7 +25,7 @@ export async function POST(request: NextRequest) {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // Check if email and approved status is in breeders collection and update the role to "breeder"
-        const breeder = await db.db("purepaws").collection("breeders").findOne({ email, status: "approved" });
+        const breeder = await db.db(DB_NAME).collection("breeders").findOne({ email, status: "approved" });
 
         const role = breeder ? "breeder" : "viewer"; // Default to viewer if not a breeder
         

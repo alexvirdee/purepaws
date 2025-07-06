@@ -1,10 +1,11 @@
 import clientPromise from "../mongodb";
 import { ObjectId } from "mongodb";
 import { IDog } from "@/interfaces/dog";
+import { DB_NAME } from "../constants";
 
 export async function getUserFavorites(userEmail: string): Promise<IDog[]> {
     const client = await clientPromise;
-    const db = client.db("purepaws");
+    const db = client.db(DB_NAME);
 
     // Get the user doc
     const user = await db.collection("users").findOne({ email: userEmail });

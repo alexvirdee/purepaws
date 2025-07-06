@@ -1,6 +1,7 @@
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb"
 import { NextRequest, NextResponse } from "next/server";
+import { DB_NAME } from "@/lib/constants";
 
 export async function PUT(
     req: NextRequest,
@@ -88,7 +89,7 @@ export async function PUT(
 
 
         const client = await clientPromise;
-        const db = client.db("purepaws");
+        const db = client.db(DB_NAME);
         const dogs = db.collection("dogs");
 
         const updateFields: any = {
@@ -136,7 +137,7 @@ export async function DELETE(
         }
 
         const client = await clientPromise;
-        const db = client.db("purepaws");
+        const db = client.db(DB_NAME);
         const dogs = db.collection("dogs");
 
         const result = await dogs.deleteOne({ _id: new ObjectId(dogId) });

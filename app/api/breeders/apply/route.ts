@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
+import { DB_NAME } from "@/lib/constants";
 
 function formatBreederData(data: any) {
   return {
@@ -29,7 +30,7 @@ export async function POST(request: Request) {
     }
 
     const client = await clientPromise;
-    const db = client.db("purepaws");
+    const db = client.db(DB_NAME);
     const breeders = db.collection('breeders')
 
     const addressString = `${address}, ${city}, ${state} ${zip || ""}`;

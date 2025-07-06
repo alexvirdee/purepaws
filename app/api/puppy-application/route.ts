@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/authOptions";
+import { DB_NAME } from "@/lib/constants";
 
 export async function POST(req: NextRequest) {
     try {
@@ -60,7 +61,7 @@ export async function POST(req: NextRequest) {
         }
 
         const client = await clientPromise;
-        const db = client.db("purepaws");
+        const db = client.db(DB_NAME);
 
         // Lookup user ID from the session email
         const user = await db.collection("users").findOne({ email: session.user.email });
@@ -110,7 +111,7 @@ export async function GET(req: NextRequest) {
     }
 
     const client = await clientPromise;
-    const db = client.db("purepaws");
+    const db = client.db(DB_NAME);
 
     // Lookup user by email to get their _id
     const user = await db.collection("users").findOne({ email: session.user.email });

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
+import { DB_NAME } from "@/lib/constants";
 
 export async function POST(request: Request) {
     try {
@@ -13,7 +14,7 @@ export async function POST(request: Request) {
         }
 
         const client = await clientPromise;
-        const db = client.db("purepaws");
+        const db = client.db(DB_NAME);
         const dogs = db.collection("dogs");
 
         // Insert a new dog

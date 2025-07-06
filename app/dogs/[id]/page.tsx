@@ -6,13 +6,14 @@ import Link from "next/link";
 import { IDog } from "@/interfaces/dog";
 import { isValidImage } from "@/utils/isValidImage";
 import { Dog as DogIcon } from "lucide-react";
+import { DB_NAME } from "@/lib/constants";
 
 
 export default async function DogDetailsPage({ params }: { params: { id: string } }) {
     const { id } = await params;
 
     const client = await clientPromise;
-    const db = client.db("purepaws");
+    const db = client.db(DB_NAME);
 
     // Fetch the dog by _id
     const dog = await db.collection("dogs").findOne<IDog>({

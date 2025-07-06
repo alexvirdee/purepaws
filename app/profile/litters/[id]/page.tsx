@@ -4,6 +4,7 @@ import clientPromise from "@/lib/mongodb";
 import { notFound } from "next/navigation";
 import DogCard from "@/components/DogCard";
 import { ObjectId } from "mongodb";
+import { DB_NAME } from "@/lib/constants";
 
 interface Params {
     params: { id: string }; // litterName from URL 
@@ -22,7 +23,7 @@ export default async function LitterDetailPage({ params }: Params) {
     const litterName = decodeURIComponent(id).trim();
 
     const client = await clientPromise;
-    const db = client.db("purepaws");
+    const db = client.db(DB_NAME);
 
     const userFromDb = await db.collection("users").findOne({
         email: session?.user?.email

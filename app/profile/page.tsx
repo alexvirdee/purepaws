@@ -11,6 +11,7 @@ import DogCard from "@/components/DogCard";
 import { IDog } from "@/interfaces/dog";
 import FavoriteDogsSection from "@/components/FavoriteDogsSection";
 import Link from "next/link";
+import { DB_NAME } from "@/lib/constants";
 
 
 export default async function ProfilePage() {
@@ -25,7 +26,7 @@ export default async function ProfilePage() {
 
     // connect to the db
     const client = await clientPromise;
-    const db = client.db("purepaws");
+    const db = client.db(DB_NAME);
 
     // Resolve name not updating on edit since session token doesn't change on profile updates
     const userFromDb = await db.collection("users").findOne({

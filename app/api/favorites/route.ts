@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/authOptions";
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
+import { DB_NAME } from "@/lib/constants";
 
 export async function POST(req: Request) {
     const session = await getServerSession(authOptions);
@@ -20,7 +21,7 @@ export async function POST(req: Request) {
     }
 
     const client = await clientPromise;
-    const db = client.db("purepaws");
+    const db = client.db(DB_NAME);
 
     // Toggle logic: add if not exists, remove if it does
     const user = await db.collection("users").findOne({ email: session.user.email });
