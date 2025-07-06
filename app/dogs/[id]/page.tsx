@@ -30,7 +30,7 @@ export default async function DogDetailsPage({ params }: { params: { id: string 
         <div className="max-w-4xl mx-auto p-8">
             <h1 className="text-3xl font-bold mb-4">{dog.name}</h1>
 
-            {dog.photos && dog.photos.length > 0 && isValidImage(dog.photos[0]) ? (
+            {dog.photos && dog.photos.length > 0 && isValidImage(dog.photos[0].path) ? (
                     <Image
                         src={dog.photos[0].path}
                         alt={dog.name}
