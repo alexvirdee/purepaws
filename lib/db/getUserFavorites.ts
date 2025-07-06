@@ -24,7 +24,7 @@ export async function getUserFavorites(userEmail: string): Promise<IDog[]> {
     return favorites.map((dog) => ({
         _id: dog._id.toString(),
         name: dog.name || "",
-        photo: dog.photo || "",
+        photos: dog.photos || [],
         breed: dog.breed || "",
         location: dog.location || "",
         status: dog.status || "",

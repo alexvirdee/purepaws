@@ -70,7 +70,6 @@ export default function FavoriteButton({ dogId, initiallyFavorited = false, onUn
         <>
             <div
                 onClick={handleFavoriteClick}
-                className="absolute top-2 right-2 bg-white rounded-full p-2 shadow hover:bg-gray-100 transition"
             >
                 <Heart
                     className={`w-5 h-5 text-red-500 cursor-pointer ${isFavorited ? 'fill-red-500' : 'fill-none'

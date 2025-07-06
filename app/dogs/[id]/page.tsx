@@ -7,6 +7,7 @@ import { IDog } from "@/interfaces/dog";
 import { isValidImage } from "@/utils/isValidImage";
 import { Dog as DogIcon } from "lucide-react";
 import { DB_NAME } from "@/lib/constants";
+import FavoriteButton from "@/components/FavoriteButton";
 
 
 export default async function DogDetailsPage({ params }: { params: { id: string } }) {
@@ -29,7 +30,10 @@ export default async function DogDetailsPage({ params }: { params: { id: string 
 
     return (
         <div className="max-w-4xl mx-auto p-8">
+     
             <h1 className="text-3xl font-bold mb-4">{dog.name}</h1>
+            <FavoriteButton dogId={dog._id.toString()} />
+   
 
             {dog.photos && dog.photos.length > 0 && isValidImage(dog.photos[0].path) ? (
                     <Image

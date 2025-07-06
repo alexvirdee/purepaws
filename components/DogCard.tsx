@@ -44,6 +44,8 @@ const STATUS_STYLES: Record<string, StatusStyle> = {
 export default function DogCard({ dog, isFavorited, onUnfavorite, loggedInUser }: DogCardProps) {
     const statusKey = dog.status?.charAt(0).toUpperCase() + dog.status?.slice(1).toLowerCase();
 
+    console.log('dog', dog);
+    console.log('dog photos', dog.photos);
 
     return (
         <li key={dog._id.toString()} className="border p-4 rounded shadow hover:shadow-lg hover:bg-gray-50 transition relative">
@@ -53,7 +55,9 @@ export default function DogCard({ dog, isFavorited, onUnfavorite, loggedInUser }
                 2. Users logged in who are not the breeders who currently own the dogs
             */}
             {loggedInUser !== dog.breederId && (
-                <FavoriteButton dogId={dog._id.toString()} initiallyFavorited={isFavorited} onUnfavorite={onUnfavorite} />
+                <div className="absolute top-2 right-2 bg-white rounded-full p-2 shadow hover:bg-gray-100 transition">
+                    <FavoriteButton dogId={dog._id.toString()} initiallyFavorited={isFavorited} onUnfavorite={onUnfavorite} />
+                </div>
             )}
 
             <Link href={`/dogs/${dog._id}`} >
