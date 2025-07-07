@@ -11,8 +11,20 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Session } from "next-auth";
 
-const PuppyApplicationForm = () => {
+
+const PuppyApplicationForm = ({
+    session,
+}: {
+    session: Session | null
+}) => {
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -100,33 +112,33 @@ const PuppyApplicationForm = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Name */}
                 <div>
-                    <label className="block mb-1 font-medium">Name *</label>
-                    <input
+                    <Label className="block mb-1 font-medium">Name *</Label>
+                    <Input
                         name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        required
-                        className="w-full border p-2 rounded"
+                        value={session?.user?.name || ""}
+                        readOnly
+                        disabled
+                        className="w-full border p-2 rounded bg-gray-200"
                     />
                 </div>
 
                 {/* Email */}
                 <div>
-                    <label className="block mb-1 font-medium">Email *</label>
-                    <input
+                    <Label className="block mb-1 font-medium">Email *</Label>
+                    <Input
                         name="email"
                         type="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        required
-                        className="w-full border p-2 rounded"
+                        value={session?.user?.email || ""}
+                        readOnly
+                        disabled
+                        className="w-full border p-2 rounded bg-gray-200"
                     />
                 </div>
 
                 {/* City */}
                 <div>
-                    <label className="block mb-1 font-medium">City *</label>
-                    <input
+                    <Label className="block mb-1 font-medium">City *</Label>
+                    <Input
                         name="city"
                         value={formData.city}
                         onChange={handleChange}
@@ -137,7 +149,7 @@ const PuppyApplicationForm = () => {
 
                 {/* State */}
                 <div>
-                    <label className="block mb-1 font-medium">State *</label>
+                    <Label className="block mb-1 font-medium">State *</Label>
                     <Select onValueChange={(value) => setFormData((prev) => ({ ...prev, state: value }))}>
                         <SelectTrigger className="w-full">
                             <SelectValue placeholder="Select a state" />
@@ -154,8 +166,8 @@ const PuppyApplicationForm = () => {
 
                 {/* Zip */}
                 <div>
-                    <label className="block mb-1 font-medium">Zip *</label>
-                    <input
+                    <Label className="block mb-1 font-medium">Zip *</Label>
+                    <Input
                         name="zip"
                         type="number"
                         value={formData.zip}
@@ -167,8 +179,8 @@ const PuppyApplicationForm = () => {
 
                 {/* Age */}
                 <div>
-                    <label className="block mb-1 font-medium">How old are you? *</label>
-                    <input
+                    <Label className="block mb-1 font-medium">How old are you? *</Label>
+                    <Input
                         name="age"
                         type="number"
                         value={formData.age}
@@ -180,8 +192,8 @@ const PuppyApplicationForm = () => {
 
                 {/* Pets owned */}
                 <div>
-                    <label className="block mb-1 font-medium">How many pets do you currently own? *</label>
-                    <input
+                    <Label className="block mb-1 font-medium">How many pets do you currently own? *</Label>
+                    <Input
                         name="petsOwned"
                         type="number"
                         value={formData.petsOwned}
@@ -193,49 +205,50 @@ const PuppyApplicationForm = () => {
 
                 {/* Children */}
                 <div>
-                    <label className="block mb-1 font-medium">Do you have children?</label>
-                    <input
+                    <Label className="block mb-1 font-medium">Do you have children?</Label>
+                    <Checkbox
                         name="hasChildren"
-                        type="checkbox"
                         checked={formData.hasChildren}
-                        onChange={handleChange}
+                        onCheckedChange={(checked) =>
+                            setFormData((prev) => ({
+                                ...prev,
+                                hasChildren: checked === true
+                            }))
+                        }
                         className="mr-2"
                     /> Yes
                 </div>
 
                 {/* Puppy preference */}
                 <div>
-                    <label className="block mb-1 font-medium">Puppy preference *</label>
+                    <Label className="block mb-1 font-medium">Puppy preference *</Label>
                     <div className="flex items-center space-x-4">
-                        <label className="flex items-center space-x-2">
-                            <input
-                                type="radio"
-                                name="puppyPreference"
-                                value="8-week"
-                                checked={formData.puppyPreference === "8-week"}
-                                onChange={handleChange}
-                            />
-                            <span>8 week puppy</span>
-                        </label>
-                        <label className="flex items-center space-x-2">
-                            <input
-                                type="radio"
-                                name="puppyPreference"
-                                value="16-week"
-                                checked={formData.puppyPreference === "16-week"}
-                                onChange={handleChange}
-                            />
-                            <span>16 week trained puppy</span>
-                        </label>
+                        <RadioGroup
+                            name="puppyPreference"
+                            value={formData.puppyPreference}
+                            onValueChange={(value) =>
+                                setFormData((prev) => ({ ...prev, puppyPreference: value }))
+                            }
+                            className="flex flex-row gap-2"
+                        >
+                            <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="8-week" id="8-week" />
+                                <Label htmlFor="8-week">8 week puppy</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="16-week" id="16-week" />
+                                <Label htmlFor="16-week">16 week trained puppy</Label>
+                            </div>
+                        </RadioGroup>
                     </div>
                 </div>
 
                 {/* Gender preference */}
                 <div>
-                    <label className="block mb-1 font-medium">Gender preference *</label>
+                    <Label className="block mb-1 font-medium">Gender preference *</Label>
                     <div className="flex items-center space-x-4">
-                        <label className="flex items-center space-x-2">
-                            <input
+                        <Label className="flex items-center space-x-2">
+                            <Input
                                 type="radio"
                                 name="genderPreference"
                                 value="male"
@@ -243,9 +256,9 @@ const PuppyApplicationForm = () => {
                                 onChange={handleChange}
                             />
                             <span>Male</span>
-                        </label>
-                        <label className="flex items-center space-x-2">
-                            <input
+                        </Label>
+                        <Label className="flex items-center space-x-2">
+                            <Input
                                 type="radio"
                                 name="genderPreference"
                                 value="female"
@@ -253,30 +266,34 @@ const PuppyApplicationForm = () => {
                                 onChange={handleChange}
                             />
                             <span>Female</span>
-                        </label>
+                        </Label>
                     </div>
                 </div>
 
                 {/* Training planned */}
                 <div>
-                    <label className="block mb-1 font-medium">
+                    <Label className="block mb-1 font-medium">
                         Will puppy be put into training or obedience classes?
-                    </label>
-                    <input
+                    </Label>
+                    <Checkbox
                         name="trainingPlanned"
-                        type="checkbox"
                         checked={formData.trainingPlanned}
-                        onChange={handleChange}
+                        onCheckedChange={(checked) =>
+                            setFormData((prev) => ({
+                                ...prev,
+                                trainingPlanned: checked === true
+                            }))
+                        }
                         className="mr-2"
                     /> Yes
                 </div>
 
                 {/* Desired traits */}
                 <div>
-                    <label className="block mb-1 font-medium">
+                    <Label className="block mb-1 font-medium">
                         Traits you are looking for in a puppy
-                    </label>
-                    <textarea
+                    </Label>
+                    <Textarea
                         name="desiredTraits"
                         value={formData.desiredTraits}
                         onChange={handleChange}
@@ -287,8 +304,8 @@ const PuppyApplicationForm = () => {
 
                 {/* Additional comments */}
                 <div>
-                    <label className="block mb-1 font-medium">Additional comments</label>
-                    <textarea
+                    <Label className="block mb-1 font-medium">Additional comments</Label>
+                    <Textarea
                         name="additionalComments"
                         value={formData.additionalComments}
                         onChange={handleChange}
@@ -298,13 +315,13 @@ const PuppyApplicationForm = () => {
                 </div>
 
                 {/* Submit */}
-                <button
+                <Button
                     type="submit"
                     className="bg-green-600 text-white px-4 py-2 rounded"
                     disabled={isSubmitting}
                 >
                     {isSubmitting ? 'Submitting...' : 'Submit Application'}
-                </button>
+                </Button>
             </form>
         </div>
     )

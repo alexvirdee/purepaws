@@ -31,7 +31,7 @@ const PuppyApplication = async () => {
     }
 
     return (
-        <PuppyApplicationForm />
+        <PuppyApplicationForm session={session} />
     );
 };
 

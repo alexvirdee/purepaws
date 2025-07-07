@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/select";
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import Link from 'next/link';
 
 interface FormData {
     name: string;
@@ -142,7 +143,7 @@ const ListYourKennelForm = ({
         return (
             <div className="p-8">
                 <h2 className="text-xl font-semibold mb-2">Application Already Submitted</h2>
-                <p className="text-gray-600">Please wait for our team to review it. You can check your status in your profile.</p>
+                <p className="text-gray-600">Please wait for our team to review it. You can check your status in your <Link className="text-blue-500 hover:text-blue-600" href="/profile">profile.</Link></p>
             </div>
         )
     }

@@ -5,6 +5,7 @@ import { getUserFavorites } from "@/lib/db/getUserFavorites";
 import { User as UserIcon, Dog as DogIcon } from "lucide-react";
 import clientPromise from "@/lib/mongodb";
 import EditProfileDialog from "@/components/EditProfileDialog";
+import EditPuppyApplicationDialog from "@/components/EditPuppyApplicationDialog";
 import AddEditDogDialog from "@/components/AddEditDogDialog";
 import { ObjectId } from "mongodb";
 import DogCard from "@/components/DogCard";
@@ -60,7 +61,7 @@ export default async function ProfilePage() {
     // Serialize the dogs to ensure compatibility with client side components
     interface SerializedDog {
         _id: string;
-        photos: { path: string; [key: string]: any }[];
+        photos: { path: string;[key: string]: any }[];
         name: string;
         breed: string;
         status: string;
@@ -136,12 +137,14 @@ export default async function ProfilePage() {
                             <p><strong>Pets Owned:</strong> {puppyApplication.petsOwned}</p>
                             <p><strong>Has Children:</strong>{puppyApplication.hasChildren === true ? 'Yes' : 'No'}</p>
                             <p><strong>Puppy Preference:</strong>{puppyApplication.puppyPreference}</p>
+                            <p><strong>Gender Preference:</strong>{puppyApplication.genderPreference}</p>
                             <p><strong>Training Planned:</strong>{puppyApplication.trainingPlanned === true ? 'Yes' : 'No'}</p>
                             <p><strong>Desired Traits:</strong>{puppyApplication.desiredTraits}</p>
                             <p><strong>Additional Comments:</strong>{puppyApplication.additionalComments}</p>
                             <p><strong>Approvals:</strong> {puppyApplication.approvals?.length || 0}</p>
                             {/* Add more fields as needed */}
-                            {/* TODO: Edit button for puppy application */}
+                            {/* Edit puppy application */}
+                            <EditPuppyApplicationDialog user={{ name: name || "", email: email, about: breeder ? breeder.about : null, role: role }} />
                         </div>
                     </div>
                 ) : (
@@ -175,7 +178,7 @@ export default async function ProfilePage() {
                     <div className="bg-white rounded-lg shadow p-6 flex flex-col sm:flex gap-6 relative">
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-xl font-bold">Litters</h2>
-                            {/* TODO: Add litter button */}
+                            {/* TODO: Add/Edit litter buttons */}
                             {/* {<AddEditDogDialog mode="add" breederId={breederId} />} */}
                         </div>
 
