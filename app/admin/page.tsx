@@ -8,8 +8,6 @@ import BreederList from "@/components/admin/BreederList";
 export default async function AdminPage() {
     const session = await getServerSession(authOptions);
 
-    console.log('Admin session:', session);
-
     if (!session || session.user?.role !== "admin") {
         redirect('/'); // Redirect to home if not authenticated or not an admin
     }
@@ -21,13 +19,21 @@ export default async function AdminPage() {
     // Fetch breeders from the database
     const breeders = await db.collection("breeders").find().toArray();
 
-    // Serialize the breeders to JSON
+    // Serialize the breeders to JSON and ensure all IBreeder fields are included
     const serializedBreeders = breeders.map(breeder => ({
         ...breeder,
         _id: breeder._id.toString(),
         name: breeder.name,
         email: breeder.email,
         status: breeder.status,
+        breeds: breeder.breeds,
+        address: breeder.address,
+        city: breeder.city,
+        state: breeder.state,
+        zip: breeder.zip,
+        phone: breeder.phone,
+        website: breeder.website,
+        // Add any other required IBreeder fields here
     }));
 
     return (
