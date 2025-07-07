@@ -22,10 +22,15 @@ export default async function DogDetailsPage({ params }: { params: { id: string 
 
     let isFavorited = false;
 
+    const user = await db.collection("users").findOne({ email: session?.user?.email });
+    const userBreederId = user?.breederId?.toString();
+
     // Fetch the dog by _id
     const dog = await db.collection("dogs").findOne<IDog>({
         _id: new ObjectId(id),
     });
+
+    const dogBreederId = dog?.breederId?.toString();
 
     if (!dog) {
         notFound(); // 404 if no dog found
@@ -42,12 +47,17 @@ export default async function DogDetailsPage({ params }: { params: { id: string 
     // Optionally fetch breeder details if needed
     const breeder = await db.collection("breeders").findOne({ _id: new ObjectId(dog.breederId) });
 
+
     return (
         <div className="max-w-4xl mx-auto p-8">
             <div className="flex justify-between mb-4">
                 <div className="flex items-center gap-2">
                     <h1 className="text-3xl font-bold">{dog.name}</h1>
-                    <FavoriteButton dogId={dog._id.toString()} initiallyFavorited={isFavorited} />
+                    {userBreederId !== dogBreederId && (
+                        <FavoriteButton dogId={dog._id.toString()} initiallyFavorited={isFavorited} />
+                    )
+                        }
+                    
                 </div>
             </div>
 
