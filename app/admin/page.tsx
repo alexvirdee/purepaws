@@ -31,7 +31,6 @@ export default async function AdminPage() {
         city: breeder.city,
         state: breeder.state,
         zip: breeder.zip,
-        phone: breeder.phone,
         website: breeder.website,
         // Add any other required IBreeder fields here
     }));

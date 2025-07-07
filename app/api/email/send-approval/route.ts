@@ -8,6 +8,7 @@ export async function POST(req: Request) {
 
     const { to, breederName } = body;
 
+    // TODO: Add CTA To PurePaws Breeder Dashboard once site is live
     const message = {
         to, // recipient email
         from: "woofpurepaws@gmail.com",

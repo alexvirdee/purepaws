@@ -29,10 +29,6 @@ export default function BreederList({ breeders }: BreederListProps) {
                 headers: { "Content-Type": "application/json" }
             });
 
-            if (!res.ok) {
-                throw new Error("Failed to approve breeder");
-            }
-
             if (res.ok) {
                 // Update local state
                 setBreederList((prev: IBreeder[]) =>
@@ -42,6 +38,33 @@ export default function BreederList({ breeders }: BreederListProps) {
                 );
 
                 toast.success("Breeder approved successfully");
+
+                const breeder = breederList.find(b => b._id === id);
+                if (!breeder) {
+                    toast.error("Breeder not found in the list");
+                    return;
+                }
+
+                // Send approval email
+                const emailRes = await fetch(`/api/email/send-approval`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        to: breeder.email,
+                        breederName: breeder.name
+                    })
+                })
+
+                if (emailRes.ok) {
+                    const emailData = await emailRes.json();
+                    console.log("Email sent successfully:", emailData);
+                } else {
+                    const emailErrorData = await emailRes.json();
+                    console.error("Failed to send email:", emailErrorData);
+                    toast.error(`Failed to send approval email: ${emailErrorData.error || "Unknown error"}`);
+                }
             } else {
                 const errorData = await res.json();
                 toast.error(`Error: ${errorData.error || "Unknown error"}`);
