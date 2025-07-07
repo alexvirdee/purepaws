@@ -90,6 +90,7 @@ const PuppyApplicationForm = ({
 
                 // Route to profile so user can view and make updates to their puppy application details
                 router.push('/profile');
+                router.refresh();
             } else {
                 toast.error(data.error || "Something went wrong. Please try again.");
 
@@ -117,7 +118,6 @@ const PuppyApplicationForm = ({
                         name="name"
                         value={session?.user?.name || ""}
                         readOnly
-                        disabled
                         className="w-full border p-2 rounded bg-gray-200"
                     />
                 </div>
@@ -130,7 +130,6 @@ const PuppyApplicationForm = ({
                         type="email"
                         value={session?.user?.email || ""}
                         readOnly
-                        disabled
                         className="w-full border p-2 rounded bg-gray-200"
                     />
                 </div>
