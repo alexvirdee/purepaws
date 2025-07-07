@@ -130,6 +130,7 @@ export default async function ProfilePage() {
                         <div className="p-2">
                             <h2 className="text-xl font-semibold mb-4">Your Puppy Application</h2>
                             <p><strong>Name:</strong> {puppyApplication.name}</p>
+                            <p><strong>Email:</strong> {puppyApplication.email}</p>
                             <p><strong>City:</strong> {puppyApplication.city}</p>
                             <p><strong>State:</strong> {puppyApplication.state}</p>
                             <p><strong>Zip:</strong> {puppyApplication.zip}</p>

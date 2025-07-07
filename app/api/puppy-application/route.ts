@@ -16,8 +16,6 @@ export async function POST(req: NextRequest) {
         const body = await req.json();
 
         const {
-            name,
-            email,
             city,
             state,
             zip,
@@ -31,6 +29,9 @@ export async function POST(req: NextRequest) {
             additionalComments,
         } = body;
 
+        const name = session?.user?.name || body.name || "";
+        const email = session?.user?.email || body.email || "";
+
         // Basic validation
         if (!name || !email || !city || !state || !zip || !age || !petsOwned || !puppyPreference || !genderPreference) {
             return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -42,7 +43,7 @@ export async function POST(req: NextRequest) {
         }
 
         if (!Number.isInteger(Number(petsOwned))) {
-             return NextResponse.json({ error: "Pets owned must be an integer" }, { status: 400 });
+            return NextResponse.json({ error: "Pets owned must be an integer" }, { status: 400 });
         }
 
         // Age validation
@@ -71,7 +72,7 @@ export async function POST(req: NextRequest) {
         }
 
         const result = await db.collection("puppyApplications").insertOne({
-            userId: user._id, 
+            userId: user._id,
             name: name.trim(),
             email: email.trim().toLowerCase(),
             city: city.trim(),
@@ -106,25 +107,25 @@ export async function GET(req: NextRequest) {
     try {
         const session = await getServerSession(authOptions);
 
-          if (!session?.user?.email) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+        if (!session?.user?.email) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
 
-    const client = await clientPromise;
-    const db = client.db(DB_NAME);
+        const client = await clientPromise;
+        const db = client.db(DB_NAME);
 
-    // Lookup user by email to get their _id
-    const user = await db.collection("users").findOne({ email: session.user.email });
+        // Lookup user by email to get their _id
+        const user = await db.collection("users").findOne({ email: session.user.email });
 
-    if (!user) {
-        return NextResponse.json({ error: "User not found." }, { status: 404 });
-    }
+        if (!user) {
+            return NextResponse.json({ error: "User not found." }, { status: 404 });
+        }
 
-    const application = await db.collection("puppyApplications").findOne({
-        userId: user._id
-    })
+        const application = await db.collection("puppyApplications").findOne({
+            userId: user._id
+        })
 
-    return NextResponse.json({ application });
+        return NextResponse.json({ application });
 
     } catch (error) {
         console.error("[GET_PUPPY_APPLICATION_ERROR]", error);
