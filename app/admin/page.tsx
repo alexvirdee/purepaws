@@ -21,18 +21,20 @@ export default async function AdminPage() {
 
     // Serialize the breeders to JSON and ensure all IBreeder fields are included
     const serializedBreeders = breeders.map(breeder => ({
-        ...breeder,
-        _id: breeder._id.toString(),
+        _id: breeder._id.toString(), // stays ObjectId because IBreeder expects ObjectId
         name: breeder.name,
         email: breeder.email,
-        status: breeder.status,
         breeds: breeder.breeds,
         address: breeder.address,
         city: breeder.city,
         state: breeder.state,
         zip: breeder.zip,
-        website: breeder.website,
-        // Add any other required IBreeder fields here
+        latitude: breeder.latitude,
+        longitude: breeder.longitude,
+        website: breeder.website || "",  // fallback if optional
+        about: breeder.about,
+        status: breeder.status,
+        submittedAt: breeder.submittedAt,
     }));
 
     return (
