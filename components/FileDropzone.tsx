@@ -49,7 +49,10 @@ export default function FileDropzone({
                 });
 
                 const data = await res.json();
-                return { path: data.secure_url };
+
+                console.log('Uploaded file:', data);
+
+                return { path: data.secure_url, public_id: data.public_id };
             });
 
             const uploadedImages = await Promise.all(uploadPromises);
@@ -57,8 +60,8 @@ export default function FileDropzone({
             setFormData((prev: any) => ({
                 ...prev,
                 [field]: multiple
-                    ? [...(prev[field] || []), ...uploadedImages.map(img => img.path)]
-                    : uploadedImages[0].path
+                    ? [...(prev[field] || []), ...uploadedImages]
+                    : uploadedImages[0]
             }));
         })();
     }, [setFormData, field, multiple, formData]);
@@ -70,11 +73,28 @@ export default function FileDropzone({
         disabled: isDisabled
     });
 
-    const handleRemove = (index: number) => {
+    const handleRemove = async (index: number) => {
+        console.log('Removing image at index:', index);
+        const removeImage = formData[field][index];
+
+        // Remove locally
         setFormData((prev: any) => ({
             ...prev,
             [field]: prev[field].filter((_: any, i: number) => i !== index),
         }));
+
+        console.log('Removing image:', removeImage);
+
+        // Remove from Cloudinary
+        if (removeImage.public_id) {
+            await fetch('/api/cloudinary/delete', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ public_id: removeImage.public_id }),
+            })
+        }
     };
 
     const currentFiles = formData[field];
@@ -102,7 +122,7 @@ export default function FileDropzone({
                         <div key={index} className="relative w-24 h-24">
                             <img
                                 key={index}
-                                src={file.preview || file}
+                                src={file.preview || file.path}
                                 alt={`Preview ${index}`}
                                 className="w-24 h-24 object-cover rounded"
                             />

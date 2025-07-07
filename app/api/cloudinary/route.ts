@@ -30,7 +30,7 @@ export const config = {
 
 // Configure Cloudinary
 cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
     api_key: process.env.CLOUDINARY_API_KEY,
     api_secret: process.env.CLOUDINARY_API_SECRET,
 });
@@ -43,8 +43,6 @@ export async function POST(req: Request) {
         });
 
         return new Promise((resolve, reject) => {
-
-
             form.parse(req as any, async (err: Error | null, fields: Fields, files: Files) => {
                 if (err) {
                     console.error('Form parse error:', err);
