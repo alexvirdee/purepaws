@@ -23,7 +23,7 @@ interface BreederListProps {
 export default function BreederList({ breeders }: BreederListProps) {
     const [breederList, setBreederList] = useState(breeders);
 
-    const handleApprove = async (id: ObjectId) => {
+    const handleApprove = async (id: string) => {
         try {
             const res = await fetch(`/api/breeders/${id}/approve`, {
                 method: "POST",
@@ -41,6 +41,7 @@ export default function BreederList({ breeders }: BreederListProps) {
                 toast.success("Breeder approved successfully");
 
                 const breeder = breederList.find(b => b._id === id);
+
                 if (!breeder) {
                     toast.error("Breeder not found in the list");
                     return;
@@ -78,7 +79,7 @@ export default function BreederList({ breeders }: BreederListProps) {
 
     // Note: This function handles the removal of breeders from the site which will set their status to "pending" currently
     // It sends a POST request to the API endpoint and updates the local state accordingly.
-    const handleRemove = async (id: ObjectId) => {
+    const handleRemove = async (id: string) => {
         try {
             const res = await fetch(`/api/breeders/${id}/pending`, {
                 method: "POST",

@@ -10,6 +10,15 @@ import DeleteDogDialog from "./DeleteDogDialog";
 import { Badge } from "@/components/ui/badge";
 import { formatPrice } from "@/utils/formatPrice";
 import Image from "next/image";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 
 interface DogCardProps {
     dog: IDog;
@@ -46,13 +55,14 @@ export default function DogCard({ dog, isFavorited, onUnfavorite, loggedInUser }
     const statusKey = dog.status?.charAt(0).toUpperCase() + dog.status?.slice(1).toLowerCase();
 
     return (
-        <li key={dog._id.toString()} className="border p-4 rounded shadow hover:shadow-lg hover:bg-gray-50 transition relative">
+        <Card key={dog._id.toString()} className="transition relative hover:shadow-lg mb-4">
+            <CardContent>
             {/* Favorite a dog */}
             {/* Only show favorite button for either
                 1. Guests on application
                 2. Users logged in who are not the breeders who currently own the dogs
             */}
-            {loggedInUser !== dog.breederId && (
+                {loggedInUser !== dog.breederId && (
                 <div className="absolute top-2 right-2 bg-white rounded-full p-2 shadow hover:bg-gray-100 transition">
                     <FavoriteButton dogId={dog._id.toString()} initiallyFavorited={isFavorited} onUnfavorite={onUnfavorite} />
                 </div>
@@ -94,7 +104,10 @@ export default function DogCard({ dog, isFavorited, onUnfavorite, loggedInUser }
                     <DeleteDogDialog dogId={dog._id} dogName={dog.name} />
                 </div>
             )}
-        </li>
+
+            </CardContent>
+            
+        </Card>
     )
 
 }

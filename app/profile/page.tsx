@@ -105,8 +105,13 @@ export default async function ProfilePage() {
 
     return (
         <main className="max-w-5xl mx-auto p-8 space-y-8">
-            <div className="flex items-center gap-2 text-3xl font-bold mb-4">
-                <UserIcon className="w-8 text-gray-700" /> Profile
+            <div className="flex flex-row justify-between mb-4">
+              <div className="flex items-center gap-2 text-3xl font-bold">
+                    <UserIcon className="w-8 text-gray-700" /> Profile
+                </div> 
+                {userFromDb?.role === "admin" && (
+                    <Link className="text-blue-600" href="/admin">Admin User</Link>
+                )}
             </div>
 
             {/* Profile Card */}
@@ -160,12 +165,12 @@ export default async function ProfilePage() {
 
                             {/* Puppy Application action buttons */}
                             <div className="flex flex-row justify-between absolute top-4 right-4 gap-4">
-                         
-                            {/* Edit puppy application */}
-                            <EditPuppyApplicationDialog puppyApplication={serializedPuppyApplication} />
 
-                            {/* Delete application */}
-                             <DeletePuppyApplicationDialog applicationId={serializedPuppyApplication?._id || ""} />
+                                {/* Edit puppy application */}
+                                <EditPuppyApplicationDialog puppyApplication={serializedPuppyApplication} />
+
+                                {/* Delete application */}
+                                <DeletePuppyApplicationDialog applicationId={serializedPuppyApplication?._id || ""} />
                             </div>
                         </div>
                     </div>
