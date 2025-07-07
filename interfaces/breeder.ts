@@ -1,5 +1,3 @@
-import { ObjectId } from "mongodb";
-
 export interface IBreeder {
   _id: string;            // MongoDB document ID
   name: string;

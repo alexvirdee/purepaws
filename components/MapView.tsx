@@ -8,6 +8,7 @@ import Image from 'next/image';
 import { APP_NAME } from "@/lib/constants";
 import FilterBar from './FilterBar';
 import { useDebounce } from '@/hooks/useDebounce';
+import { Command } from 'lucide-react';
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN!;
 
@@ -20,6 +21,7 @@ export default function MapView({ breeders }: { breeders: any[] }) {
   });
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedBreed, setSelectedBreed] = useState('All');
+  const [isMapInteractive, setIsMapInteractive] = useState(false);
 
   const mapRef = useRef<any>(null);
 
@@ -119,48 +121,64 @@ export default function MapView({ breeders }: { breeders: any[] }) {
         setSearchTerm={handleSearchChange}
         clearFilters={clearFilters}
       />
-      <Map
-        interactive={true}
-        onMove={(evt) => setViewState(evt.viewState)}
-        ref={mapRef}
-        mapboxAccessToken={MAPBOX_TOKEN}
-        initialViewState={viewState}
-        mapStyle="mapbox://styles/mapbox/streets-v11"
-        style={{ width: '100%', height: '100%' }}
-      >
-        {filteredBreeders.map((breeder) => (
-          <Marker
-            key={breeder.id}
-            longitude={breeder.longitude}
-            latitude={breeder.latitude}
-            anchor="bottom"
+      <div className="relative w-full h-[600px]">
+        {!isMapInteractive && (
+          <div
+            className="absolute inset-0 z-10 flex items-center justify-center bg-black/10 cursor-pointer"
+            onClick={() => setIsMapInteractive(true)}
           >
-            <div onClick={() => setPopupInfo(breeder)} style={{ cursor: 'pointer' }}>
-              <Image src="/images/paw-outline.svg" alt={`${APP_NAME} logo`} width={25} height={25} priority={true} />
+            <div className="bg-white/50 px-6 py-3 rounded shadow text-gray-700 text-sm">
+              <div className="flex flex-row gap-4">
+                <Command />
+                <p>Click to enable map scrolling</p>
+              </div>
             </div>
-          </Marker>
-        ))}
-
-        {popupInfo && (
-          <Popup
-            longitude={popupInfo.longitude}
-            latitude={popupInfo.latitude}
-            anchor="top"
-            onClose={() => setPopupInfo(null)}
-            closeOnClick={false}
-          >
-            <div className="p-4 bg-white rounded-lg shadow-lg max-w-xs">
-              <h3 className="text-lg font-bold mb-2">{popupInfo.name}</h3>
-              <p className="text-sm text-gray-600 mb-1">{popupInfo.location}</p>
-              <p className="text-sm text-gray-600 mb-3">Breeds: {popupInfo.breeds.join(', ')}</p>
-              {/* Dynamic link */}
-              <Link href={`/breeders/${popupInfo.id}`}>
-                <span className="text-blue-500 hover:text-blue-700 underline text-sm font-medium">View Details</span>
-              </Link>
-            </div>
-          </Popup>
+          </div>
         )}
-      </Map>
+        <Map
+          scrollZoom={isMapInteractive}
+          interactive={true}
+          onMove={(evt) => setViewState(evt.viewState)}
+          ref={mapRef}
+          mapboxAccessToken={MAPBOX_TOKEN}
+          initialViewState={viewState}
+          mapStyle="mapbox://styles/mapbox/streets-v11"
+          style={{ width: '100%', height: '100%' }}
+        >
+          {filteredBreeders.map((breeder) => (
+            <Marker
+              key={breeder.id}
+              longitude={breeder.longitude}
+              latitude={breeder.latitude}
+              anchor="bottom"
+            >
+              <div onClick={() => setPopupInfo(breeder)} style={{ cursor: 'pointer' }}>
+                <Image src="/images/paw-outline.svg" alt={`${APP_NAME} logo`} width={25} height={25} priority={true} />
+              </div>
+            </Marker>
+          ))}
+
+          {popupInfo && (
+            <Popup
+              longitude={popupInfo.longitude}
+              latitude={popupInfo.latitude}
+              anchor="top"
+              onClose={() => setPopupInfo(null)}
+              closeOnClick={false}
+            >
+              <div className="p-4 bg-white rounded-lg shadow-lg max-w-xs">
+                <h3 className="text-lg font-bold mb-2">{popupInfo.name}</h3>
+                <p className="text-sm text-gray-600 mb-1">{popupInfo.location}</p>
+                <p className="text-sm text-gray-600 mb-3">Breeds: {popupInfo.breeds.join(', ')}</p>
+                {/* Dynamic link */}
+                <Link href={`/breeders/${popupInfo.id}`}>
+                  <span className="text-blue-500 hover:text-blue-700 underline text-sm font-medium">View Details</span>
+                </Link>
+              </div>
+            </Popup>
+          )}
+        </Map>
+      </div>
       {showNoResults && (
         <div
           className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 w-full max-w-md p-6 bg-white border border-gray-300 rounded shadow-lg text-center"
@@ -173,7 +191,7 @@ export default function MapView({ breeders }: { breeders: any[] }) {
               setSelectedBreed('All');
               setPopupInfo(null);
             }}
-            className="absolute top-2 right-2 text-gray-500 hover:text-black cursor-pointer"  
+            className="absolute top-2 right-2 text-gray-500 hover:text-black cursor-pointer"
           >&times;</button>
           <div className="text-center">
             <h2 className="text-xl font-semibold mb-2">No breeders found</h2>
