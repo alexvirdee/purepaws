@@ -2,6 +2,7 @@
 
 import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
+import { toast } from "sonner";
 
 
 type FileDropzoneProps = {
@@ -22,9 +23,22 @@ export default function FileDropzone({
     multiple = true
 }: FileDropzoneProps) {
 
+    const currentCount = (formData[field] || []).length;
+    const isDisabled = currentCount >= 5 || (multiple && formData[field]?.length >= 5);
+
     const onDrop = useCallback((acceptedFiles: File[]) => {
+        const currentCount = (formData[field] || []).length;
+        
+        if (currentCount >= 5) {
+            toast.warning('You can only upload up to 5 files.');
+            return;
+        }
+
+        const remainingSlots = 5 - currentCount;
+        const filesToUpload = acceptedFiles.slice(0, remainingSlots);
+
         (async () => {
-            const uploadPromises = acceptedFiles.map(async (file) => {
+            const uploadPromises = filesToUpload.map(async (file) => {
                 const formDataObj = new FormData();
                 formDataObj.append("file", file);
                 formDataObj.append("upload_preset", process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!);
@@ -47,12 +61,13 @@ export default function FileDropzone({
                     : uploadedImages[0].path
             }));
         })();
-    }, [setFormData, field, multiple]);
+    }, [setFormData, field, multiple, formData]);
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop,
         accept,
-        multiple
+        multiple,
+        disabled: isDisabled
     });
 
     const handleRemove = (index: number) => {
