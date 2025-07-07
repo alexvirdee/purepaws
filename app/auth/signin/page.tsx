@@ -14,8 +14,6 @@ export default function SignIn() {
         const email = form.get('email') as string;
         const password = form.get('password') as string;
 
-        console.log(email, password);
-
         const result = await signIn('credentials', {
             email,
             password,

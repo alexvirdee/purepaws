@@ -133,8 +133,6 @@ const ListYourKennelForm = ({
         } else {
             console.error('Error submitting application');
         }
-
-        console.log(formData);
     };
 
     const router = useRouter();

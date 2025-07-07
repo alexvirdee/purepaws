@@ -13,12 +13,9 @@ export async function PUT(
 
         const dogId = param.id;
 
-        console.log('do I have the dogId', dogId);
-
         // ✅ Validate ID
         if (!ObjectId.isValid(dogId)) {
-            console.log('having an issue with the dogId it seems like..');
-            
+        
             return NextResponse.json(
                 { error: "Invalid dog ID" },
                 { status: 400 }
@@ -42,26 +39,20 @@ export async function PUT(
         const price = Number(rawPrice);
 
         if (!name || name.trim().length === 0) {
-            console.log('issue with the name');
-
+    
             return NextResponse.json({ error: "Name is required" }, { status: 400 });
         }
 
         if (!breed || breed.trim().length === 0) {
-            console.log('issue with the breed');
-
+      
             return NextResponse.json({ error: "Breed is required" }, { status: 400 });
         }
 
         if (dob && isNaN(Date.parse(dob))) {
-            console.log('issue with the dob');
-
             return NextResponse.json({ error: "Invalid date of birth" }, { status: 400 });
         }
 
         if (!gender || gender.trim().length === 0) {
-            console.log('issue with the gender edit');
-
             return NextResponse.json({ error: "Gender is required" }, { status: 400 });
         }
 
@@ -73,16 +64,11 @@ export async function PUT(
         // }
 
         if (price && (typeof price !== "number" || price < 0)) {
-            console.log('issue with the price');
-
-            console.log('price', price);
-            console.log('price type', typeof price);
 
             return NextResponse.json({ error: "Price must be a positive number" }, { status: 400 });
         }
 
         if (status && !["available", "pending", "sold"].includes(status)) {
-            console.log('issue with the status');
 
             return NextResponse.json({ error: "Invalid status value" }, { status: 400 });
         }

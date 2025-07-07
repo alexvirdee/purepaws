@@ -33,8 +33,6 @@ const Breeder = async ({ params }: BreederParams) => {
         email: session?.user?.email
     })
 
-    console.log('userFromDb', userFromDb?._id)
-
     let favoriteDogs: IDog[] = [];
     let loggedInUserBreederId: string = "";
 

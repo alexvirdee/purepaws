@@ -90,8 +90,6 @@ export default function AddEditDogDialog({
             ? editEndpoint
             : addEndpoint
 
-        console.log('formData', formData)
-
         const res = await fetch(endpoint, {
             method: mode === 'edit' ? 'PUT' : 'POST',
             headers: { 'Content-Type': 'application/json' },

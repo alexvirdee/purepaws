@@ -14,8 +14,6 @@ export async function POST(req: Request) {
 
     const { dogId } = await req.json();
 
-    console.log('dogId', dogId)
-
     if (!dogId) {
         return NextResponse.json({ error: "Missing dogId" }, { status: 400 });
     }

@@ -45,9 +45,6 @@ const STATUS_STYLES: Record<string, StatusStyle> = {
 export default function DogCard({ dog, isFavorited, onUnfavorite, loggedInUser }: DogCardProps) {
     const statusKey = dog.status?.charAt(0).toUpperCase() + dog.status?.slice(1).toLowerCase();
 
-    console.log('dog', dog);
-    console.log('dog photos', dog.photos);
-
     return (
         <li key={dog._id.toString()} className="border p-4 rounded shadow hover:shadow-lg hover:bg-gray-50 transition relative">
             {/* Favorite a dog */}
