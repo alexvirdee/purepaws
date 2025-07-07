@@ -49,51 +49,67 @@ export default function FileDropzone({
         })();
     }, [setFormData, field, multiple]);
 
-const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept,
-    multiple
-});
+    const { getRootProps, getInputProps, isDragActive } = useDropzone({
+        onDrop,
+        accept,
+        multiple
+    });
 
-const currentFiles = formData[field];
+    const handleRemove = (index: number) => {
+        setFormData((prev: any) => ({
+            ...prev,
+            [field]: prev[field].filter((_: any, i: number) => i !== index),
+        }));
+    };
 
-return (
-    <div>
-        <label className="block text-xs font-medium mb-1 text-gray-500">{label}</label>
-        <div
-            {...getRootProps()}
-            className={`border border-dashed rounded p-4 text-center cursor-pointer ${isDragActive ? 'bg-blue-50 border-blue-400' : ''
-                }`}
-        >
-            <input {...getInputProps()} />
-            {isDragActive ? (
-                <p>Drop the files here...</p>
-            ) : (
-                <p>Drag & drop or click to select files</p>
+    const currentFiles = formData[field];
+
+    return (
+        <div>
+            <label className="block text-xs font-medium mb-1 text-gray-500">{label}</label>
+            <div
+                {...getRootProps()}
+                className={`border border-dashed rounded p-4 text-center cursor-pointer ${isDragActive ? 'bg-blue-50 border-blue-400' : ''
+                    }`}
+            >
+                <input {...getInputProps()} />
+                {isDragActive ? (
+                    <p>Drop the files here...</p>
+                ) : (
+                    <p>Drag & drop or click to select files</p>
+                )}
+            </div>
+
+            {/* Simple preview */}
+            {multiple && Array.isArray(currentFiles) && currentFiles.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                    {currentFiles.map((file: any, index: number) => (
+                        <div key={index} className="relative w-24 h-24">
+                            <img
+                                key={index}
+                                src={file.preview || file}
+                                alt={`Preview ${index}`}
+                                className="w-24 h-24 object-cover rounded"
+                            />
+                            <button
+                                type="button"
+                                className="absolute top-0 right-0 bg-gray-400 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                                onClick={() => handleRemove(index)}
+                            >
+                                X
+                            </button>
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            {!multiple && currentFiles && (
+                <img
+                    src={currentFiles.preview || currentFiles}
+                    alt="Preview"
+                    className="w-32 h-32 object-cover rounded mt-2"
+                />
             )}
         </div>
-
-        {/* Simple preview */}
-        {multiple && Array.isArray(currentFiles) && currentFiles.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-2">
-                {currentFiles.map((file: any, index: number) => (
-                    <img
-                        key={index}
-                        src={file.preview || file}
-                        alt={`Preview ${index}`}
-                        className="w-24 h-24 object-cover rounded"
-                    />
-                ))}
-            </div>
-        )}
-
-        {!multiple && currentFiles && (
-            <img
-                src={currentFiles.preview || currentFiles}
-                alt="Preview"
-                className="w-32 h-32 object-cover rounded mt-2"
-            />
-        )}
-    </div>
-)
+    )
 }
