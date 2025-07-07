@@ -53,3 +53,41 @@ export async function PUT(
         );
     }
 }
+
+export async function DELETE(
+    req: NextRequest,
+    context: { params: { id: string } }
+) {
+   try {
+      let param;
+        param = await context.params;
+
+        const applicationId = param.id;
+
+    if (!ObjectId.isValid(applicationId)) {
+      return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+    }
+
+    const client = await clientPromise;
+    const db = client.db(DB_NAME);
+
+    const result = await db.collection("puppyApplications").deleteOne({
+      _id: new ObjectId(applicationId),
+    });
+
+    if (result.deletedCount === 0) {
+      return NextResponse.json(
+        { error: "Application not found." },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(
+      { message: "Application deleted successfully." },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Error deleting application:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
+}

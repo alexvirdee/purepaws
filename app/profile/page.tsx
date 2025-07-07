@@ -13,6 +13,7 @@ import { IDog } from "@/interfaces/dog";
 import FavoriteDogsSection from "@/components/FavoriteDogsSection";
 import Link from "next/link";
 import { DB_NAME } from "@/lib/constants";
+import DeletePuppyApplicationDialog from "@/components/DeletePuppyApplicationDialog";
 
 interface SerializedDog {
     _id: string;
@@ -156,9 +157,16 @@ export default async function ProfilePage() {
                             <p><strong>Desired Traits:</strong>{puppyApplication.desiredTraits}</p>
                             <p><strong>Additional Comments:</strong>{puppyApplication.additionalComments}</p>
                             <p><strong>Approvals:</strong> {puppyApplication.approvals?.length || 0}</p>
-                            {/* Add more fields as needed */}
+
+                            {/* Puppy Application action buttons */}
+                            <div className="flex flex-row justify-between absolute top-4 right-4 gap-4">
+                         
                             {/* Edit puppy application */}
                             <EditPuppyApplicationDialog puppyApplication={serializedPuppyApplication} />
+
+                            {/* Delete application */}
+                             <DeletePuppyApplicationDialog applicationId={serializedPuppyApplication?._id || ""} />
+                            </div>
                         </div>
                     </div>
                 ) : (

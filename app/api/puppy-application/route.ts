@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/authOptions";
 import { DB_NAME } from "@/lib/constants";
 
+
 export async function POST(req: NextRequest) {
     try {
         const session = await getServerSession(authOptions);
@@ -132,3 +133,4 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ error: "Something went wrong." }, { status: 500 });
     }
 }
+
