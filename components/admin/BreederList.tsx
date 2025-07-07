@@ -14,6 +14,7 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 interface BreederListProps {
     breeders: IBreeder[];
@@ -115,6 +116,7 @@ export default function BreederList({ breeders }: BreederListProps) {
                         <TableRow>
                             <TableHead>Name</TableHead>
                             <TableHead>Email</TableHead>
+                            <TableHead>Breeder ID</TableHead>
                             <TableHead>Status</TableHead>
                             <TableHead>Actions</TableHead>
                         </TableRow>
@@ -124,6 +126,9 @@ export default function BreederList({ breeders }: BreederListProps) {
                             <TableRow key={breeder._id.toString()}>
                                 <TableCell>{breeder.name}</TableCell>
                                 <TableCell>{breeder.email}</TableCell>
+                                <TableCell>
+                                    <Link className="text-blue-500 hover:text-blue-600" href={`/breeders/${breeder._id.toString()}`}>{breeder._id.toString()}</Link>
+                                </TableCell>
                                 <TableCell className="capitalize">{breeder.status}</TableCell>
                                 <TableCell>
                                     {breeder.status === "pending" && (

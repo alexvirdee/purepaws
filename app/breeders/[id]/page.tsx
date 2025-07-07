@@ -6,6 +6,7 @@ import { getUserFavorites } from "@/lib/db/getUserFavorites";
 import DogCardList from "@/components/DogCardList";
 import { IDog } from "@/interfaces/dog";
 import { DB_NAME } from "@/lib/constants";
+import { notFound } from "next/navigation";
 
 interface BreederParams {
     params: {
@@ -28,6 +29,22 @@ const Breeder = async ({ params }: BreederParams) => {
     const breeder = await db.collection("breeders").findOne({
         _id: new ObjectId(breederId)
     });
+
+    // If breeder not found, return 404
+    if (!breeder) {
+        return notFound();
+    }
+
+    // If breeder has not been approved yet only admin users can view the individual breeder page to vet them
+    if (breeder.status !== "approved") {
+        // If they are NOT approved, only admins can view
+        if (!session || session.user?.role !== "admin") {
+            return notFound();
+        }
+    }
+
+    // Otherwise breeder has been approved and can be viewed by anyone (also will be shown on the homepage map)
+
 
     const userFromDb = await db.collection("users").findOne({
         email: session?.user?.email
