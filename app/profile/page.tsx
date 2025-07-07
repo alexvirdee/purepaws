@@ -14,6 +14,20 @@ import FavoriteDogsSection from "@/components/FavoriteDogsSection";
 import Link from "next/link";
 import { DB_NAME } from "@/lib/constants";
 
+interface SerializedDog {
+    _id: string;
+    photos: { path: string;[key: string]: any }[];
+    name: string;
+    breed: string;
+    status: string;
+    price: number;
+    location: string;
+    description: string;
+    createdAt: string | null;
+    updatedAt: string | null;
+    [key: string]: any;
+}
+
 
 export default async function ProfilePage() {
     const session = await getServerSession(authOptions);
@@ -58,21 +72,20 @@ export default async function ProfilePage() {
         userId: userFromDb?._id
     })
 
-    // Serialize the dogs to ensure compatibility with client side components
-    interface SerializedDog {
-        _id: string;
-        photos: { path: string;[key: string]: any }[];
-        name: string;
-        breed: string;
-        status: string;
-        price: number;
-        location: string;
-        description: string;
-        createdAt: string | null;
-        updatedAt: string | null;
-        [key: string]: any;
+    // Serialize the puppy application to ensure compatibility with client side components
+    let serializedPuppyApplication = null;
+    if (puppyApplication) {
+        serializedPuppyApplication = {
+            ...puppyApplication,
+            _id: puppyApplication._id?.toString() || null,
+            userId: puppyApplication.userId?.toString() || null,
+            createdAt: puppyApplication.createdAt ? puppyApplication.createdAt.toString() : null,
+            updatedAt: puppyApplication.updatedAt ? puppyApplication.updatedAt.toString() : null,
+        };
     }
 
+
+    // Serialize the dogs to ensure compatibility with client side components
     const serializeDogs: SerializedDog[] = JSON.parse(JSON.stringify(dogs)).map((dog: IDog): SerializedDog => ({
         ...dog,
         _id: dog._id.toString(), // convert ObjectId to a string
@@ -145,7 +158,7 @@ export default async function ProfilePage() {
                             <p><strong>Approvals:</strong> {puppyApplication.approvals?.length || 0}</p>
                             {/* Add more fields as needed */}
                             {/* Edit puppy application */}
-                            <EditPuppyApplicationDialog user={{ name: name || "", email: email, about: breeder ? breeder.about : null, role: role }} />
+                            <EditPuppyApplicationDialog puppyApplication={serializedPuppyApplication} />
                         </div>
                     </div>
                 ) : (

@@ -26,31 +26,57 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { US_STATES } from "@/lib/constants/usStates";
+import { IPuppyApplication } from "@/interfaces/puppyApplication";
 
-export default function EditPuppyApplicationDialog({ user }: { user: { name: string; email: string; about: string; role: string } }) {
-    const [name, setName] = useState(user.name);
-    const [about, setAbout] = useState(user.about);
+export default function EditPuppyApplicationDialog({ puppyApplication }: {
+    puppyApplication: any;
+}) {
+    const [formData, setFormData] = useState<Omit<IPuppyApplication, '_id'>>({
+        name: puppyApplication.name || '',
+        email: puppyApplication.email || '',
+        city: puppyApplication.city || '',
+        state: puppyApplication.state || '',
+        zip: puppyApplication.zip || '',
+        age: puppyApplication.age || '',
+        petsOwned: puppyApplication.petsOwned || '',
+        hasChildren: puppyApplication.hasChildren || false,
+        puppyPreference: puppyApplication.puppyPreference || '',
+        genderPreference: puppyApplication.genderPreference || '',
+        trainingPlanned: puppyApplication.trainingPlanned || false,
+        desiredTraits: puppyApplication.desiredTraits || '',
+        additionalComments: puppyApplication.additionalComments || ''
+    })
     const [open, setOpen] = useState(false);
 
     const router = useRouter();
 
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value, type } = e.target;
+        const checked = (e.target as HTMLInputElement).checked;
+
+        setFormData((prev) => ({
+            ...prev,
+            [name]: type === 'checkbox' ? checked : value
+        }));
+    };
+
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // const response = await fetch('/api/profile/update', {
-        //     method: "POST",
-        //     headers: { "Content-Type": "application/json" },
-        //     body: JSON.stringify({ name, about })
-        // });
+        const response = await fetch(`/api/puppy-application/${puppyApplication._id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData)
+        });
 
-        // if (response.ok) {
-        //     toast.success('Profile updated successfully');
-        //     setOpen(false);
+        if (response.ok) {
+            toast.success('Puppy application updated successfully');
+            setOpen(false);
 
-        //     router.refresh();
-        // } else {
-        //     toast.error('Error updating profile please try again.')
-        // }
+            router.refresh();
+        } else {
+            toast.error('Error updating puppy application please try again.')
+        }
     }
 
     return (
@@ -73,9 +99,8 @@ export default function EditPuppyApplicationDialog({ user }: { user: { name: str
                         <Label className="block mb-1 font-medium">Name *</Label>
                         <Input
                             name="name"
-                            // value={formData.name}
-                            // onChange={handleChange}
-                            required
+                            value={formData.name}
+                            readOnly
                             className="w-full border p-2 rounded"
                         />
                     </div>
@@ -86,9 +111,8 @@ export default function EditPuppyApplicationDialog({ user }: { user: { name: str
                         <Input
                             name="email"
                             type="email"
-                            // value={formData.email}
-                            // onChange={handleChange}
-                            required
+                            value={formData.email}
+                            readOnly
                             className="w-full border p-2 rounded"
                         />
                     </div>
@@ -98,8 +122,8 @@ export default function EditPuppyApplicationDialog({ user }: { user: { name: str
                         <Label className="block mb-1 font-medium">City *</Label>
                         <Input
                             name="city"
-                            // value={formData.city}
-                            // onChange={handleChange}
+                            value={formData.city}
+                            onChange={handleChange}
                             required
                             className="w-full border p-2 rounded"
                         />
@@ -108,8 +132,10 @@ export default function EditPuppyApplicationDialog({ user }: { user: { name: str
                     {/* State */}
                     <div>
                         <Label className="block mb-1 font-medium">State *</Label>
-                        {/* TODO: Add onOnValueChange to the Select element below */}
-                        <Select >
+                        <Select
+                            value={formData.state}
+                            onValueChange={(value) => setFormData((prev) => ({ ...prev, state: value }))}
+                        >
                             <SelectTrigger className="w-full">
                                 <SelectValue placeholder="Select a state" />
                             </SelectTrigger>
@@ -129,8 +155,8 @@ export default function EditPuppyApplicationDialog({ user }: { user: { name: str
                         <Input
                             name="zip"
                             type="number"
-                            // value={formData.zip}
-                            // onChange={handleChange}
+                            value={formData.zip}
+                            onChange={handleChange}
                             required
                             className="w-full border p-2 rounded"
                         />
@@ -142,8 +168,8 @@ export default function EditPuppyApplicationDialog({ user }: { user: { name: str
                         <Input
                             name="age"
                             type="number"
-                            // value={formData.age}
-                            // onChange={handleChange}
+                            value={formData.age}
+                            onChange={handleChange}
                             required
                             className="w-full border p-2 rounded"
                         />
@@ -155,8 +181,8 @@ export default function EditPuppyApplicationDialog({ user }: { user: { name: str
                         <Input
                             name="petsOwned"
                             type="number"
-                            // value={formData.petsOwned}
-                            // onChange={handleChange}
+                            value={formData.petsOwned}
+                            onChange={handleChange}
                             required
                             className="w-full border p-2 rounded"
                         />
@@ -167,8 +193,10 @@ export default function EditPuppyApplicationDialog({ user }: { user: { name: str
                         <Label className="block mb-1 font-medium">Do you have children?</Label>
                         <Checkbox
                             name="hasChildren"
-                            // checked={formData.hasChildren}
-                            // onChange={handleChange}
+                            checked={formData.hasChildren}
+                            onCheckedChange={(checked) =>
+                                setFormData((prev) => ({ ...prev, hasChildren: checked === true }))
+                            }
                             className="mr-2"
                         /> Yes
                     </div>
@@ -179,10 +207,10 @@ export default function EditPuppyApplicationDialog({ user }: { user: { name: str
                         <div className="flex items-center space-x-4">
                             <RadioGroup
                                 name="puppyPreference"
-                                // value={formData.puppyPreference}
-                                // onValueChange={(value) =>
-                                //     setFormData((prev) => ({ ...prev, puppyPreference: value }))
-                                // }
+                                value={formData.puppyPreference}
+                                onValueChange={(value) =>
+                                    setFormData((prev) => ({ ...prev, puppyPreference: value as "8-week" | "16-week" }))
+                                }
                                 className="flex flex-row gap-2"
                             >
                                 <div className="flex items-center space-x-2">
@@ -206,8 +234,8 @@ export default function EditPuppyApplicationDialog({ user }: { user: { name: str
                                     type="radio"
                                     name="genderPreference"
                                     value="male"
-                                // checked={formData.genderPreference === "male"}
-                                // onChange={handleChange}
+                                    checked={formData.genderPreference === "male"}
+                                    onChange={handleChange}
                                 />
                                 <span>Male</span>
                             </Label>
@@ -216,8 +244,8 @@ export default function EditPuppyApplicationDialog({ user }: { user: { name: str
                                     type="radio"
                                     name="genderPreference"
                                     value="female"
-                                // checked={formData.genderPreference === "female"}
-                                // onChange={handleChange}
+                                    checked={formData.genderPreference === "female"}
+                                    onChange={handleChange}
                                 />
                                 <span>Female</span>
                             </Label>
@@ -231,8 +259,10 @@ export default function EditPuppyApplicationDialog({ user }: { user: { name: str
                         </Label>
                         <Checkbox
                             name="trainingPlanned"
-                            // checked={formData.trainingPlanned}
-                            // onChange={handleChange}
+                            checked={formData.trainingPlanned}
+                            onCheckedChange={(checked) =>
+                                setFormData((prev) => ({ ...prev, trainingPlanned: checked === true }))
+                            }
                             className="mr-2"
                         /> Yes
                     </div>
@@ -244,8 +274,8 @@ export default function EditPuppyApplicationDialog({ user }: { user: { name: str
                         </Label>
                         <Textarea
                             name="desiredTraits"
-                            // value={formData.desiredTraits}
-                            // onChange={handleChange}
+                            value={formData.desiredTraits}
+                            onChange={handleChange}
                             className="w-full border p-2 rounded"
                             rows={4}
                         />
@@ -256,8 +286,8 @@ export default function EditPuppyApplicationDialog({ user }: { user: { name: str
                         <Label className="block mb-1 font-medium">Additional comments</Label>
                         <Textarea
                             name="additionalComments"
-                            // value={formData.additionalComments}
-                            // onChange={handleChange}
+                            value={formData.additionalComments}
+                            onChange={handleChange}
                             className="w-full border p-2 rounded"
                             rows={4}
                         />
