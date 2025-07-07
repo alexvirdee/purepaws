@@ -9,6 +9,7 @@ import AddEditDogDialog from "./AddEditDogDialog";
 import DeleteDogDialog from "./DeleteDogDialog";
 import { Badge } from "@/components/ui/badge";
 import { formatPrice } from "@/utils/formatPrice";
+import Image from "next/image";
 
 interface DogCardProps {
     dog: IDog;
@@ -62,10 +63,12 @@ export default function DogCard({ dog, isFavorited, onUnfavorite, loggedInUser }
 
             <Link href={`/dogs/${dog._id}`} >
                 {dog.photos && dog.photos.length > 0 && isValidImage(dog.photos[0]) ? (
-                    <img
-                        src={dog.photos[0].path}
+                    <Image
+                        src={typeof dog.photos[0] === 'string' ? dog.photos[0] : dog.photos[0]?.path}
                         alt={dog.name}
                         className="w-full h-48 object-cover mb-2 rounded"
+                        width="400"
+                        height="200"
                     />
                 ) : (
                     <div className="w-full h-48 flex items-center justify-center bg-gray-200 rounded mb-2">

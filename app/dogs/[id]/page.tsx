@@ -52,9 +52,9 @@ export default async function DogDetailsPage({ params }: { params: { id: string 
             </div>
 
 
-            {dog.photos && dog.photos.length > 0 && isValidImage(dog.photos[0].path) ? (
+            {dog.photos && dog.photos.length > 0 && isValidImage(dog.photos[0]) ? (
                 <Image
-                    src={dog.photos[0].path}
+                    src={typeof dog.photos[0] === 'string' ? dog.photos[0] : dog.photos[0]?.path}
                     alt={dog.name}
                     className="rounded mb-4"
                     width={600}
