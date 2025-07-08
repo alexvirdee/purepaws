@@ -57,13 +57,13 @@ export default function FileDropzone({
                 return { path: data.secure_url, public_id: data.public_id };
             });
 
-            const uploadedImages = await Promise.all(uploadPromises);
+            const uploadedFiles = await Promise.all(uploadPromises);
 
             setFormData((prev: any) => ({
                 ...prev,
                 [field]: multiple
-                    ? [...(prev[field] || []), ...uploadedImages]
-                    : uploadedImages[0]
+                    ? [...(prev[field] || []), ...uploadedFiles]
+                    : uploadedFiles[0]
             }));
         })();
     }, [setFormData, field, multiple, formData]);
@@ -76,8 +76,8 @@ export default function FileDropzone({
     });
 
     const handleRemove = async (index: number) => {
-        console.log('Removing image at index:', index);
-        const removeImage = formData[field][index];
+        console.log('Removing file at index:', index);
+        const removeFile = formData[field][index];
 
         // Remove locally
         setFormData((prev: any) => ({
@@ -85,16 +85,16 @@ export default function FileDropzone({
             [field]: prev[field].filter((_: any, i: number) => i !== index),
         }));
 
-        console.log('Removing image:', removeImage);
+        console.log('Removing file:', removeFile);
 
         // Remove from Cloudinary
-        if (removeImage.public_id) {
+        if (removeFile.public_id) {
             await fetch('/api/cloudinary/delete', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ public_id: removeImage.public_id }),
+                body: JSON.stringify({ public_id: removeFile.public_id }),
             })
         }
     };
