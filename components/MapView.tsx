@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useMemo } from 'react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { Map, Marker, Popup } from 'react-map-gl/mapbox';
 import Link from 'next/link';
@@ -27,20 +27,44 @@ export default function MapView({ breeders }: { breeders: any[] }) {
 
   // Filter breeders by selected breed
   // TODO: Implement true search functionality once necessary
-  const filteredBreeders = breeders.filter((breeder) => {
-    const matchesBreed =
-      selectedBreed === 'All' || breeder.breeds.includes(selectedBreed);
 
-    const matchesSearch =
-      searchTerm.trim() === '' ||
-      breeder.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      breeder.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      breeder.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      breeder.state.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      breeder.zip.toLowerCase().includes(searchTerm.toLowerCase());
+  const normalizedSelectedBreed = selectedBreed.toLowerCase().trim();
+  const normalizedSearchTerm = searchTerm.toLowerCase().trim();
 
-    return matchesBreed && matchesSearch;
-  });
+  const filteredBreeders = useMemo(() => {
+    const results = breeders.filter((breeder) => {
+      const breederBreeds = breeder.breeds.map((b: string) => b.toLowerCase().trim());
+
+      // Handle possible legacy vs. slug formats:
+      const normalizedBreedOptions = [
+        normalizedSelectedBreed.replace(/-/g, ' '),,               // e.g., 'english springer spaniel'
+        normalizedSelectedBreed.replace(/\s+/g, '-'), // e.g., 'english-springer-spaniel'
+      ];
+
+      const matchesBreed =
+        normalizedSelectedBreed === 'all' ||
+        breederBreeds.some((b: string) =>
+          normalizedBreedOptions.includes(b)
+        );
+
+      const matchesSearch =
+        normalizedSearchTerm === '' ||
+        breeder.name.toLowerCase().includes(normalizedSearchTerm) ||
+        breeder.address.toLowerCase().includes(normalizedSearchTerm) ||
+        breeder.city.toLowerCase().includes(normalizedSearchTerm) ||
+        breeder.state.toLowerCase().includes(normalizedSearchTerm) ||
+        breeder.zip.toLowerCase().includes(normalizedSearchTerm) ||
+        breederBreeds.some((b: string | string[]) => b.includes(normalizedSearchTerm));
+
+      console.log('Selected breed:', normalizedSelectedBreed);
+      console.log('Possible matches:', normalizedBreedOptions);
+      console.log('Breeder breeds:', breederBreeds);
+
+      return matchesBreed && matchesSearch;
+    });
+
+    return results;
+  }, [breeders, normalizedSelectedBreed, normalizedSearchTerm])
 
   const hasFilter = selectedBreed !== 'All' || searchTerm.trim() !== '';
   const showNoResults = hasFilter && filteredBreeders.length === 0;
@@ -99,29 +123,29 @@ export default function MapView({ breeders }: { breeders: any[] }) {
   }
 
   return (
-    <div
-      className="relative w-full h-[600px]"
-      onClick={(e) => {
-        if (showNoResults) {
-          // Prevent clicks inside of the overlay closing it
-          const overlay = document.getElementById('no-results-overlay');
-          if (overlay && overlay.contains(e.target as Node)) return;
+    <>
+      <div
+        className="relative w-full h-[600px]"
+        onClick={(e) => {
+          if (showNoResults) {
+            // Prevent clicks inside of the overlay closing it
+            const overlay = document.getElementById('no-results-overlay');
+            if (overlay && overlay.contains(e.target as Node)) return;
 
-          // Clear your filters to reset map
-          setSearchTerm('');
-          setSelectedBreed('All');
-          setPopupInfo(null);
-        }
-      }}
-    >
-      <FilterBar
-        selectedBreed={selectedBreed}
-        setSelectedBreed={handleBreedChange}
-        searchTerm={searchTerm}
-        setSearchTerm={handleSearchChange}
-        clearFilters={clearFilters}
-      />
-      <div className="relative w-full h-[600px]">
+            // Clear your filters to reset map
+            setSearchTerm('');
+            setSelectedBreed('All');
+            setPopupInfo(null);
+          }
+        }}
+      >
+        <FilterBar
+          selectedBreed={selectedBreed}
+          setSelectedBreed={handleBreedChange}
+          searchTerm={searchTerm}
+          setSearchTerm={handleSearchChange}
+          clearFilters={clearFilters}
+        />
         {!isMapInteractive && (
           <div
             className="absolute inset-0 z-10 flex items-center justify-center bg-black/10 cursor-pointer"
@@ -178,27 +202,28 @@ export default function MapView({ breeders }: { breeders: any[] }) {
             </Popup>
           )}
         </Map>
-      </div>
-      {showNoResults && (
-        <div
-          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 w-full max-w-md p-6 bg-white border border-gray-300 rounded shadow-lg text-center"
-          id="no-results-overlay"
-        >
-          <button
-            onClick={() => {
-              // Optionally clear filters when manually closing
-              setSearchTerm('');
-              setSelectedBreed('All');
-              setPopupInfo(null);
-            }}
-            className="absolute top-2 right-2 text-gray-500 hover:text-black cursor-pointer"
-          >&times;</button>
-          <div className="text-center">
-            <h2 className="text-xl font-semibold mb-2">No breeders found</h2>
-            <p className="text-gray-600">Try adjusting your search or filters.</p>
+
+        {showNoResults && (
+          <div
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 w-full max-w-md p-6 bg-white border border-gray-300 rounded shadow-lg text-center"
+            id="no-results-overlay"
+          >
+            <button
+              onClick={() => {
+                // Optionally clear filters when manually closing
+                setSearchTerm('');
+                setSelectedBreed('All');
+                setPopupInfo(null);
+              }}
+              className="absolute top-2 right-2 text-gray-500 hover:text-black cursor-pointer"
+            >&times;</button>
+            <div className="text-center">
+              <h2 className="text-xl font-semibold mb-2">No breeders found</h2>
+              <p className="text-gray-600">Try adjusting your search or filters.</p>
+            </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </>
   );
 }

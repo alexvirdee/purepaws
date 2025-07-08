@@ -188,7 +188,7 @@ export default async function ProfilePage() {
             ) : null}
 
 
-            {/* Breeder Dashboard */}
+            {/* Breeder Profile */}
             {/* TODO: Breeder CRUD functionality
                 1. Add dogs - Done
                 2. Edit dogs - Mostly done
@@ -199,7 +199,10 @@ export default async function ProfilePage() {
                         - Expected dogs/breeds 
                         - Contact interest form (on breeder detail page)
             */}
-            {breeder && breeder.status === "approved" && (
+            {role === "breeder" && 
+            breederId && 
+            breeder && 
+            breeder.status === "approved" && (
                 <>
                     {/* Breeder litters */}
                     <div className="bg-white rounded-lg shadow p-6 flex flex-col sm:flex gap-6 relative">

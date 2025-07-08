@@ -5,31 +5,61 @@ import { DB_NAME } from "@/lib/constants";
 
 export async function POST(request: Request) {
     try {
+
+        console.log('Trying to add a new dog...');
+
         const body = await request.json();
         const { name, litter, breed, dob, gender, status, price, photos, breederId } = body;
 
-        // Note - litter name is not required 
-        if (!name || !breed || !dob || !gender || !status || !price || !breederId) {
-            return NextResponse.json({ error: "Missing required fields." }, { status: 400 });
+        console.log("[API] Add Dog Request Body:", JSON.stringify(body, null, 2));
+
+        // Collect missing fields in an array for a clear response
+        const missingFields = [];
+        if (!name) missingFields.push("name");
+        if (!breed) missingFields.push("breed");
+        if (!dob) missingFields.push("dob");
+        if (!gender) missingFields.push("gender");
+        if (!status) missingFields.push("status");
+        if (!price) missingFields.push("price");
+        if (!breederId) missingFields.push("breederId");
+
+        if (missingFields.length > 0) {
+            console.warn("[API] Add Dog: Missing required fields:", missingFields);
+            return NextResponse.json(
+                { error: `Missing required fields: ${missingFields.join(", ")}` },
+                { status: 400 }
+            );
         }
+
+        if (photos && !Array.isArray(photos)) {
+            return NextResponse.json(
+                { error: "Photos must be an array." },
+                { status: 400 }
+            );
+        }
+
 
         const client = await clientPromise;
         const db = client.db(DB_NAME);
         const dogs = db.collection("dogs");
 
-        // Insert a new dog
-        const result = await dogs.insertOne({
+        const newDog = {
             name: name.trim(),
-            litter: litter.trim(),
+            litter: litter?.trim() || "",
             breed: breed.trim(),
-            dob: dob || null,
-            gender: gender || "",
+            dob,
+            gender,
             status: status.trim(),
             price: Number(price),
             photos: photos || [],
             breederId: new ObjectId(breederId),
             createdAt: new Date(),
-        });
+        };
+
+        console.log("[API] Add Dog:", JSON.stringify(newDog, null, 2));
+
+        // Insert a new dog
+        const result = await dogs.insertOne(newDog);
 
         return NextResponse.json({
             success: true,

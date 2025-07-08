@@ -38,10 +38,10 @@ export default function BreederList({ breeders }: BreederListProps) {
 
 
     const handleStatusChange = async (id: string, status: "approved" | "pending" | "rejected") => {
-        const res = await fetch(`/api/breeders/${id}/status`, {
+        const res = await fetch(`/api/admin/breeders/update-status`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ status }),
+            body: JSON.stringify({ breederId: id, status }),
         });
 
         if (res.ok) {

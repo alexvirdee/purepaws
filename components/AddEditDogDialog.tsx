@@ -79,6 +79,7 @@ export default function AddEditDogDialog({
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
     }
+    
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -90,23 +91,36 @@ export default function AddEditDogDialog({
             ? editEndpoint
             : addEndpoint
 
-        const res = await fetch(endpoint, {
-            method: mode === 'edit' ? 'PUT' : 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
+        try {
+            console.log(JSON.stringify({
                 ...formData,
                 breederId: mode === 'add' ? breederId : undefined
-            })
-        });
+            }, null, 2));
 
-        if (res.ok) {
-            toast.success(`Dog ${mode === 'edit' ? 'edited' : 'added'} successfully`);
-            setOpen(false);
+            const res = await fetch(endpoint, {
+                method: mode === 'edit' ? 'PUT' : 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    ...formData,
+                    breederId: mode === 'add' ? breederId : undefined
+                })
+            });
 
-            router.refresh();
-            onSubmitSuccess?.();
-        } else {
-            toast.error(`Failed to ${mode === 'edit' ? 'update' : 'add'} dog. Please try again`);
+            if (res.ok) {
+                toast.success(`Dog ${mode === 'edit' ? 'edited' : 'added'} successfully`);
+                setOpen(false);
+
+                router.refresh();
+                onSubmitSuccess?.();
+            } else {
+                toast.error(`Failed to ${mode === 'edit' ? 'update' : 'add'} dog. Please try again`);
+            }
+        } catch (error) {
+            console.error('Error submitting form:', error);
+            toast.error(
+                `Something went wrong: ${error instanceof Error ? error.message : String(error)
+                }`
+            );
         }
     };
 
