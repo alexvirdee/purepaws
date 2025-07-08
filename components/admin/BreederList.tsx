@@ -53,6 +53,36 @@ export default function BreederList({ breeders }: BreederListProps) {
                     b._id === id ? { ...b, status: status } : b
                 )
             );
+
+            // Send approval email if status is approved
+            if (status === "approved") {
+                const breeder = breederList.find(b => b._id === id);
+
+                if (!breeder) {
+                    toast.error("Breeder not found in the list");
+                    return;
+                }
+
+                const emailRes = await fetch(`/api/email/send-approval`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        to: breeder.email,
+                        breederName: breeder.name
+                    })
+                })
+
+                if (emailRes.ok) {
+                    const emailData = await emailRes.json();
+                    console.log("Email sent successfully:", emailData);
+                } else {
+                    const emailErrorData = await emailRes.json();
+                    console.error("Failed to send email:", emailErrorData);
+                    toast.error(`Failed to send approval email: ${emailErrorData.error || "Unknown error"}`);
+                }
+            }
         } else {
             toast.error("Failed to update status");
         }
@@ -105,13 +135,13 @@ export default function BreederList({ breeders }: BreederListProps) {
                                                 <DropdownMenuPortal>
                                                     <DropdownMenuSubContent>
                                                         <DropdownMenuItem onClick={() => handleStatusChange(breeder._id, "approved")}>
-                                                           <Check /> Approve
+                                                            <Check /> Approve
                                                         </DropdownMenuItem>
                                                         <DropdownMenuItem onClick={() => handleStatusChange(breeder._id, "pending")}>
-                                                          <CircleDashed />  Pending
+                                                            <CircleDashed />  Pending
                                                         </DropdownMenuItem>
                                                         <DropdownMenuItem onClick={() => handleStatusChange(breeder._id, "rejected")}>
-                                                          <XCircle />  Reject
+                                                            <XCircle />  Reject
                                                         </DropdownMenuItem>
                                                     </DropdownMenuSubContent>
                                                 </DropdownMenuPortal>
