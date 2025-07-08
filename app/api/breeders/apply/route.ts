@@ -18,21 +18,48 @@ function formatBreederData(data: any) {
   };
 }
 
+function isValidBreederData(data: any) {
+  const {
+    name,
+    email,
+    address,
+    city,
+    state,
+    zip,
+    breeds,
+    about,
+    supportingDocuments
+  } = data;
+
+  if (!name || name.trim() === "") return "Kennel name is required.";
+  if (!email || email.trim() === "") return "Email is required.";
+  if (!address || address.trim() === "") return "Address is required.";
+  if (!city || city.trim() === "") return "City is required.";
+  if (!state || state.trim() === "") return "State is required.";
+  if (!zip || zip.trim() === "") return "Zip code is required.";
+
+  if (!Array.isArray(breeds) || breeds.length === 0)
+    return "At least one breed is required.";
+  if (breeds.length > 2) return "You can select up to 2 breeds.";
+
+  if (!about || about.trim() === "") return "About your kennel is required.";
+
+  if (!Array.isArray(supportingDocuments) || supportingDocuments.length === 0)
+    return "At least one supporting document is required.";
+
+  return null; // All good!
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { name, email, breeds, address, city, state, zip, supportingDocuments, about } = formatBreederData(body);
 
-    if (!name.trim() ||
-      !email ||
-      !breeds ||
-      !address ||
-      !city ||
-      !state ||
-      !zip ||
-      !Array.isArray(supportingDocuments) || supportingDocuments.length === 0 || !about.trim()) {
+    const validationError = isValidBreederData({ name, email, address, city, state, zip, breeds, about, supportingDocuments });
+
+    if (validationError) {
       return NextResponse.json(
-        { error: "All fields are required" },
+        { error: validationError },
         { status: 400 }
       );
     }
