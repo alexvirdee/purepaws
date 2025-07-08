@@ -52,23 +52,29 @@ export async function POST(req: NextRequest) {
         // ✅ 3. Update user role & breederId based on new status
         let userUpdate = {};
 
-        if (status === "approved") {
-            userUpdate = {
-                role: "breeder",
-                breederId: user.breederId ? user.breederId : breeder._id // set if not already
-            };
+        if (user.role !== "admin") {
+            if (status === "approved") {
+                userUpdate = {
+                    role: "breeder",
+                    breederId: user.breederId ? user.breederId : breeder._id // set if not already
+                };
+            } else {
+                userUpdate = {
+                    role: "viewer",
+                    breederId: null // optional: clear if you prefer
+                };
+            }
         } else {
-            userUpdate = {
-                role: "viewer",
-                breederId: null // optional: clear if you prefer
-            };
+            console.log(`User ${user.email} is admin; skipping role/breederId sync.`);
         }
 
 
-        await db.collection("users").updateOne(
-            { _id: user._id },
-            { $set: userUpdate }
-        );
+        if (Object.keys(userUpdate).length > 0) {
+            await db.collection("users").updateOne(
+                { _id: user._id },
+                { $set: userUpdate }
+            );
+        }
 
 
         return NextResponse.json({

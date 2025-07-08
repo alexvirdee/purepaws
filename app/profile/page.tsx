@@ -199,8 +199,7 @@ export default async function ProfilePage() {
                         - Expected dogs/breeds 
                         - Contact interest form (on breeder detail page)
             */}
-            {role === "breeder" && 
-            breederId && 
+            {breederId && 
             breeder && 
             breeder.status === "approved" && (
                 <>
