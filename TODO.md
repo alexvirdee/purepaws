@@ -5,13 +5,13 @@
 ## 1️⃣ Core Functionality
 
 - [ ] **Add Litter Name Field**
-  - Add “litter name” input to *Add Dog* form
-  - Group dogs by litter in breeder profile
-  - Display litter detail page with dogs listed properly
+  - Add “litter name” input to *Add Dog* form - Done
+  - Group dogs by litter in breeder profile (in-progress)
+  - Display litter detail page with dogs listed properly (in-progress)
 
 - [ ] **Image Storage**
-  - Choose & configure **Cloudinary** or **S3**
-  - Test uploading images for dogs
+  - Choose & configure **Cloudinary** or **S3** - Done
+  - Test uploading images for dogs - Done
   - Confirm images render properly in production (not local `/public` only)
 
 - [ ] **Puppy Application**
@@ -33,6 +33,9 @@
 
 ## 3️⃣ Light Design Polish (Optional)
 
+- [ ] Improve **Home Map View**
+  - Add clustering for overlapping breeders 
+
 - [ ] Improve **Puppy Detail View**
   - Add placeholder for multiple images or photo slider
   - Add share/copy link button with Sonner toast
@@ -43,7 +46,6 @@
 ## 💡 Notes
 
 - Focus on **core features first**, polish later
-- No need for fancy forgot password flow yet
 - Once these work, you’re *MVP-ready* for breeders & puppy parents!
 
 Keep building! 🐕✨
