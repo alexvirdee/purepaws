@@ -37,7 +37,7 @@ export default function MapView({ breeders }: { breeders: any[] }) {
 
       // Handle possible legacy vs. slug formats:
       const normalizedBreedOptions = [
-        normalizedSelectedBreed.replace(/-/g, ' '),,               // e.g., 'english springer spaniel'
+        normalizedSelectedBreed.replace(/-/g, ' '), ,               // e.g., 'english springer spaniel'
         normalizedSelectedBreed.replace(/\s+/g, '-'), // e.g., 'english-springer-spaniel'
       ];
 
@@ -122,6 +122,14 @@ export default function MapView({ breeders }: { breeders: any[] }) {
     setPopupInfo(null); // ✅ closes popup when filtering
   }
 
+  function getOffsetCoords(lat: number, lng: number, index: number) {
+    const offset = 0.001; // adjust as needed
+    return {
+      lat: lat + offset * index,
+      lng: lng + offset * index,
+    };
+  }
+
   return (
     <>
       <div
@@ -169,7 +177,25 @@ export default function MapView({ breeders }: { breeders: any[] }) {
           mapStyle="mapbox://styles/mapbox/streets-v11"
           style={{ width: '100%', height: '100%' }}
         >
-          {filteredBreeders.map((breeder) => (
+          {filteredBreeders.map((breeder, index) => {
+            const { lat, lng } = getOffsetCoords(breeder.latitude, breeder.longitude, index);
+            console.log(`Breeder ${breeder.name} Offset Lat/Lng:`, lat, lng);
+            return (
+              <Marker
+                key={breeder.id}
+                longitude={lng}
+                latitude={lat}
+                anchor="bottom"
+              >
+                <div onClick={() => setPopupInfo(breeder)} style={{ cursor: 'pointer' }}>
+                  <Image src="/images/paw-outline.svg" alt={`${APP_NAME} logo`} width={25} height={25} priority={true} />
+                </div>
+              </Marker>
+            );
+          })}
+          {/* {filteredBreeders.map((breeder) => (
+            // Use getOffsetCoords to avoid marker overlap
+            
             <Marker
               key={breeder.id}
               longitude={breeder.longitude}
@@ -180,7 +206,7 @@ export default function MapView({ breeders }: { breeders: any[] }) {
                 <Image src="/images/paw-outline.svg" alt={`${APP_NAME} logo`} width={25} height={25} priority={true} />
               </div>
             </Marker>
-          ))}
+          ))} */}
 
           {popupInfo && (
             <Popup

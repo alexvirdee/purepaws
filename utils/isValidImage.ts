@@ -1,6 +1,6 @@
 // Utility function to check if the photo is a valid image URL
 export const isValidImage = (photo: string | { path: string } | Array<{ path: string }>): boolean => {
-  const validExtensions = [".jpg", ".jpeg", ".png", ".gif", ".webp"];
+  const validExtensions = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".avif"];
 
   if (Array.isArray(photo)) {
     // Array of photo objects

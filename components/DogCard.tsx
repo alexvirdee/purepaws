@@ -54,6 +54,10 @@ const STATUS_STYLES: Record<string, StatusStyle> = {
 export default function DogCard({ dog, isFavorited, onUnfavorite, loggedInUser }: DogCardProps) {
     const statusKey = dog.status?.charAt(0).toUpperCase() + dog.status?.slice(1).toLowerCase();
 
+    if (dog && dog.photos) {
+        console.log("DogCard - dog photos:", dog.photos[0].path);
+    }
+
     return (
         <Card key={dog._id.toString()} className="transition relative hover:shadow-lg mb-4">
             <CardContent>
@@ -71,7 +75,7 @@ export default function DogCard({ dog, isFavorited, onUnfavorite, loggedInUser }
             <Link href={`/dogs/${dog._id}`} >
                 {dog.photos && dog.photos.length > 0 && isValidImage(dog.photos[0]) ? (
                     <Image
-                        src={typeof dog.photos[0] === 'string' ? dog.photos[0] : dog.photos[0]?.path}
+                        src={dog.photos[0]?.path}
                         alt={dog.name}
                         className="w-full h-48 object-cover mb-2 rounded"
                         width="400"
