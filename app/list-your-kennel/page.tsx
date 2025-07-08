@@ -11,6 +11,7 @@ const ListYourKennel = async () => {
     const session = await getServerSession(authOptions);
 
     let hasBreederApplication = false;
+    let email = '';
 
     // If user is logged in and role is breeder → redirect to profile
     if (session?.user?.role === "breeder") {
@@ -25,12 +26,14 @@ const ListYourKennel = async () => {
             email: session.user.email
         });
 
+        email = session.user.email;
+
         if (breeder) {
             hasBreederApplication = true;
         }
     }
 
-    return <ListYourKennelForm hasBreederApplication={hasBreederApplication} />
+    return <ListYourKennelForm email={email} hasBreederApplication={hasBreederApplication} />
 }
 
 export default ListYourKennel;

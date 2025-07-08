@@ -63,8 +63,12 @@ function validateForm(formData: FormData): string | null {
 }
 
 const ListYourKennelForm = ({
+    email,
     hasBreederApplication
 }: {
+    email?: string;
+    // This is used to check if the user has already submitted a breeder application
+    // If they have, we show a message instead of the form
     hasBreederApplication: boolean;
 }) => {
     const initialFormData = {
@@ -84,6 +88,7 @@ const ListYourKennelForm = ({
 
     const [formData, setFormData] = useState<FormData>(initialFormData);
     const [selectedBreed, setSelectedBreed] = useState<string | undefined>(undefined);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         if (hasBreederApplication && !hasShown.current) {
@@ -91,6 +96,12 @@ const ListYourKennelForm = ({
             hasShown.current = true;
         }
     }, [hasBreederApplication])
+
+    useEffect(() => {
+        if (email) {
+            setFormData(prev => ({ ...prev, email }));
+        }
+    }, [email]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -100,6 +111,8 @@ const ListYourKennelForm = ({
     const handleSubmit = async (e: SubmitEvent) => {
         e.preventDefault();
 
+        setIsSubmitting(true);
+
         // Validate form data
         const validationError = validateForm(formData);
 
@@ -108,23 +121,35 @@ const ListYourKennelForm = ({
             return;
         }
 
-        // POST to your API route here
-        const response: ApiResponse = await fetch('/api/breeders/apply', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formData),
-        });
+        try {
+            // POST to your API route here
+            const response: ApiResponse = await fetch('/api/breeders/apply', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            });
 
-        if (response.ok) {
-            console.log('Application submitted successfully!');
+            if (response.ok) {
+                console.log('Application submitted successfully!');
 
-            // Reset form data
-            setFormData(initialFormData);
-            router.push("/success");
-        } else {
-            console.error('Error submitting application');
+                // Reset form data
+                setFormData(initialFormData);
+
+                toast.success('Application submitted successfully!');
+
+                router.push("/success");
+            } else {
+                console.error('Error submitting application');
+            }
+        } catch (error) {
+            console.error('Error during form submission:', error);
+            toast.error('An error occurred while submitting your application. Please try again later.');
+            setIsSubmitting(false);
+            return;
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -161,9 +186,9 @@ const ListYourKennelForm = ({
                     <Input
                         name="email"
                         type="email"
-                        value={formData.email}
+                        value={email ? email : formData.email}
                         onChange={handleChange}
-                        required
+                        readOnly={email ? true : false}
                         className="w-full border p-2 rounded"
                     />
                 </div>
@@ -319,8 +344,11 @@ const ListYourKennelForm = ({
                 <Button
                     type="submit"
                     className="bg-green-600 text-white px-4 py-2 rounded cursor-pointer hover:bg-green-700 transition-colors disabled:cursor-not-allowed"
+                    disabled={isSubmitting}
                 >
-                    Submit Application
+                  {
+                    isSubmitting ? 'Submitting...' : 'Submit Application'
+                  } 
                 </Button>
             </form>
         </div>

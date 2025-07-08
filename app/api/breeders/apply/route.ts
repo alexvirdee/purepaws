@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
 import { DB_NAME } from "@/lib/constants";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../../auth/[...nextauth]/authOptions";
 
 function formatBreederData(data: any) {
   return {
@@ -53,7 +55,10 @@ function isValidBreederData(data: any) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, email, breeds, address, city, state, zip, supportingDocuments, about } = formatBreederData(body);
+    const { name, breeds, address, city, state, zip, supportingDocuments, about } = formatBreederData(body);
+
+    const session = await getServerSession(authOptions);
+    const email = session?.user?.email;
 
     const validationError = isValidBreederData({ name, email, address, city, state, zip, breeds, about, supportingDocuments });
 

@@ -70,7 +70,7 @@ const Menu: React.FC<MenuProps> = ({ puppyApplication }) => {
                             </Link>
                             {/* TODO: Notifications feature */}
                             <Button asChild variant="ghost" className="relative">
-                                <Link href="/notifications">
+                                <Link href="/profile/notifications">
                                     <BellIcon className="text-gray-500 hover:text-blue-600" />
                                     {/* Hypothetical unread count */}
                                     <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
@@ -121,6 +121,16 @@ const Menu: React.FC<MenuProps> = ({ puppyApplication }) => {
                                     <Link href="/profile" className="text-sm text-gray-700">
                                         {session.user.email || session.user.name}
                                     </Link>
+                                    {/* TODO: Notifications feature */}
+                                    <Button asChild variant="ghost" className="relative">
+                                        <Link href="/profile/notifications">
+                                            <BellIcon className="text-gray-500 hover:text-blue-600" />
+                                            {/* Hypothetical unread count */}
+                                            <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
+                                                1
+                                            </span>
+                                        </Link>
+                                    </Button>
                                     <Button onClick={handleSignOut} variant={"outline"} className="text-blue-500">
                                         <LogOut /> Sign Out
                                     </Button>
