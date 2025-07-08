@@ -54,6 +54,25 @@ const BREEDS = [
     'English Springer Spaniel',
 ];
 
+function validateForm(formData: FormData): string | null {
+  if (!formData.name.trim()) return "Kennel name is required.";
+  if (!formData.email.trim()) return "Email is required.";
+  if (!formData.address.trim()) return "Address is required.";
+  if (!formData.city.trim()) return "City is required.";
+  if (!formData.state) return "State is required.";
+  if (!formData.zip.trim()) return "Zip code is required.";
+
+  if (formData.breeds.length === 0) return "Please select at least one breed.";
+  if (formData.breeds.length > 2) return "You can only select up to 2 breeds.";
+
+  if (!formData.about.trim()) return "About your kennel is required.";
+  if (!formData.supportingDocuments || formData.supportingDocuments.length === 0) {
+    return "Please upload at least one supporting document.";
+  }
+
+  return null; // All good!
+}
+
 const ListYourKennelForm = ({
     hasBreederApplication
 }: {
@@ -121,22 +140,12 @@ const ListYourKennelForm = ({
     const handleSubmit = async (e: SubmitEvent) => {
         e.preventDefault();
 
-        // Client side validation
-        if (!formData.name.trim() ||
-            !formData.email ||
-            !formData.breeds.length ||
-            !formData.address ||
-            !formData.city ||
-            !formData.state ||
-            formData.zip ||
-            !formData.about.trim()) {
-            toast.error('Please fill in all required fields.');
-            return; // Stop submission!
-        }
+        // Validate form data
+        const validationError = validateForm(formData);
 
-        if (!formData.supportingDocuments || formData.supportingDocuments.length === 0) {
-            toast.error('Please upload at least one supporting document.');
-            return; // Stop submission!
+        if (validationError) {
+            toast.error(validationError);
+            return;
         }
 
         // POST to your API route here
