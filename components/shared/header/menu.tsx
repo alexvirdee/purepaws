@@ -45,6 +45,7 @@ const Menu: React.FC<MenuProps> = ({ puppyApplication }) => {
         <>
             <div className="flex justify-end gap-3 pr-4">
                 <nav className="hidden md:flex w-full gap-2 items-center">
+                    {/* Note - currently admin role can see all navbar links */}
                     {session?.user?.role !== 'breeder' && (
                         <>
                             {!puppyApplication && (
@@ -87,7 +88,7 @@ const Menu: React.FC<MenuProps> = ({ puppyApplication }) => {
                             <EllipsisVertical />
                         </SheetTrigger>
                         <SheetContent className="flex flex-col items-start">
-                            <SheetTitle>Menu</SheetTitle>
+                            <SheetTitle className="p-4">Menu</SheetTitle>
                             {session?.user?.role !== 'breeder' && (
                                 <>
                                     {!puppyApplication && (
@@ -106,7 +107,7 @@ const Menu: React.FC<MenuProps> = ({ puppyApplication }) => {
                             )}
                             {/* Session check */}
                             {session?.user ? (
-                                <div className="flex items-center gap-4">
+                                <div className="flex flex-col gap-4 pl-4">
                                     <Link href="/profile" className="text-sm text-gray-700">
                                         {session.user.email || session.user.name}
                                     </Link>
