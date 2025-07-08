@@ -1,17 +1,18 @@
 'use client';
 
-import { useCallback } from "react";
+import React, { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
 
 
-type FileDropzoneProps = {
-    formData: any;
-    setFormData: (value: any) => void;
-    field: string;           // e.g. 'photos', 'documents'
-    label?: string;          // optional custom label
-    accept?: any;            // react-dropzone accept prop
-    multiple?: boolean;      // allow multiple files
+type FileDropzoneProps<T> = {
+    formData: T;
+    setFormData: React.Dispatch<React.SetStateAction<T>>;
+    field: keyof T;           
+    label?: string;         
+    accept?: any;   
+    maxFiles?: number;         
+    multiple?: boolean;      
 }
 
 export default function FileDropzone({
@@ -20,21 +21,22 @@ export default function FileDropzone({
     field,
     label = 'Upload files',
     accept = { 'image/*': [] },
+    maxFiles = 5,
     multiple = true
-}: FileDropzoneProps) {
+}: FileDropzoneProps<any>) {
 
     const currentCount = (formData[field] || []).length;
     const isDisabled = currentCount >= 5 || (multiple && formData[field]?.length >= 5);
 
     const onDrop = useCallback((acceptedFiles: File[]) => {
         const currentCount = (formData[field] || []).length;
-        
-        if (currentCount >= 5) {
-            toast.warning('You can only upload up to 5 files.');
+
+        if (currentCount >= maxFiles) {
+            toast.warning(`You can only upload up to ${maxFiles} files.`);
             return;
         }
 
-        const remainingSlots = 5 - currentCount;
+        const remainingSlots = maxFiles - currentCount;
         const filesToUpload = acceptedFiles.slice(0, remainingSlots);
 
         (async () => {
@@ -43,7 +45,7 @@ export default function FileDropzone({
                 formDataObj.append("file", file);
                 formDataObj.append("upload_preset", process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!);
 
-                const res = await fetch(`https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`, {
+                const res = await fetch(`https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/auto/upload`, {
                     method: "POST",
                     body: formDataObj,
                 });
@@ -115,36 +117,59 @@ export default function FileDropzone({
                 )}
             </div>
 
-            {/* Simple preview */}
-            {multiple && Array.isArray(currentFiles) && currentFiles.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-2">
+            {accept && accept['application/pdf'] !== undefined ? (
+                <ul className="mt-2">
                     {currentFiles.map((file: any, index: number) => (
-                        <div key={index} className="relative w-24 h-24">
-                            <img
-                                key={index}
-                                src={file.preview || file.path}
-                                alt={`Preview ${index}`}
-                                className="w-24 h-24 object-cover rounded"
-                            />
+                        <li key={index} className="flex items-center gap-2">
+                            <a href={file.path} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                                {file.path.split('/').pop()}
+                            </a>
                             <button
                                 type="button"
-                                className="absolute top-0 right-0 bg-gray-400 text-white rounded-full w-6 h-6 flex items-center justify-center"
                                 onClick={() => handleRemove(index)}
+                                className="text-sm text-red-500"
                             >
-                                X
+                                Remove
                             </button>
-                        </div>
+                        </li>
                     ))}
-                </div>
+                </ul>
+            ) : (
+                <>
+                    {/* Image previews */}
+                    {multiple && Array.isArray(currentFiles) && currentFiles.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-2">
+                            {currentFiles.map((file: any, index: number) => (
+                                <div key={index} className="relative w-24 h-24">
+                                    <img
+                                        key={index}
+                                        src={file.preview || file.path}
+                                        alt={`Preview ${index}`}
+                                        className="w-24 h-24 object-cover rounded"
+                                    />
+                                    <button
+                                        type="button"
+                                        className="absolute top-0 right-0 bg-gray-400 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                                        onClick={() => handleRemove(index)}
+                                    >
+                                        X
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    {!multiple && currentFiles && (
+                        <img
+                            src={currentFiles.preview || currentFiles}
+                            alt="Preview"
+                            className="w-32 h-32 object-cover rounded mt-2"
+                        />
+                    )}
+                </>
             )}
 
-            {!multiple && currentFiles && (
-                <img
-                    src={currentFiles.preview || currentFiles}
-                    alt="Preview"
-                    className="w-32 h-32 object-cover rounded mt-2"
-                />
-            )}
+
         </div>
     )
 }

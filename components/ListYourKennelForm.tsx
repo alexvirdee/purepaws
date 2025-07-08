@@ -2,6 +2,11 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { US_STATES } from '@/lib/constants/usStates';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
 import {
     Select,
     SelectContent,
@@ -12,6 +17,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import Link from 'next/link';
+import FileDropzone from '@/components/FileDropzone';
 
 interface FormData {
     name: string;
@@ -22,8 +28,8 @@ interface FormData {
     state: string;
     zip: string;
     breeds: string[];
-    certifications: string;
     about: string;
+    supportingDocuments: string[];
 }
 
 
@@ -62,8 +68,8 @@ const ListYourKennelForm = ({
         state: '',
         zip: '',
         breeds: [],
-        certifications: '',
         about: '',
+        supportingDocuments: [],
     }
 
     const hasShown = useRef(false);
@@ -115,6 +121,24 @@ const ListYourKennelForm = ({
     const handleSubmit = async (e: SubmitEvent) => {
         e.preventDefault();
 
+        // Client side validation
+        if (!formData.name.trim() ||
+            !formData.email ||
+            !formData.breeds.length ||
+            !formData.address ||
+            !formData.city ||
+            !formData.state ||
+            formData.zip ||
+            !formData.about.trim()) {
+            toast.error('Please fill in all required fields.');
+            return; // Stop submission!
+        }
+
+        if (!formData.supportingDocuments || formData.supportingDocuments.length === 0) {
+            toast.error('Please upload at least one supporting document.');
+            return; // Stop submission!
+        }
+
         // POST to your API route here
         const response: ApiResponse = await fetch('/api/breeders/apply', {
             method: 'POST',
@@ -154,8 +178,8 @@ const ListYourKennelForm = ({
             </p>
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                    <label className="block mb-1 font-medium">Kennel Name *</label>
-                    <input
+                    <Label className="block mb-1 font-medium">Kennel Name *</Label>
+                    <Input
                         name="name"
                         value={formData.name}
                         onChange={handleChange}
@@ -164,8 +188,8 @@ const ListYourKennelForm = ({
                     />
                 </div>
                 <div>
-                    <label className="block mb-1 font-medium">Email *</label>
-                    <input
+                    <Label className="block mb-1 font-medium">Email *</Label>
+                    <Input
                         name="email"
                         type="email"
                         value={formData.email}
@@ -175,8 +199,8 @@ const ListYourKennelForm = ({
                     />
                 </div>
                 <div>
-                    <label className="block mb-1 font-medium">Website</label>
-                    <input
+                    <Label className="block mb-1 font-medium">Website</Label>
+                    <Input
                         name="website"
                         type="url"
                         value={formData.website}
@@ -185,8 +209,8 @@ const ListYourKennelForm = ({
                     />
                 </div>
                 <div>
-                    <label className="block mb-1 font-medium">Address *</label>
-                    <input
+                    <Label className="block mb-1 font-medium">Address *</Label>
+                    <Input
                         name="address"
                         value={formData.address}
                         onChange={handleChange}
@@ -195,8 +219,8 @@ const ListYourKennelForm = ({
                     />
                 </div>
                 <div>
-                    <label className="block mb-1 font-medium">City *</label>
-                    <input
+                    <Label className="block mb-1 font-medium">City *</Label>
+                    <Input
                         name="city"
                         value={formData.city}
                         onChange={handleChange}
@@ -205,7 +229,7 @@ const ListYourKennelForm = ({
                     />
                 </div>
                 <div>
-                    <label className="block mb-1 font-medium">State *</label>
+                    <Label className="block mb-1 font-medium">State *</Label>
                     <Select onValueChange={(value) => setFormData((prev) => ({ ...prev, state: value }))}>
                         <SelectTrigger className="w-full">
                             <SelectValue placeholder="Select a state" />
@@ -220,8 +244,8 @@ const ListYourKennelForm = ({
                     </Select>
                 </div>
                 <div>
-                    <label className="block mb-1 font-medium">Zip *</label>
-                    <input
+                    <Label className="block mb-1 font-medium">Zip *</Label>
+                    <Input
                         name="zip"
                         value={formData.zip}
                         onChange={handleChange}
@@ -231,35 +255,25 @@ const ListYourKennelForm = ({
                 </div>
                 <div>
                     {/* Breeds checkboxes - breeder should be limited to 2  */}
-                    <label className="block mb-1 font-medium">Breeds Offered *</label>
+                    <Label className="block mb-1 font-medium">Breeds Offered*</Label>
                     {breedError && (
                         <p className="text-red-600 text-sm mb-2">{breedError}</p>
                     )}
                     <div className="flex flex-wrap gap-2">
                         {BREEDS.map((breed) => (
-                            <label key={breed} className="flex items-center space-x-2">
-                                <input
-                                    type="checkbox"
+                            <Label key={breed} className="flex items-center space-x-2">
+                                <Checkbox
                                     checked={formData.breeds.includes(breed)}
-                                    onChange={() => handleBreedChange(breed)}
+                                    onCheckedChange={() => handleBreedChange(breed)}
                                 />
                                 <span>{breed}</span>
-                            </label>
+                            </Label>
                         ))}
                     </div>
                 </div>
                 <div>
-                    <label className="block mb-1 font-medium">Certifications</label>
-                    <input
-                        name="certifications"
-                        value={formData.certifications}
-                        onChange={handleChange}
-                        className="w-full border p-2 rounded"
-                    />
-                </div>
-                <div>
-                    <label className="block mb-1 font-medium">About Your Kennel *</label>
-                    <textarea
+                    <Label className="block mb-1 font-medium">About Your Kennel *</Label>
+                    <Textarea
                         name="about"
                         value={formData.about}
                         onChange={handleChange}
@@ -268,12 +282,23 @@ const ListYourKennelForm = ({
                         rows={4}
                     />
                 </div>
-                <button
+                <div>
+                    <Label className="block mb-1 font-medium">Supporting Documents*</Label>
+                    <FileDropzone
+                        formData={formData}
+                        setFormData={setFormData} field="supportingDocuments"
+                        label="Upload supporting documents"
+                        accept={{ 'application/pdf': [] }}
+                        maxFiles={10}
+                        multiple
+                    />
+                </div>
+                <Button
                     type="submit"
                     className="bg-blue-600 text-white px-4 py-2 rounded"
                 >
                     Submit Application
-                </button>
+                </Button>
             </form>
         </div>
     )

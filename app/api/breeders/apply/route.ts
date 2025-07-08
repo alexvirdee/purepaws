@@ -9,20 +9,28 @@ function formatBreederData(data: any) {
     email: data.email?.trim().toLowerCase(),
     address: data.address?.trim(),
     city: data.city?.trim().charAt(0).toUpperCase() +
-          data.city?.trim().slice(1).toLowerCase(),
+      data.city?.trim().slice(1).toLowerCase(),
     state: data.state?.trim().toUpperCase(),
     zip: data.zip?.trim(),
+    breeds: data.breeds || [],
+    supportingDocuments: data.supportingDocuments || [],
     about: data.about?.trim(),
-    breeds: data.breeds || []
   };
 }
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, email, breeds, address, city, state, zip, about } = formatBreederData(body);
+    const { name, email, breeds, address, city, state, zip, supportingDocuments, about } = formatBreederData(body);
 
-    if (!name || !email || !breeds || !address || !city || !state || !zip || !about) {
+    if (!name.trim() ||
+      !email ||
+      !breeds ||
+      !address ||
+      !city ||
+      !state ||
+      !zip ||
+      !Array.isArray(supportingDocuments) || supportingDocuments.length === 0 || !about.trim()) {
       return NextResponse.json(
         { error: "All fields are required" },
         { status: 400 }
@@ -57,31 +65,32 @@ export async function POST(request: Request) {
     }
 
     const { center } = geocodeData.features[0];
-    const [longitude, latitude] = center;   
+    const [longitude, latitude] = center;
 
     // Create the new breeder object
     const newBreeder = {
-        name,
-        email,
-        breeds,
-        address,
-        city,
-        state,
-        zip,
-        latitude,
-        longitude,
-        about,
-        status: "pending",
-        submittedAt: new Date(),
-      };
+      name,
+      email,
+      breeds,
+      address,
+      city,
+      state,
+      zip,
+      latitude,
+      longitude,
+      supportingDocuments,
+      about,
+      status: "pending",
+      submittedAt: new Date(),
+    };
 
     const result = await breeders.insertOne(newBreeder);
 
-    return NextResponse.json({ 
-        success: true, 
-        id: result.insertedId,
-        message: 'Application submitted successfully! We will review it and get back to you soon.'
-        });
+    return NextResponse.json({
+      success: true,
+      id: result.insertedId,
+      message: 'Application submitted successfully! We will review it and get back to you soon.'
+    });
   } catch (error) {
     console.error("Error saving breeder application:", error);
     return NextResponse.json(
