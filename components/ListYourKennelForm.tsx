@@ -18,6 +18,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import Link from 'next/link';
 import FileDropzone from '@/components/FileDropzone';
+import { DOG_BREEDS } from '@/lib/constants/dogBreeds';
 
 interface FormData {
     name: string;
@@ -41,36 +42,24 @@ interface ApiResponse {
     ok: boolean;
 }
 
-const BREEDS = [
-    'Golden Retriever',
-    'Labrador Retriever',
-    'German Shepherd',
-    'Bulldog',
-    'Poodle',
-    'Beagle',
-    'Rottweiler',
-    'Dachshund',
-    'Boxer',
-    'English Springer Spaniel',
-];
 
 function validateForm(formData: FormData): string | null {
-  if (!formData.name.trim()) return "Kennel name is required.";
-  if (!formData.email.trim()) return "Email is required.";
-  if (!formData.address.trim()) return "Address is required.";
-  if (!formData.city.trim()) return "City is required.";
-  if (!formData.state) return "State is required.";
-  if (!formData.zip.trim()) return "Zip code is required.";
+    if (!formData.name.trim()) return "Kennel name is required.";
+    if (!formData.email.trim()) return "Email is required.";
+    if (!formData.address.trim()) return "Address is required.";
+    if (!formData.city.trim()) return "City is required.";
+    if (!formData.state) return "State is required.";
+    if (!formData.zip.trim()) return "Zip code is required.";
 
-  if (formData.breeds.length === 0) return "Please select at least one breed.";
-  if (formData.breeds.length > 2) return "You can only select up to 2 breeds.";
+    if (formData.breeds.length === 0) return "Please select at least one breed.";
+    if (formData.breeds.length > 2) return "You can only select up to 2 breeds.";
 
-  if (!formData.about.trim()) return "About your kennel is required.";
-  if (!formData.supportingDocuments || formData.supportingDocuments.length === 0) {
-    return "Please upload at least one supporting document.";
-  }
+    if (!formData.about.trim()) return "About your kennel is required.";
+    if (!formData.supportingDocuments || formData.supportingDocuments.length === 0) {
+        return "Please upload at least one supporting document.";
+    }
 
-  return null; // All good!
+    return null; // All good!
 }
 
 const ListYourKennelForm = ({
@@ -94,7 +83,7 @@ const ListYourKennelForm = ({
     const hasShown = useRef(false);
 
     const [formData, setFormData] = useState<FormData>(initialFormData);
-    const [breedError, setBreedError] = useState<string | null>(null);
+    const [selectedBreed, setSelectedBreed] = useState<string | undefined>(undefined);
 
     useEffect(() => {
         if (hasBreederApplication && !hasShown.current) {
@@ -106,35 +95,6 @@ const ListYourKennelForm = ({
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
-    };
-
-    const handleBreedChange = (breed: string) => {
-        setFormData((prev: FormData) => {
-            const exists = prev.breeds.includes(breed);
-
-            // If the breed is already selected, allow unselecting it
-            if (exists) {
-                const updatedBreeds = prev.breeds.filter((b) => b !== breed);
-                setBreedError(null);
-                return {
-                    ...prev,
-                    breeds: updatedBreeds
-                };
-            }
-
-            // Limit to 2 breeds
-            if (prev.breeds.length >= 2) {
-                setBreedError('You can only select up to 2 breeds.');
-                return prev;
-            }
-
-            // Otherwise, update the breeds and clear the error
-            setBreedError(null);
-            return {
-                ...prev,
-                breeds: [...prev.breeds, breed]
-            };
-        });
     };
 
     const handleSubmit = async (e: SubmitEvent) => {
@@ -263,21 +223,75 @@ const ListYourKennelForm = ({
                     />
                 </div>
                 <div>
-                    {/* Breeds checkboxes - breeder should be limited to 2  */}
+                    {/* Breeds offered - breeder should be limited to 2  */}
                     <Label className="block mb-1 font-medium">Breeds Offered*</Label>
-                    {breedError && (
-                        <p className="text-red-600 text-sm mb-2">{breedError}</p>
-                    )}
+                    {/* Currently showing top 50 purebred dog breeds  */}
                     <div className="flex flex-wrap gap-2">
-                        {BREEDS.map((breed) => (
-                            <Label key={breed} className="flex items-center space-x-2">
-                                <Checkbox
+                        <div className="flex flex-wrap gap-2 mb-2">
+                            {formData.breeds.map((breedValue) => {
+                                const breed = DOG_BREEDS.find(b => b.value === breedValue);
+                                return (
+                                    <div
+                                        key={breedValue}
+                                        className="flex items-center bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm"
+                                    >
+                                        {breed?.label || breedValue}
+                                        <button
+                                            type="button"
+                                            className="ml-2 text-blue-500 hover:text-blue-700"
+                                            onClick={() => {
+                                                setFormData((prev) => ({
+                                                    ...prev,
+                                                    breeds: prev.breeds.filter(b => b !== breedValue),
+                                                }));
+                                            }}
+                                        >
+                                            ✕
+                                        </button>
+                                    </div>
+                                );
+                            })}
+                        </div>
+
+                        {/* <Label className="flex items-center space-x-2"> Select up to 2 dog breeds  </Label> */}
+                        <Select
+                            value={selectedBreed}
+                            onValueChange={(value) => {
+                                if (formData.breeds.includes(value)) {
+                                    toast.error("You already selected that breed.");
+                                    return;
+                                }
+                                if (formData.breeds.length >= 2) {
+                                    toast.error("You can only select up to 2 breeds.");
+                                    return;
+                                }
+
+                                setFormData((prev) => ({
+                                    ...prev,
+                                    breeds: [...prev.breeds, value],
+                                }));
+
+                                setSelectedBreed(undefined); // Clear the dropdown!
+                            }}
+                        >
+                            <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Select up to 2 breeds" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {DOG_BREEDS.map((breed, index) => (
+                                    <SelectItem key={index} value={breed.value}>
+                                        {breed.label}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        {/* {DOG_BREEDS.map((breed, index) => ( */}
+                        {/* <Checkbox
                                     checked={formData.breeds.includes(breed)}
                                     onCheckedChange={() => handleBreedChange(breed)}
                                 />
-                                <span>{breed}</span>
-                            </Label>
-                        ))}
+                                <span>{breed}</span> */}
+
                     </div>
                 </div>
                 <div>
@@ -296,7 +310,7 @@ const ListYourKennelForm = ({
                     <FileDropzone
                         formData={formData}
                         setFormData={setFormData} field="supportingDocuments"
-                        label="Upload supporting documents"
+                        label="Upload supporting documents in pdf format (e.g. kennel license, health certifications, etc.)"
                         accept={{ 'application/pdf': [] }}
                         maxFiles={10}
                         multiple
@@ -304,7 +318,7 @@ const ListYourKennelForm = ({
                 </div>
                 <Button
                     type="submit"
-                    className="bg-blue-600 text-white px-4 py-2 rounded"
+                    className="bg-green-600 text-white px-4 py-2 rounded cursor-pointer hover:bg-green-700 transition-colors disabled:cursor-not-allowed"
                 >
                     Submit Application
                 </Button>
