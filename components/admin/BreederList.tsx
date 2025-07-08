@@ -27,7 +27,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
-import { MoreVertical } from "lucide-react";
+import { MoreVertical, Check, XCircle, CircleDashed } from "lucide-react";
 
 interface BreederListProps {
     breeders: IBreeder[];
@@ -105,13 +105,13 @@ export default function BreederList({ breeders }: BreederListProps) {
                                                 <DropdownMenuPortal>
                                                     <DropdownMenuSubContent>
                                                         <DropdownMenuItem onClick={() => handleStatusChange(breeder._id, "approved")}>
-                                                            Approve
+                                                           <Check /> Approve
                                                         </DropdownMenuItem>
                                                         <DropdownMenuItem onClick={() => handleStatusChange(breeder._id, "pending")}>
-                                                            Pending
+                                                          <CircleDashed />  Pending
                                                         </DropdownMenuItem>
                                                         <DropdownMenuItem onClick={() => handleStatusChange(breeder._id, "rejected")}>
-                                                            Reject
+                                                          <XCircle />  Reject
                                                         </DropdownMenuItem>
                                                     </DropdownMenuSubContent>
                                                 </DropdownMenuPortal>
