@@ -28,9 +28,17 @@ export async function POST(req: NextRequest) {
 
         const breederObjectId = new ObjectId(breederId);
 
+        let breederUpdateFields: any = { status };
+
+        if (status === "approved") {
+            breederUpdateFields.approvedAt = new Date();
+        } else {
+            breederUpdateFields.approvedAt = null; // Clear approvedAt if not approved
+        }
+
         const breederUpdate = await db.collection("breeders").updateOne(
             { _id: breederObjectId },
-            { $set: { status } }
+            { $set: breederUpdateFields }
         );
 
         if (breederUpdate.modifiedCount === 0) {

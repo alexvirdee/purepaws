@@ -99,6 +99,7 @@ export default function BreederList({ breeders }: BreederListProps) {
                             <TableHead>Name</TableHead>
                             <TableHead>Email</TableHead>
                             <TableHead>Breeder ID</TableHead>
+                            <TableHead>Submitted At</TableHead>
                             <TableHead>Status</TableHead>
                             <TableHead>Actions</TableHead>
                         </TableRow>
@@ -111,6 +112,13 @@ export default function BreederList({ breeders }: BreederListProps) {
                                 <TableCell>
                                     <Link className="text-blue-500 hover:text-blue-600" href={`/breeders/${breeder._id.toString()}`}>{breeder._id.toString()}</Link>
                                 </TableCell>
+                                <TableCell> {breeder.submittedAt
+                                    ? new Date(breeder.submittedAt).toLocaleString('en-US', {
+                                        month: '2-digit',
+                                        day: '2-digit',
+                                        year: 'numeric',
+                                    })
+                                    : "N/A"}</TableCell>
                                 <TableCell className="capitalize">
                                     {breeder.status === "approved" && (
                                         <Badge className="bg-green-600" variant="default">Approved</Badge>
