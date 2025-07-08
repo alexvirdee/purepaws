@@ -13,6 +13,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import ChartCard from "@/components/admin/ChartCard";
+
 
 export default async function AdminPage() {
     const session = await getServerSession(authOptions);
@@ -31,6 +33,30 @@ export default async function AdminPage() {
 
     const users = await db.collection("users").find().toArray();
     const totalUsers = users.length;
+
+    const userSignupsByDate: Record<string, number> = {};
+
+    users.forEach((user) => {
+        if (! user.createdAt) return; // Skip if createdAt is not available
+
+        const createdAt = 
+            typeof user.createdAt === "string"
+                ? new Date(user.createdAt)
+                : user.createdAt instanceof Date 
+                ? user.createdAt
+                : new Date(user.createdAt.toString()); // Ensure createdAt is a Date object
+
+        if (isNaN(createdAt.getTime())) return; // Skip if createdAt is invalid
+
+        const date = new Date(user.createdAt).toISOString().split('T')[0]; // Get date in YYYY-MM-DD format
+        userSignupsByDate[date] = (userSignupsByDate[date] || 0) + 1; // Count signups per day
+    });
+
+    // Convert the userSignupsByDate object to an array for the chart
+    const userSignupsChartData = Object.entries(userSignupsByDate).map(([date, count]) => ({
+        date,   
+        count,
+    }));
 
     const dogs = await db.collection("dogs").find().toArray();
     const totalDogs = dogs.length;
@@ -76,6 +102,10 @@ export default async function AdminPage() {
                     </div>
                 </CardContent>
             </Card>
+
+            {/* User sign ups over time chart */}
+            <ChartCard title="📈 User Signups Over Time" data={userSignupsChartData} />
+
             <BreederList breeders={serializedBreeders} />
         </div>
     );

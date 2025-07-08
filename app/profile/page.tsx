@@ -106,11 +106,11 @@ export default async function ProfilePage() {
     return (
         <main className="max-w-5xl mx-auto p-8 space-y-8">
             <div className="flex flex-row justify-between mb-4">
-              <div className="flex items-center gap-2 text-3xl font-bold">
+                <div className="flex items-center gap-2 text-3xl font-bold">
                     <UserIcon className="w-8 text-gray-700" /> Profile
-                </div> 
+                </div>
                 {userFromDb?.role === "admin" && (
-                    <Link className="text-blue-600" href="/admin">Admin User</Link>
+                    <Link className="text-blue-600" href="/admin">Admin Dashboard</Link>
                 )}
             </div>
 
@@ -273,12 +273,27 @@ export default async function ProfilePage() {
             {/* For breeder profile who are not approved yet display that information in the profile */}
             {breeder && breeder.status !== "approved" && (
                 <div className="bg-white rounded-lg shadow p-6 flex flex-col sm:flex gap-6 relative">
-                    <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-xl font-bold">Breeder application status is <span className="text-blue-500">{breeder.status}</span></h2>
-                        <p className="text-gray-500">
-                            Team is currently reviewing your breeder application. You will receive an email once approved!
-                        </p>
+                    <div className="flex justify-between items-center mb-1">
+                        <h2 className="text-xl font-bold">
+                            Breeder application status:&nbsp;
+                            <span className={breeder.status === 'rejected' ? 'text-red-600' : 'text-blue-500'}>
+                                {breeder.status.charAt(0).toUpperCase() + breeder.status.slice(1)}
+                            </span>
+                        </h2>
                     </div>
+
+                    {breeder.status === "pending" && (
+                        <p className="text-gray-600">
+                            Our team is currently reviewing your breeder application. You’ll receive an email once approved!
+                        </p>
+                    )}
+
+                    {breeder.status === "rejected" && (
+                        <p className="text-gray-600">
+                            Unfortunately, your breeder application was rejected. If you believe this was in error,
+                            please email    <a href="mailto:woofpurepaws@gmail.com">woofpurepaws@gmail.com</a>  for assistance.
+                        </p>
+                    )}
                 </div>
             )}
 

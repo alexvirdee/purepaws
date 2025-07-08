@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { IBreeder } from "@/interfaces/breeder";
-import { ObjectId } from "mongodb";
 import { toast } from "sonner";
 import {
     Table,
@@ -15,6 +14,16 @@ import {
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
+import { MoreVertical } from "lucide-react";
 
 interface BreederListProps {
     breeders: IBreeder[];
@@ -23,94 +32,32 @@ interface BreederListProps {
 export default function BreederList({ breeders }: BreederListProps) {
     const [breederList, setBreederList] = useState(breeders);
 
-    const handleApprove = async (id: string) => {
-        try {
-            const res = await fetch(`/api/breeders/${id}/approve`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" }
-            });
 
-            if (res.ok) {
-                // Update local state
-                setBreederList((prev: IBreeder[]) =>
-                    prev.map((b: IBreeder) =>
-                        b._id === id ? { ...b, status: "approved" } : b
-                    )
-                );
+    const handleStatusChange = async (id: string, status: "approved" | "pending" | "rejected") => {
+        const res = await fetch(`/api/breeders/${id}/status`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ status }),
+        });
 
-                toast.success("Breeder approved successfully");
+        if (res.ok) {
+            toast.success(`Breeder status updated to ${status}`);
 
-                const breeder = breederList.find(b => b._id === id);
-
-                if (!breeder) {
-                    toast.error("Breeder not found in the list");
-                    return;
-                }
-
-                // Send approval email
-                const emailRes = await fetch(`/api/email/send-approval`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        to: breeder.email,
-                        breederName: breeder.name
-                    })
-                })
-
-                if (emailRes.ok) {
-                    const emailData = await emailRes.json();
-                    console.log("Email sent successfully:", emailData);
-                } else {
-                    const emailErrorData = await emailRes.json();
-                    console.error("Failed to send email:", emailErrorData);
-                    toast.error(`Failed to send approval email: ${emailErrorData.error || "Unknown error"}`);
-                }
-            } else {
-                const errorData = await res.json();
-                toast.error(`Error: ${errorData.error || "Unknown error"}`);
-            }
-        } catch (error) {
-            console.error("Error approving breeder:", error);
-        }
-    }
-
-
-    // Note: This function handles the removal of breeders from the site which will set their status to "pending" currently
-    // It sends a POST request to the API endpoint and updates the local state accordingly.
-    const handleRemove = async (id: string) => {
-        try {
-            const res = await fetch(`/api/breeders/${id}/pending`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" }
-            });
-
-            if (res.ok) {
-                // Update local state
-                setBreederList((prev: IBreeder[]) =>
-                    prev.map((b: IBreeder) =>
-                        b._id === id ? { ...b, status: "pending" } : b
-                    )
-                );
-
-                toast.success("Breeder status reverted to pending successfully");
-            } else {
-                const errorData = await res.json();
-                toast.error(`Error: ${errorData.error || "Unknown error"}`);
-                return;
-            }
-
-        } catch (error) {
-            console.error("Error adjusting breeder status:", error);
-            toast.error("Failed to adjust breeder status");
+            // Update local state
+            setBreederList((prev: IBreeder[]) =>
+                prev.map((b: IBreeder) =>
+                    b._id === id ? { ...b, status: status } : b
+                )
+            );
+        } else {
+            toast.error("Failed to update status");
         }
     }
 
     return (
         <>
             <div className="overflow-x-auto">
-                <h1 className="text-2xl font-semibold">List of breeders submitted to PurePaws</h1>
+                <h1 className="text-2xl font-semibold">Breeders</h1>
                 <Table>
                     <TableCaption>List of breeders submitted to PurePaws</TableCaption>
                     <TableHeader>
@@ -130,30 +77,36 @@ export default function BreederList({ breeders }: BreederListProps) {
                                 <TableCell>
                                     <Link className="text-blue-500 hover:text-blue-600" href={`/breeders/${breeder._id.toString()}`}>{breeder._id.toString()}</Link>
                                 </TableCell>
-                                <TableCell className="capitalize">{breeder.status}</TableCell>
-                                <TableCell>
-                                    {breeder.status === "pending" && (
-                                        <Button
-                                            size="sm"
-                                            variant="default"
-                                            className="bg-green-600 hover:bg-green-700 cursor-pointer"
-                                            onClick={() => handleApprove(breeder._id)}
-                                        >
-                                            Approve
-                                        </Button>
-                                    )}
-
-                                    {/* For removal of breeders */}
+                                <TableCell className="capitalize">
                                     {breeder.status === "approved" && (
-                                        <Button
-                                            size="sm"
-                                            variant="destructive"
-                                            className="cursor-pointer"
-                                            onClick={() => handleRemove(breeder._id)}
-                                        >
-                                            Remove
-                                        </Button>
+                                        <Badge className="bg-green-600" variant="default">Approved</Badge>
                                     )}
+                                    {breeder.status === "pending" && (
+                                        <Badge className="bg-blue-500 text-white" variant="secondary">Pending</Badge>
+                                    )}
+                                    {breeder.status === "rejected" && (
+                                        <Badge variant="destructive">Rejected</Badge>
+                                    )}
+                                </TableCell>
+                                <TableCell>
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="ghost" size="icon">
+                                                <MoreVertical className="h-4 w-4" /> {/* lucide-react icon */}
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end">
+                                            <DropdownMenuItem onClick={() => handleStatusChange(breeder._id, "approved")}>
+                                                ✅ Approve
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => handleStatusChange(breeder._id, "pending")}>
+                                                🕒 Pending
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => handleStatusChange(breeder._id, "rejected")}>
+                                                🚫 Reject
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
                                 </TableCell>
                             </TableRow>
                         ))}

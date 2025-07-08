@@ -27,22 +27,28 @@ export async function POST(
 
   const { id } = await params;
 
+  const { status } = await req.json();
+
+  if (!["approved", "pending", "rejected"].includes(status)) {
+    return NextResponse.json({ error: "Invalid status" }, { status: 400 });
+  }
+
   const client = await clientPromise;
   const db = client.db(DB_NAME);
 
-  // Revert breeder to pending
+  // Update the breeder's status in the database
   const result: UpdateResult = await db
     .collection("breeders")
-    .updateOne({ _id: new ObjectId(id) }, { $set: { status: "pending" } });
+    .updateOne({ _id: new ObjectId(id) }, { $set: { status } });
 
   if (result.modifiedCount === 0) {
     return NextResponse.json(
-      { error: "Breeder not found or already pending" },
+      { error: "Breeder not found or status unchanged" },
       { status: 404 }
     );
   }
 
   return NextResponse.json({
-    message: "Breeder status reverted to pending.",
+    message: `Breeder status updated to ${status}.`,
   });
 }
