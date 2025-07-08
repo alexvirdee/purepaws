@@ -20,6 +20,10 @@ import {
     DropdownMenuItem,
     DropdownMenuLabel,
     DropdownMenuSeparator,
+    DropdownMenuSub,
+    DropdownMenuSubTrigger,
+    DropdownMenuPortal,
+    DropdownMenuSubContent,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
@@ -95,16 +99,26 @@ export default function BreederList({ breeders }: BreederListProps) {
                                                 <MoreVertical className="h-4 w-4" /> {/* lucide-react icon */}
                                             </Button>
                                         </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                            <DropdownMenuItem onClick={() => handleStatusChange(breeder._id, "approved")}>
-                                                ✅ Approve
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem onClick={() => handleStatusChange(breeder._id, "pending")}>
-                                                🕒 Pending
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem onClick={() => handleStatusChange(breeder._id, "rejected")}>
-                                                🚫 Reject
-                                            </DropdownMenuItem>
+                                        <DropdownMenuContent className="w-56" align="end">
+                                            <DropdownMenuSub>
+                                                <DropdownMenuSubTrigger>Update status</DropdownMenuSubTrigger>
+                                                <DropdownMenuPortal>
+                                                    <DropdownMenuSubContent>
+                                                        <DropdownMenuItem onClick={() => handleStatusChange(breeder._id, "approved")}>
+                                                            Approve
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem onClick={() => handleStatusChange(breeder._id, "pending")}>
+                                                            Pending
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem onClick={() => handleStatusChange(breeder._id, "rejected")}>
+                                                            Reject
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuSubContent>
+                                                </DropdownMenuPortal>
+                                                <DropdownMenuItem>
+                                                    <Link href={`/breeders/${breeder._id.toString()}`}>View profile</Link>
+                                                </DropdownMenuItem>
+                                            </DropdownMenuSub>
                                         </DropdownMenuContent>
                                     </DropdownMenu>
                                 </TableCell>
