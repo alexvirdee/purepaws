@@ -20,11 +20,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 import DogCardActions from "./DogCardActions";
 
 interface DogCardProps {
+    isRequest?: boolean; // If this is a request card, we can use this prop to conditionally render
     dog: IDog;
     isFavorited?: boolean;
     onUnfavorite?: (dogId: string) => void;
     loggedInUser?: string;
+    puppyApplication?: any;
     hasPuppyApplication?: boolean; // If the user has an application on their profile
+    hasPuppyInterest?: boolean; // If the user has shown interest in this dog
 }
 
 type BadgeVariant = "default" | "secondary" | "destructive" | "outline";
@@ -51,11 +54,14 @@ const STATUS_STYLES: Record<string, StatusStyle> = {
     },
 };
 
-export default function DogCard({ hasPuppyApplication, dog, isFavorited, onUnfavorite, loggedInUser }: DogCardProps) {
-    // const [showSignInDialog, setShowSignInDialog] = useState(false);
-
-    // const { data: session } = useSession();
-
+export default function DogCard({// If this is a request card, we can use this prop to conditionally render
+    puppyApplication,
+    hasPuppyApplication,
+    hasPuppyInterest,
+    dog,
+    isFavorited,
+    onUnfavorite,
+    loggedInUser }: DogCardProps) {
     const statusKey = dog.status?.charAt(0).toUpperCase() + dog.status?.slice(1).toLowerCase();
 
     if (dog && dog.photos) {
@@ -70,7 +76,7 @@ export default function DogCard({ hasPuppyApplication, dog, isFavorited, onUnfav
                 1. Guests on application
                 2. Users logged in who are not the breeders who currently own the dogs
             */}
-                {loggedInUser !== dog.breederId && (
+                {loggedInUser !== dog.breederId && !hasPuppyInterest && (
                     <div className="absolute top-2 right-2 bg-white rounded-full p-2 shadow hover:bg-gray-100 transition">
                         <FavoriteButton dogId={dog._id.toString()} initiallyFavorited={isFavorited} onUnfavorite={onUnfavorite} />
                     </div>
@@ -95,15 +101,18 @@ export default function DogCard({ hasPuppyApplication, dog, isFavorited, onUnfav
                     <p className="text-green-700 font-semibold mb-4">{formatPrice(dog.price)}</p>
                 </Link>
 
-                <DogCardActions
-                    dog={dog}
-                    dogId={dog._id}
-                    isFavorited={isFavorited}
-                    loggedInUser={loggedInUser}
-                    breederId={dog.breederId ?? ""}
-                    dogName={dog.name}
-                    hasPuppyApplication={hasPuppyApplication}
-                />
+            
+                    <DogCardActions
+                        dog={dog}
+                        dogId={dog._id}
+                        isFavorited={isFavorited}
+                        loggedInUser={loggedInUser}
+                        breederId={dog.breederId ?? ""}
+                        dogName={dog.name}
+                        puppyApplication={puppyApplication}
+                        hasPuppyApplication={hasPuppyApplication}
+                        hasPuppyInterest={hasPuppyInterest}
+                    />
             </CardContent>
 
         </Card>

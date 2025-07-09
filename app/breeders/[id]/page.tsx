@@ -87,6 +87,16 @@ const Breeder = async ({ params }: BreederParams) => {
         };
     }
 
+    // Find if the user had sent a puppy interest for any of the dogs
+    let puppyInterests: any[] | undefined = [];
+
+    if (userFromDb?._id) {
+        puppyInterests = await db.collection("puppyInterests").find({
+            userId: userFromDb._id,
+            breederId: ObjectId.isValid(breederId) ? new ObjectId(breederId) : breederId
+        }).toArray();
+    }
+
     // Serialize the dogs to ensure compatibility with Client Components
     const serializedDogs = dogs.map((dog) => ({
         ...dog,
@@ -122,7 +132,14 @@ const Breeder = async ({ params }: BreederParams) => {
             <h2 className="text-2xl font-bold mb-4 mx-auto text-center">Available Dogs</h2>
             {dogs.length > 0 ? (
                 // Note to future self - I am passing in the loggedInUser here so I don't show the favorite button if it's the breeder on the page
-                <DogCardList dogs={serializedDogs} favorites={favoriteDogs.map(dog => dog._id)} loggedInUser={loggedInUserBreederId} hasPuppyApplication={hasPuppyApplication} />
+                <DogCardList
+                    dogs={serializedDogs}
+                    favorites={favoriteDogs.map(dog => dog._id)}
+                    loggedInUser={loggedInUserBreederId}
+                    hasPuppyApplication={hasPuppyApplication}
+                    puppyApplication={serializedPuppyApplication} 
+                    puppyInterests={puppyInterests}
+                />
             ) : (
                 <p className="text-gray-500">No dogs available for this breeder.</p>
             )}

@@ -13,40 +13,84 @@ import { Button } from "@/components/ui/button";
 import { PawPrintIcon } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import Link from "next/link";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
-export default function PuppyInterestDialog({ 
-    dogId, 
-    breederId, 
-    hasPuppyApplication, 
-    name }: { 
-    dogId: string; 
-    breederId: string;
-    hasPuppyApplication: boolean, 
-    name: string }) {
+export default function PuppyInterestDialog({
+    hasPuppyInterest,
+    dogId,
+    breederId,
+    puppyApplication,
+    hasPuppyApplication,
+    name }:
+    {
+        hasPuppyInterest?: boolean;
+        dogId: string;
+        breederId: string;
+        puppyApplication?: any;
+        hasPuppyApplication: boolean,
+        name: string
+    }) {
     const [open, setOpen] = useState(false);
     const [message, setMessage] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const router = useRouter();
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.stopPropagation();
         e.preventDefault();
 
-        //  TODO: Call interest api to submit interest with an optional message to the breeder
-        console.log("Submitting interest for:", name, "with message:", message);
+        setIsSubmitting(true);
 
-        // Simulate API call
-        setTimeout(() => {
-            console.log("Interest submitted successfully!");
-            setOpen(false);
-            setMessage(""); // Reset message after submission
-        }, 500);
+        try {
+            const res = await fetch('/api/puppy-interests', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    dogId,
+                    breederId,
+                    puppyApplicationId: puppyApplication?._id,
+                    message: message.trim()
+                }),
+            });
+
+            const data = await res.json();
+
+            console.log("[PuppyInterestDialog] Response:", data);
+
+            if (res.ok) {
+                toast.success(`Your interest in ${name} has been submitted! 🎉`);
+
+                if (data.removedFromFavorites) {
+                    toast.info(`${name} has been removed from your favorites to your adoption requests.`);
+                }
+
+                // Re-fetch server component data
+                router.refresh();
+
+                setOpen(false);
+                setMessage("");
+            } else {
+                toast.error(data.error || "Something went wrong. Please try again.");
+            }
+
+        } catch (error) {
+            console.error("Error submitting interest:", error);
+            toast.error("An unexpected error occurred. Please try again.");
+        }
+
+        setIsSubmitting(false);
     }
 
     return (
         <>
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger asChild>
-                    <Button className="bg-blue-600 hover:bg-blue-700 text-white hover:text-white cursor-pointer">
-                        <PawPrintIcon /> Apply for {name}
+                    <Button disabled={hasPuppyInterest} className={`${hasPuppyInterest ? `bg-gray-500 hover:bg-gray-600` : `bg-blue-600 hover:bg-blue-700 text-white hover:text-white cursor-pointer`}`}>
+                        <PawPrintIcon /> {hasPuppyInterest ? `Applied` : `Apply for ${name}`} 
                     </Button>
                 </DialogTrigger>
                 {!hasPuppyApplication ? (
@@ -84,7 +128,7 @@ export default function PuppyInterestDialog({
                                 className="w-full"
                             />
                             <Button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white">
-                                Submit Interest
+                                {isSubmitting ? 'Sending...' : `Send Application`}
                             </Button>
                         </form>
                     </DialogContent>

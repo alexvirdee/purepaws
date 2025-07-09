@@ -11,20 +11,37 @@ import AddEditDogDialog from "./AddEditDogDialog";
 import DeleteDogDialog from "./DeleteDogDialog";
 import { IDog } from "@/interfaces/dog";
 
-export default function DogCardActions({ hasPuppyApplication, dog, dogId, isFavorited, loggedInUser, breederId, dogName }: {
-    hasPuppyApplication?: boolean;
-    dog: IDog;
-    dogId: string;
-    isFavorited?: boolean;
-    loggedInUser?: string;
-    breederId: string;
-    dogName: string;
-}) {
+export default function DogCardActions({
+    hasPuppyInterest,
+    puppyApplication,
+    hasPuppyApplication,
+    dog,
+    dogId,
+    isFavorited,
+    loggedInUser,
+    breederId,
+    dogName }: {
+        hasPuppyInterest?: boolean;
+        puppyApplication?: any;
+        hasPuppyApplication?: boolean;
+        dog: IDog;
+        dogId: string;
+        isFavorited?: boolean;
+        loggedInUser?: string;
+        breederId: string;
+        dogName: string;
+    }) {
     const { data: session } = useSession();
     const [showSignIn, setShowSignIn] = useState(false);
 
+    console.log('loggedInUser:', loggedInUser);
+    console.log('breederId:', breederId);
+
     // If they are the breeder, actions are edit/delete
-    if (loggedInUser === breederId) return (
+    if (loggedInUser &&
+        breederId &&
+        loggedInUser === breederId
+    ) return (
         <div className="flex gap-2 mt-2">
             <AddEditDogDialog mode="edit" initialData={dog} />
             <DeleteDogDialog dogId={dogId} dogName={dogName} />
@@ -34,7 +51,14 @@ export default function DogCardActions({ hasPuppyApplication, dog, dogId, isFavo
     return (
         <div className="flex flex-col gap-2">
             {session?.user?.email ? (
-                <PuppyInterestDialog dogId={dogId} breederId={breederId} hasPuppyApplication={!!hasPuppyApplication} name={dogName} />
+                <PuppyInterestDialog
+                    dogId={dogId}
+                    breederId={breederId}
+                    puppyApplication={puppyApplication}
+                    hasPuppyApplication={!!hasPuppyApplication}
+                    name={dogName}
+                    hasPuppyInterest={hasPuppyInterest}
+                />
             ) : (
                 <>
                     <Button
