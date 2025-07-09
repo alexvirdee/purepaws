@@ -75,11 +75,56 @@ export default async function BreederDashboardPage() {
         updatedAt: dog.updatedAt ? dog.updatedAt.toString() : null
     }));
 
+    const puppyInterests = await db
+        .collection("puppyInterests")
+        .find({ breederId: new ObjectId(breederId) })
+        .toArray();
+
+    // Get unique dog IDs in these requests
+    const puppyInterestDogIds = puppyInterests.map(interest => interest.dogId);
+
+    const dogsForInterests = await db.collection("dogs")
+        .find({ _id: { $in: puppyInterestDogIds } })
+        .toArray();
+
+    const puppyInterestUserIds = puppyInterests.map(interest => interest.userId);
+
+    const usersForInterests = await db.collection("users")
+        .find({ _id: { $in: puppyInterestUserIds } })
+        .toArray();
+
+    const adoptionRequests = puppyInterests.map(interest => {
+        const dog = dogsForInterests.find(d => d._id.toString() === interest.dogId.toString());
+        const buyer = usersForInterests.find(u => u._id.toString() === interest.userId.toString());
+
+        return {
+            _id: interest._id.toString(),
+            dog: dog ? {
+                _id: dog._id.toString(),
+                name: dog.name || "Unknown",
+                photos: dog.photos || [],
+                breed: dog.breed || "Unknown",
+            } : null,
+            buyer: buyer ? {
+                _id: buyer._id.toString(),
+                name: buyer.name || "Unknown Buyer",
+                email: buyer.email || "",
+            } : null,
+            message: interest.message || "",
+            status: interest.status || "pending",
+            createdAt: interest.createdAt ? interest.createdAt.toISOString() : null,
+        };
+    });
+
     return (
         <main className="max-w-5xl mx-auto p-8 space-y-8">
             <div className="flex justify-between items-center mb-4">
                 <div className="flex items-center gap-2 text-3xl font-bold">
                     <UserIcon className="w-8 text-gray-700" /> Breeder Dashboard
+                </div>
+                {/* Breeder action buttons */}
+                <div className="flex flex-row justify-end">
+                    <AddEditDogDialog mode="add" breederId={breederId} />
                 </div>
             </div>
 
@@ -87,11 +132,11 @@ export default async function BreederDashboardPage() {
                 <BreederApprovalBanner breeder={serializedBreeder} />
             )}
 
-            {/* ✅ My Dogs */}
-            <div className="bg-white rounded-lg shadow p-6 flex flex-col gap-6">
+
+            {/* My Dogs - using dog card with actions currently */}
+            <div className="bg-white rounded-lg shadow p-6 flex flex-col gap-6 max-h-[60vh] overflow-y-auto">
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="text-xl font-bold">My Dogs</h2>
-                    <AddEditDogDialog mode="add" breederId={breederId} />
                 </div>
 
                 {serializedDogs.length > 0 ? (
@@ -104,6 +149,31 @@ export default async function BreederDashboardPage() {
                     <p className="text-gray-500">
                         You haven't listed any dogs yet. Click "Add Dog" to get started!
                     </p>
+                )}
+            </div>
+
+            {/* Adoption Requests */}
+            <div className="bg-white rounded-lg shadow p-6 flex flex-col gap-4">
+                <h2 className="text-xl font-bold mb-2">Adoption Requests</h2>
+                {adoptionRequests.length > 0 ? (
+                    adoptionRequests.map((request) => (
+                        <div key={request._id} className="border p-4 rounded">
+                            <div className="flex items-center gap-4">
+                                {request.dog?.photos?.[0]?.path && (
+                                    <img src={request.dog.photos[0].path} alt={request.dog.name} className="w-20 h-20 object-cover rounded" />
+                                )}
+                                <div>
+                                    <h3 className="font-semibold">{request.dog?.name}</h3>
+                                    <p className="text-sm text-gray-500">From: {request.buyer?.name} ({request.buyer?.email})</p>
+                                    <p className="text-sm text-gray-500">Status: {request.status}</p>
+                                    <p className="text-sm">{request.message}</p>
+                                    <p className="text-xs text-gray-400">Submitted: {request.createdAt?.split('T')[0]}</p>
+                                </div>
+                            </div>
+                        </div>
+                    ))
+                ) : (
+                    <p className="text-gray-500">No adoption requests yet.</p>
                 )}
             </div>
 

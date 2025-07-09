@@ -89,8 +89,14 @@ export default function PuppyInterestDialog({
         <>
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger asChild>
-                    <Button disabled={hasPuppyInterest} className={`${hasPuppyInterest ? `bg-gray-500 hover:bg-gray-600` : `bg-blue-600 hover:bg-blue-700 text-white hover:text-white cursor-pointer`}`}>
-                        <PawPrintIcon /> {hasPuppyInterest ? `Applied` : `Apply for ${name}`} 
+                    <Button
+                        disabled={hasPuppyInterest}
+                        className={`w-full flex items-center justify-center gap-2 whitespace-nowrap text-sm px-3 py-2 ${hasPuppyInterest ? `bg-gray-500 hover:bg-gray-600` : `bg-blue-600 hover:bg-blue-700 text-white hover:text-white cursor-pointer`}`}
+                    >
+                        <PawPrintIcon />
+                        <span className="truncate max-w-[180px] block">
+                            {hasPuppyInterest ? `Applied` : `Apply for ${name}`}
+                        </span>
                     </Button>
                 </DialogTrigger>
                 {!hasPuppyApplication ? (

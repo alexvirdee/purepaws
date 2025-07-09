@@ -191,21 +191,22 @@ export default async function ProfilePage() {
             {/* Puppy Application Details
                 Note - Only showing this section for regular users i.e. not breeders since they won't be submitting puppy applications
             */}
-            {session?.user?.role !== "breeder" ? (
-                serializedPuppyApplication ? (
-                    <PuppyApplicationDetails data={serializedPuppyApplication} />
-                ) : (
-                    <div className="p-2">
-                        <p className="mb-4">You have not submitted a puppy application yet.</p>
-                        <a
-                            href="/puppy-application"
-                            className="inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
-                        >
-                            Submit Puppy Application
-                        </a>
+            {serializedPuppyApplication ? (
+                <PuppyApplicationDetails data={serializedPuppyApplication} />
+            ) : (
+                <div className="bg-white rounded-lg shadow p-6 flex flex-col sm:flex gap-6 relative p-2">
+                    <p className="mb-4">You have not submitted a puppy application yet.</p>
+                    <div>
+                    <Link
+                        href="/puppy-application"
+                        className="inline-block bg-green-600 text-white text-sm px-3 py-1.5 rounded hover:bg-green-700 transition"
+                    >
+                        Submit Puppy Application
+                    </Link>
                     </div>
-                )
-            ) : null}
+                </div>
+            )
+            }
 
             {/* For breeders who've applied and are not approved yet display that information in the profile */}
             {breeder && breeder.status !== "approved" && (

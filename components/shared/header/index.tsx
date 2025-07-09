@@ -16,40 +16,55 @@ const Header = async () => {
     const db = client.db(DB_NAME);
 
     let puppyApplication = null;
+    // For notifications currently just checking on number of incoming requests breeders have regarding their puppy applications 
+    // TODO: Add notificaitons for other things like new messages, etc.
+    let notificationCount = 0;
 
     // Check if logged in user has a puppy application
     if (session?.user?.email) {
         puppyApplication = await db.collection("puppyApplications").findOne({
             email: session.user.email
         })
-    }
 
-    // Serialize puppyApplication if user has one
-    if (puppyApplication) {
-        puppyApplication = {
-            ...puppyApplication,
-            _id: puppyApplication._id.toString(),
-            userId: puppyApplication.userId?.toString() || null,
-            createdAt: puppyApplication.createdAt?.toISOString() || null,
-            updatedAt: puppyApplication.updatedAt?.toISOString() || null
+        const breederUser = await db.collection('users').findOne({ email: session.user.email });
+        const breederId = breederUser?.breederId;
+
+        if (breederId) {
+            const puppyRequests = await db.collection('puppyInterests').find({
+                breederId: breederId,
+                status: "pending"
+            }).toArray();
+
+            notificationCount += puppyRequests.length;
+        }
+
+        // Serialize puppyApplication if user has one
+        if (puppyApplication) {
+            puppyApplication = {
+                ...puppyApplication,
+                _id: puppyApplication._id.toString(),
+                userId: puppyApplication.userId?.toString() || null,
+                createdAt: puppyApplication.createdAt?.toISOString() || null,
+                updatedAt: puppyApplication.updatedAt?.toISOString() || null
+            }
         }
     }
 
 
-    return (
-        <header className="w-full border-b">
-            <div className="wrapper flex justify-between items-center py-2">
-                <div className="flex items-center">
-                    <Link href="/" className="flex items-center">
-                        <Image height={48} width={48} priority={true} alt="" src="/images/paw-outline.svg" />
-                        <span className="hidden lg:block font-bold text-2xl ml-2">
-                            {APP_NAME}
-                        </span>
-                    </Link>
+        return (
+            <header className="w-full border-b">
+                <div className="wrapper flex justify-between items-center py-2">
+                    <div className="flex items-center">
+                        <Link href="/" className="flex items-center">
+                            <Image height={48} width={48} priority={true} alt="" src="/images/paw-outline.svg" />
+                            <span className="hidden lg:block font-bold text-2xl ml-2">
+                                {APP_NAME}
+                            </span>
+                        </Link>
+                    </div>
+                    <Menu notificationCount={notificationCount} puppyApplication={puppyApplication} />
                 </div>
-                <Menu puppyApplication={puppyApplication} />
-            </div>
-        </header>);
-}
+            </header>);
+    }
 
-export default Header;
+    export default Header;
