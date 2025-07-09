@@ -15,7 +15,9 @@ import Link from "next/link";
 import { DB_NAME } from "@/lib/constants";
 import DeletePuppyApplicationDialog from "@/components/DeletePuppyApplicationDialog";
 import BreederApprovalBanner from "@/components/breeders/BreederApprovalBanner";
-import { Button } from "@/components/ui/button";
+import PuppyAppPDFDownload from "@/components/PuppyAppPDFDownload";
+
+
 
 interface SerializedDog {
     _id: string;
@@ -101,168 +103,165 @@ export default async function ProfilePage() {
     }
 
 
-    // Serialize the dogs to ensure compatibility with client side components
-    const serializeDogs: SerializedDog[] = JSON.parse(JSON.stringify(dogs)).map((dog: IDog): SerializedDog => ({
-        ...dog,
-        _id: dog._id.toString(), // convert ObjectId to a string
-        photos: dog.photos || [], // ensure photos property exists
-        name: dog.name || "Unknown", // ensure name property exists
-        breed: dog.breed || "Unknown", // ensure breed property exists
-        status: dog.status || "Unknown", // ensure status property exists
-        price: dog.price || 0, // ensure price property exists
-        location: dog.location || "Unknown", // ensure location property exists
-        dob: dog.dob || "Unknown", // ensure dob property exists
-        gender: dog.gender || "Unknown", // ensure gender property exists
-        description: dog.description || "No description available", // ensure description property exists
-        createdAt: dog.createdAt ? dog.createdAt.toString() : null,
-        updatedAt: dog.updatedAt ? dog.updatedAt.toString() : null
-    }));
+            // Serialize the dogs to ensure compatibility with client side components
+            const serializeDogs: SerializedDog[] = JSON.parse(JSON.stringify(dogs)).map((dog: IDog): SerializedDog => ({
+                ...dog,
+                _id: dog._id.toString(), // convert ObjectId to a string
+                photos: dog.photos || [], // ensure photos property exists
+                name: dog.name || "Unknown", // ensure name property exists
+                breed: dog.breed || "Unknown", // ensure breed property exists
+                status: dog.status || "Unknown", // ensure status property exists
+                price: dog.price || 0, // ensure price property exists
+                location: dog.location || "Unknown", // ensure location property exists
+                dob: dog.dob || "Unknown", // ensure dob property exists
+                gender: dog.gender || "Unknown", // ensure gender property exists
+                description: dog.description || "No description available", // ensure description property exists
+                createdAt: dog.createdAt ? dog.createdAt.toString() : null,
+                updatedAt: dog.updatedAt ? dog.updatedAt.toString() : null
+            }));
 
-    return (
-        <main className="max-w-5xl mx-auto p-8 space-y-8">
-            <div className="flex flex-row justify-between mb-4">
-                <div className="flex items-center gap-2 text-3xl font-bold">
-                    <UserIcon className="w-8 text-gray-700" /> Profile
-                </div>
-                {userFromDb?.role === "admin" && (
-                    <Link className="text-blue-600" href="/admin">Admin Dashboard</Link>
-                )}
-            </div>
+            return (
+                <main className="max-w-5xl mx-auto p-8 space-y-8">
+                    <div className="flex flex-row justify-between mb-4">
+                        <div className="flex items-center gap-2 text-3xl font-bold">
+                            <UserIcon className="w-8 text-gray-700" /> Profile
+                        </div>
+                        {userFromDb?.role === "admin" && (
+                            <Link className="text-blue-600" href="/admin">Admin Dashboard</Link>
+                        )}
+                    </div>
 
-            {/* Breeder approval banner */}
-            {breederId &&
-                breeder &&
-                breeder.status === "approved" && (
-                    <BreederApprovalBanner breeder={serializedBreeder} />
-                )}
+                    {/* Breeder approval banner */}
+                    {breederId &&
+                        breeder &&
+                        breeder.status === "approved" && (
+                            <BreederApprovalBanner breeder={serializedBreeder} />
+                        )}
 
-            {/* Profile Card */}
-            <div className="bg-white rounded-lg shadow p-6 flex flex-col sm:flex gap-6 relative">
-                {/* Profile Image Placeholder */}
-                <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center text-2xl font-bold">
-                    {name?.[0].toUpperCase() || email?.[0].toUpperCase()}
-                </div>
-                <div className="flex-1">
-                    <h2 className="text-xl font-semibold mb-1">
-                        {name}
-                    </h2>
-                    <p className="text-sm text-gray-500 mb-1">
-                        {role?.charAt(0).toUpperCase() + role?.slice(1)}
-                    </p>
-                    <p className="text-sm text-gray-500 mb-1">
-                        {email}
-                    </p>
-                    {role === 'breeder' && (
-                        <p className="text-sm text-gray-500">
-                            {breeder?.about}
-                        </p>
-                    )}
-                </div>
-                {/* Edit Profile */}
-                <EditProfileDialog user={{ name: name || "", email: email, about: breeder ? breeder.about : null, role: role }} />
-            </div>
+                    {/* Profile Card */}
+                    <div className="bg-white rounded-lg shadow p-6 flex flex-col sm:flex gap-6 relative">
+                        {/* Profile Image Placeholder */}
+                        <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center text-2xl font-bold">
+                            {name?.[0].toUpperCase() || email?.[0].toUpperCase()}
+                        </div>
+                        <div className="flex-1">
+                            <h2 className="text-xl font-semibold mb-1">
+                                {name}
+                            </h2>
+                            <p className="text-sm text-gray-500 mb-1">
+                                {role?.charAt(0).toUpperCase() + role?.slice(1)}
+                            </p>
+                            <p className="text-sm text-gray-500 mb-1">
+                                {email}
+                            </p>
+                            {role === 'breeder' && (
+                                <p className="text-sm text-gray-500">
+                                    {breeder?.about}
+                                </p>
+                            )}
+                        </div>
+                        {/* Edit Profile */}
+                        <EditProfileDialog user={{ name: name || "", email: email, about: breeder ? breeder.about : null, role: role }} />
+                    </div>
 
-            {/* Puppy Application Details
+                    {/* Puppy Application Details
                 Note - Only showing this section for regular users i.e. not breeders since they won't be submitting puppy applications
             */}
-            {session?.user?.role !== "breeder" ? (
-                puppyApplication ? (
-                    <div className="bg-white rounded-lg shadow p-6 relative">
-                        <div className="flex justify-between items-start mb-6">
-                            <div>
-                                <h2 className="text-2xl font-bold text-gray-800 mb-2">🐶 Your Puppy Application</h2>
-                                <p className="text-sm text-gray-500">Here’s what you’ve submitted.</p>
-                                   <div className="flex flex-col sm:flex-row gap-2 mt-4 md:absolute md:top-4 md:right-4">
-                            {/* Future: Save as PDF */}
-                            <Button className="text-sm text-blue-600 border border-blue-600 px-3 py-1 rounded hover:bg-blue-50 transition">
-                                Save as PDF
-                            </Button>
-                            <EditPuppyApplicationDialog puppyApplication={serializedPuppyApplication} />
-                            <DeletePuppyApplicationDialog applicationId={serializedPuppyApplication?._id || ""} />
-                        </div>
+                    {session?.user?.role !== "breeder" ? (
+                        puppyApplication ? (
+                            <div className="bg-white rounded-lg shadow p-6 relative">
+                                <div className="flex justify-between items-start mb-6">
+                                    <div>
+                                        <h2 className="text-2xl font-bold text-gray-800 mb-2">🐶 Your Puppy Application</h2>
+                                        <p className="text-sm text-gray-500">Here’s what you’ve submitted.</p>
+                                        <div className="flex flex-col sm:flex-row gap-2 mt-4 md:absolute md:top-4 md:right-4">
+                                            <PuppyAppPDFDownload data={serializedPuppyApplication} />
+                                            <EditPuppyApplicationDialog puppyApplication={serializedPuppyApplication} />
+                                            <DeletePuppyApplicationDialog applicationId={serializedPuppyApplication?._id || ""} />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8">
+                                    <div>
+                                        <p className="flex items-center gap-2 text-gray-500">
+                                            <UserIcon />
+                                            <span className="pt-1">{puppyApplication.name}</span>
+                                        </p>
+                                        <p className="flex items-center gap-2 text-gray-500">
+                                            <MailIcon />
+                                            <span className="pt-1">{puppyApplication.email}</span>
+                                        </p>
+                                        <p className="flex items-center gap-2 text-gray-500">
+                                            <MapIcon />
+                                            <span className="pt-1">{puppyApplication.city}, {puppyApplication.state} {puppyApplication.zip}</span>
+                                        </p>
+
+                                        <p className="flex items-center gap-2 text-gray-500">
+                                            <Contact />
+                                            <span className="pt-1">{puppyApplication.age}</span>
+                                        </p>
+
+                                        <p className="flex items-center gap-2 text-gray-500">
+                                            <DogIcon />
+                                            <span className="pt-1">{puppyApplication.petsOwned}</span>
+                                        </p>
+
+                                        <p className="flex items-center gap-2 text-gray-500">
+                                            <BabyIcon />
+                                            <span className="pt-1">{puppyApplication.hasChildren ? 'Yes' : 'No'}</span>
+                                        </p>
+
+                                    </div>
+                                    <div>
+                                        <p className="flex items-center gap-2 text-gray-500">
+                                            <DogIcon />
+                                            <span className="pt-1">{puppyApplication.puppyPreference}</span>
+                                        </p>
+
+                                        <p className="flex items-center gap-2 text-gray-500">
+                                            <Users />
+                                            <span className="pt-1">{puppyApplication.genderPreference}</span>
+                                        </p>
+
+                                        <p className="flex items-center gap-2 text-gray-500">
+                                            <DumbbellIcon />
+                                            <span className="pt-1">{puppyApplication.trainingPlanned ? 'Yes' : 'No'}</span>
+                                        </p>
+
+                                        <p className="flex items-center gap-2 text-gray-500">
+                                            <Heart />
+                                            <span className="pt-1">{puppyApplication.desiredTraits}</span>
+                                        </p>
+
+                                        <p className="flex items-center gap-2 text-gray-500">
+                                            <NotebookPenIcon />
+                                            <span className="pt-1">{puppyApplication.additionalComments}</span>
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="border-t border-gray-200 mt-6 pt-4 text-sm text-gray-500">
+                                    Need to make changes? You can edit your application anytime before you start sending it to breeders.
+                                </div>
+
                             </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8">
-                            <div>
-                                <p className="flex items-center gap-2 text-gray-500">
-                                    <UserIcon />
-                                   <span className="pt-1">{puppyApplication.name}</span> 
-                                </p>
-                                <p className="flex items-center gap-2 text-gray-500">
-                                    <MailIcon />
-                                   <span className="pt-1">{puppyApplication.email}</span> 
-                                </p>
-                                <p className="flex items-center gap-2 text-gray-500">
-                                    <MapIcon />
-                                   <span className="pt-1">{puppyApplication.city}, {puppyApplication.state} {puppyApplication.zip}</span> 
-                                </p>
-
-                                <p className="flex items-center gap-2 text-gray-500">
-                                    <Contact />
-                                   <span className="pt-1">{puppyApplication.age}</span> 
-                                </p>
-
-                                <p className="flex items-center gap-2 text-gray-500">
-                                    <DogIcon />
-                                   <span className="pt-1">{puppyApplication.petsOwned}</span> 
-                                </p>
-
-                                <p className="flex items-center gap-2 text-gray-500">
-                                    <BabyIcon />
-                                   <span className="pt-1">{puppyApplication.hasChildren ? 'Yes' : 'No'}</span> 
-                                </p>
-
+                        ) : (
+                            <div className="p-2">
+                                <p className="mb-4">You have not submitted a puppy application yet.</p>
+                                <a
+                                    href="/puppy-application"
+                                    className="inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+                                >
+                                    Submit Puppy Application
+                                </a>
                             </div>
-                            <div>
-                                  <p className="flex items-center gap-2 text-gray-500">
-                                    <DogIcon />
-                                   <span className="pt-1">{puppyApplication.puppyPreference}</span> 
-                                </p>
-
-                                  <p className="flex items-center gap-2 text-gray-500">
-                                    <Users />
-                                   <span className="pt-1">{puppyApplication.genderPreference}</span> 
-                                </p>
-                            
-                                  <p className="flex items-center gap-2 text-gray-500">
-                                    <DumbbellIcon />
-                                   <span className="pt-1">{puppyApplication.trainingPlanned ? 'Yes' : 'No'}</span> 
-                                </p>
-
-                                  <p className="flex items-center gap-2 text-gray-500">
-                                    <Heart />
-                                   <span className="pt-1">{puppyApplication.desiredTraits}</span> 
-                                </p>
-
-                                  <p className="flex items-center gap-2 text-gray-500">
-                                    <NotebookPenIcon />
-                                   <span className="pt-1">{puppyApplication.additionalComments}</span> 
-                                </p>
-                            </div>
-                        </div>
-
-                        <div className="border-t border-gray-200 mt-6 pt-4 text-sm text-gray-500">
-                            Need to make changes? You can edit your application anytime before you start sending it to breeders.
-                        </div>
-
-                    </div>
-                ) : (
-                    <div className="p-2">
-                        <p className="mb-4">You have not submitted a puppy application yet.</p>
-                        <a
-                            href="/puppy-application"
-                            className="inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
-                        >
-                            Submit Puppy Application
-                        </a>
-                    </div>
-                )
-            ) : null}
+                        )
+                    ) : null}
 
 
-            {/* Breeder Profile */}
-            {/* TODO: Breeder CRUD functionality
+                    {/* Breeder Profile */}
+                    {/* TODO: Breeder CRUD functionality
                 1. Add dogs - Done
                 2. Edit dogs - Mostly done
                 3. Remove dogs - in-progress
@@ -272,115 +271,115 @@ export default async function ProfilePage() {
                         - Expected dogs/breeds 
                         - Contact interest form (on breeder detail page)
             */}
-            {breederId &&
-                breeder &&
-                breeder.status === "approved" && (
-                    <>
-                        {/* Breeder litters */}
+                    {breederId &&
+                        breeder &&
+                        breeder.status === "approved" && (
+                            <>
+                                {/* Breeder litters */}
+                                <div className="bg-white rounded-lg shadow p-6 flex flex-col sm:flex gap-6 relative">
+                                    <div className="flex justify-between items-center mb-4">
+                                        <h2 className="text-xl font-bold">Litters</h2>
+                                        {/* TODO: Add/Edit litter buttons */}
+                                        {/* {<AddEditDogDialog mode="add" breederId={breederId} />} */}
+                                    </div>
+
+                                    {/* List of litters */}
+                                    {serializeDogs.length > 0 ? (
+                                        <ul className="space-y-4">
+                                            {Array.from(new Set(serializeDogs
+                                                .map(dog => dog.litter)
+                                                .filter(Boolean) // remove undefined/null
+                                            )).map((litterName, index) => (
+                                                <li className="border p-4 rounded shadow hover:shadow-md hover:bg-gray-200 transition" key={index}>
+                                                    <Link
+                                                        href={`/profile/litters/${encodeURIComponent(litterName)}`}
+
+                                                    >
+                                                        <h3 className="text-lg font-semibold">{litterName}</h3>
+                                                        <p className="text-sm text-gray-600">
+                                                            {
+                                                                serializeDogs.filter(dog => dog.litter === litterName).length
+                                                            } puppies in this litter
+                                                        </p>
+                                                        {/* TODO: Add link to view litter details */}
+                                                    </Link>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    ) : (
+                                        <p className="text-gray-500">
+                                            You have no litters yet.
+                                        </p>
+                                    )}
+                                </div>
+                                {/* All dogs for breeder */}
+                                <div className="bg-white rounded-lg shadow p-6 flex flex-col sm:flex gap-6 relative">
+                                    <div className="flex justify-between items-center mb-4">
+                                        <h2 className="text-xl font-bold">My Dogs</h2>
+                                        {<AddEditDogDialog mode="add" breederId={breederId} />}
+                                    </div>
+
+                                    {/* List of dogs */}
+                                    {serializeDogs.length > 0 ? (
+                                        <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                            {serializeDogs.map((dog, index) => (
+                                                <div key={index}>
+                                                    <DogCard key={index} dog={dog} loggedInUser={breederId} />
+                                                </div>
+                                            ))}
+                                        </ul>
+                                    ) : (
+                                        <p className="text-gray-500">You haven't listed any dogs yet. Click "Add Dog" to get started!</p>
+                                    )}
+
+                                    {/* 📅 Upcoming Litters Placeholder */}
+                                    <div className="mt-8 bg-gray-200">
+                                        <h2 className="text-xl font-bold mb-2">Upcoming Litters</h2>
+                                        <p className="text-gray-500">
+                                            Coming soon: Add feature for upcoming litters with estimated due dates and notify interested families.
+                                        </p>
+                                    </div>
+                                </div>
+                            </>
+                        )
+                    }
+
+                    {/* For breeder profile who are not approved yet display that information in the profile */}
+                    {breeder && breeder.status !== "approved" && (
                         <div className="bg-white rounded-lg shadow p-6 flex flex-col sm:flex gap-6 relative">
-                            <div className="flex justify-between items-center mb-4">
-                                <h2 className="text-xl font-bold">Litters</h2>
-                                {/* TODO: Add/Edit litter buttons */}
-                                {/* {<AddEditDogDialog mode="add" breederId={breederId} />} */}
+                            <div className="flex justify-between items-center mb-1">
+                                <h2 className="text-xl font-bold">
+                                    Breeder application status:&nbsp;
+                                    <span className={breeder.status === 'rejected' ? 'text-red-600' : 'text-blue-500'}>
+                                        {breeder.status.charAt(0).toUpperCase() + breeder.status.slice(1)}
+                                    </span>
+                                </h2>
                             </div>
 
-                            {/* List of litters */}
-                            {serializeDogs.length > 0 ? (
-                                <ul className="space-y-4">
-                                    {Array.from(new Set(serializeDogs
-                                        .map(dog => dog.litter)
-                                        .filter(Boolean) // remove undefined/null
-                                    )).map((litterName, index) => (
-                                        <li className="border p-4 rounded shadow hover:shadow-md hover:bg-gray-200 transition" key={index}>
-                                            <Link
-                                                href={`/profile/litters/${encodeURIComponent(litterName)}`}
+                            {breeder.status === "pending" && (
+                                <p className="text-gray-600">
+                                    Our team is currently reviewing your breeder application. You’ll receive an email once approved!
+                                </p>
+                            )}
 
-                                            >
-                                                <h3 className="text-lg font-semibold">{litterName}</h3>
-                                                <p className="text-sm text-gray-600">
-                                                    {
-                                                        serializeDogs.filter(dog => dog.litter === litterName).length
-                                                    } puppies in this litter
-                                                </p>
-                                                {/* TODO: Add link to view litter details */}
-                                            </Link>
-                                        </li>
-                                    ))}
-                                </ul>
-                            ) : (
-                                <p className="text-gray-500">
-                                    You have no litters yet.
+                            {breeder.status === "rejected" && (
+                                <p className="text-gray-600">
+                                    Unfortunately, your breeder application was rejected. If you believe this was in error,
+                                    please email    <a href="mailto:woofpurepaws@gmail.com">woofpurepaws@gmail.com</a>  for assistance.
                                 </p>
                             )}
                         </div>
-                        {/* All dogs for breeder */}
-                        <div className="bg-white rounded-lg shadow p-6 flex flex-col sm:flex gap-6 relative">
-                            <div className="flex justify-between items-center mb-4">
-                                <h2 className="text-xl font-bold">My Dogs</h2>
-                                {<AddEditDogDialog mode="add" breederId={breederId} />}
-                            </div>
+                    )}
 
-                            {/* List of dogs */}
-                            {serializeDogs.length > 0 ? (
-                                <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                    {serializeDogs.map((dog, index) => (
-                                        <div key={index}>
-                                            <DogCard key={index} dog={dog} loggedInUser={breederId} />
-                                        </div>
-                                    ))}
-                                </ul>
-                            ) : (
-                                <p className="text-gray-500">You haven't listed any dogs yet. Click "Add Dog" to get started!</p>
-                            )}
-
-                            {/* 📅 Upcoming Litters Placeholder */}
-                            <div className="mt-8 bg-gray-200">
-                                <h2 className="text-xl font-bold mb-2">Upcoming Litters</h2>
-                                <p className="text-gray-500">
-                                    Coming soon: Add feature for upcoming litters with estimated due dates and notify interested families.
-                                </p>
-                            </div>
+                    {/* User Favorites */}
+                    {favoriteDogs.length > 0 ? (
+                        <div className="bg-white rounded shadow p-6">
+                            <h3 className="text-lg font-bold mb-4">Your Favorite Dogs</h3>
+                            <FavoriteDogsSection initialDogs={favoriteDogs} favorites={favoriteDogs} />
                         </div>
-                    </>
-                )
-            }
-
-            {/* For breeder profile who are not approved yet display that information in the profile */}
-            {breeder && breeder.status !== "approved" && (
-                <div className="bg-white rounded-lg shadow p-6 flex flex-col sm:flex gap-6 relative">
-                    <div className="flex justify-between items-center mb-1">
-                        <h2 className="text-xl font-bold">
-                            Breeder application status:&nbsp;
-                            <span className={breeder.status === 'rejected' ? 'text-red-600' : 'text-blue-500'}>
-                                {breeder.status.charAt(0).toUpperCase() + breeder.status.slice(1)}
-                            </span>
-                        </h2>
-                    </div>
-
-                    {breeder.status === "pending" && (
-                        <p className="text-gray-600">
-                            Our team is currently reviewing your breeder application. You’ll receive an email once approved!
-                        </p>
+                    ) : (
+                        <p className="text-gray-500">You have no favorite dogs yet.</p>
                     )}
-
-                    {breeder.status === "rejected" && (
-                        <p className="text-gray-600">
-                            Unfortunately, your breeder application was rejected. If you believe this was in error,
-                            please email    <a href="mailto:woofpurepaws@gmail.com">woofpurepaws@gmail.com</a>  for assistance.
-                        </p>
-                    )}
-                </div>
-            )}
-
-            {/* User Favorites */}
-            {favoriteDogs.length > 0 ? (
-                <div className="bg-white rounded shadow p-6">
-                    <h3 className="text-lg font-bold mb-4">Your Favorite Dogs</h3>
-                    <FavoriteDogsSection initialDogs={favoriteDogs} favorites={favoriteDogs} />
-                </div>
-            ) : (
-                <p className="text-gray-500">You have no favorite dogs yet.</p>
-            )}
-        </main>
-    );
-}
+                </main>
+            );
+        }
