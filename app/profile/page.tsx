@@ -5,32 +5,13 @@ import { getUserFavorites } from "@/lib/db/getUserFavorites";
 import { User as UserIcon, Dog as DogIcon, } from "lucide-react";
 import clientPromise from "@/lib/mongodb";
 import EditProfileDialog from "@/components/EditProfileDialog";
-
-import AddEditDogDialog from "@/components/AddEditDogDialog";
 import { ObjectId } from "mongodb";
-import DogCard from "@/components/DogCard";
-import { IDog } from "@/interfaces/dog";
 import FavoriteDogsSection from "@/components/FavoriteDogsSection";
 import Link from "next/link";
 import { DB_NAME } from "@/lib/constants";
 import BreederApprovalBanner from "@/components/breeders/BreederApprovalBanner";
 import PuppyApplicationDetails from "@/components/PuppyApplicationDetails";
 import AdoptionRequestsSection from "@/components/AdoptionRequestsSection";
-
-
-interface SerializedDog {
-    _id: string;
-    photos: { path: string;[key: string]: any }[];
-    name: string;
-    breed: string;
-    status: string;
-    price: number;
-    location: string;
-    description: string;
-    createdAt: string | null;
-    updatedAt: string | null;
-    [key: string]: any;
-}
 
 
 export default async function ProfilePage() {
@@ -104,24 +85,6 @@ export default async function ProfilePage() {
         };
     }
 
-
-    // Serialize the dogs to ensure compatibility with client side components
-    const serializeDogs: SerializedDog[] = JSON.parse(JSON.stringify(dogs)).map((dog: IDog): SerializedDog => ({
-        ...dog,
-        _id: dog._id.toString(), // convert ObjectId to a string
-        photos: dog.photos || [], // ensure photos property exists
-        name: dog.name || "Unknown", // ensure name property exists
-        breed: dog.breed || "Unknown", // ensure breed property exists
-        status: dog.status || "Unknown", // ensure status property exists
-        price: dog.price || 0, // ensure price property exists
-        location: dog.location || "Unknown", // ensure location property exists
-        dob: dog.dob || "Unknown", // ensure dob property exists
-        gender: dog.gender || "Unknown", // ensure gender property exists
-        description: dog.description || "No description available", // ensure description property exists
-        createdAt: dog.createdAt ? dog.createdAt.toString() : null,
-        updatedAt: dog.updatedAt ? dog.updatedAt.toString() : null
-    }));
-
     // Puppy interest requests for this user
     const puppyInterests = await db.collection("puppyInterests")
         .find({ userId: userFromDb?._id })
@@ -186,6 +149,10 @@ export default async function ProfilePage() {
                 {userFromDb?.role === "admin" && (
                     <Link className="text-blue-600" href="/admin">Admin Dashboard</Link>
                 )}
+
+                {userFromDb?.role === "breeder" && (
+                    <Link className="text-blue-600" href="/dashboard">View my Dashboard</Link>
+                )}
             </div>
 
             {/* Breeder approval banner */}
@@ -240,92 +207,7 @@ export default async function ProfilePage() {
                 )
             ) : null}
 
-
-            {/* Breeder Profile */}
-            {/* TODO: Breeder CRUD functionality
-                1. Add dogs - Done
-                2. Edit dogs - Mostly done
-                3. Remove dogs - in-progress
-                4. Display dogs added to db 
-                5. Add "Upcoming Litters" section with following details
-                        - Estimated Due Date
-                        - Expected dogs/breeds 
-                        - Contact interest form (on breeder detail page)
-            */}
-            {breederId &&
-                breeder &&
-                breeder.status === "approved" && (
-                    <>
-                        {/* Breeder litters */}
-                        <div className="bg-white rounded-lg shadow p-6 flex flex-col sm:flex gap-6 relative">
-                            <div className="flex justify-between items-center mb-4">
-                                <h2 className="text-xl font-bold">Litters</h2>
-                                {/* TODO: Add/Edit litter buttons */}
-                                {/* {<AddEditDogDialog mode="add" breederId={breederId} />} */}
-                            </div>
-
-                            {/* List of litters */}
-                            {serializeDogs.length > 0 ? (
-                                <ul className="space-y-4">
-                                    {Array.from(new Set(serializeDogs
-                                        .map(dog => dog.litter)
-                                        .filter(Boolean) // remove undefined/null
-                                    )).map((litterName, index) => (
-                                        <li className="border p-4 rounded shadow hover:shadow-md hover:bg-gray-200 transition" key={index}>
-                                            <Link
-                                                href={`/profile/litters/${encodeURIComponent(litterName)}`}
-
-                                            >
-                                                <h3 className="text-lg font-semibold">{litterName}</h3>
-                                                <p className="text-sm text-gray-600">
-                                                    {
-                                                        serializeDogs.filter(dog => dog.litter === litterName).length
-                                                    } puppies in this litter
-                                                </p>
-                                                {/* TODO: Add link to view litter details */}
-                                            </Link>
-                                        </li>
-                                    ))}
-                                </ul>
-                            ) : (
-                                <p className="text-gray-500">
-                                    You have no litters yet.
-                                </p>
-                            )}
-                        </div>
-                        {/* All dogs for breeder */}
-                        <div className="bg-white rounded-lg shadow p-6 flex flex-col sm:flex gap-6 relative">
-                            <div className="flex justify-between items-center mb-4">
-                                <h2 className="text-xl font-bold">My Dogs</h2>
-                                {<AddEditDogDialog mode="add" breederId={breederId} />}
-                            </div>
-
-                            {/* List of dogs */}
-                            {serializeDogs.length > 0 ? (
-                                <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                    {serializeDogs.map((dog, index) => (
-                                        <div key={index}>
-                                            <DogCard key={index} dog={dog} loggedInUser={breederId} />
-                                        </div>
-                                    ))}
-                                </ul>
-                            ) : (
-                                <p className="text-gray-500">You haven't listed any dogs yet. Click "Add Dog" to get started!</p>
-                            )}
-
-                            {/* 📅 Upcoming Litters Placeholder */}
-                            <div className="mt-8 bg-gray-200">
-                                <h2 className="text-xl font-bold mb-2">Upcoming Litters</h2>
-                                <p className="text-gray-500">
-                                    Coming soon: Add feature for upcoming litters with estimated due dates and notify interested families.
-                                </p>
-                            </div>
-                        </div>
-                    </>
-                )
-            }
-
-            {/* For breeder profile who are not approved yet display that information in the profile */}
+            {/* For breeders who've applied and are not approved yet display that information in the profile */}
             {breeder && breeder.status !== "approved" && (
                 <div className="bg-white rounded-lg shadow p-6 flex flex-col sm:flex gap-6 relative">
                     <div className="flex justify-between items-center mb-1">

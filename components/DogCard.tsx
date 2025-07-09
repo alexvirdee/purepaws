@@ -18,6 +18,7 @@ import {
 import DogImage from "./DogImage";
 import { Skeleton } from "@/components/ui/skeleton";
 import DogCardActions from "./DogCardActions";
+import { DogIcon } from "lucide-react";
 
 interface DogCardProps {
     isRequest?: boolean; // If this is a request card, we can use this prop to conditionally render
@@ -64,9 +65,9 @@ export default function DogCard({// If this is a request card, we can use this p
     loggedInUser }: DogCardProps) {
     const statusKey = dog.status?.charAt(0).toUpperCase() + dog.status?.slice(1).toLowerCase();
 
-    if (dog && dog.photos) {
-        console.log("DogCard - dog photos:", dog.photos[0].path);
-    }
+    // if (dog && dog.photos) {
+    //     console.log("DogCard - dog photos:", dog.photos[0].path);
+    // }
 
     return (
         <Card key={dog._id.toString()} className="transition relative hover:shadow-lg mb-4">
@@ -85,7 +86,13 @@ export default function DogCard({// If this is a request card, we can use this p
                 <Link href={`/dogs/${dog._id}`} >
                     {/* Suspense for image */}
                     <Suspense fallback={<Skeleton className="w-full h-48 rounded" />}>
-                        <DogImage src={dog.photos?.[0]?.path} alt={dog.name} />
+                        {dog.photos && dog.photos.length > 0 ? (
+                            <DogImage src={dog.photos?.[0]?.path} alt={dog.name} />
+                        ) : (
+                            <div className="w-full h-48 flex items-center justify-center bg-gray-200 rounded mb-2">
+                                <DogIcon className="w-16 h-16 text-gray-500" />
+                            </div>
+                        )}
                     </Suspense>
 
                     {/* Dog details */}
@@ -101,18 +108,18 @@ export default function DogCard({// If this is a request card, we can use this p
                     <p className="text-green-700 font-semibold mb-4">{formatPrice(dog.price)}</p>
                 </Link>
 
-            
-                    <DogCardActions
-                        dog={dog}
-                        dogId={dog._id}
-                        isFavorited={isFavorited}
-                        loggedInUser={loggedInUser}
-                        breederId={dog.breederId ?? ""}
-                        dogName={dog.name}
-                        puppyApplication={puppyApplication}
-                        hasPuppyApplication={hasPuppyApplication}
-                        hasPuppyInterest={hasPuppyInterest}
-                    />
+
+                <DogCardActions
+                    dog={dog}
+                    dogId={dog._id}
+                    isFavorited={isFavorited}
+                    loggedInUser={loggedInUser}
+                    breederId={dog.breederId ?? ""}
+                    dogName={dog.name}
+                    puppyApplication={puppyApplication}
+                    hasPuppyApplication={hasPuppyApplication}
+                    hasPuppyInterest={hasPuppyInterest}
+                />
             </CardContent>
 
         </Card>
