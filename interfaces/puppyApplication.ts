@@ -13,7 +13,7 @@ export interface IPuppyApplication {
     trainingPlanned: boolean;
     desiredTraits?: string;
     additionalComments?: string;
-    approvals?: string[]; // or whatever you use to track breeder approvals
+    approvals?: string[]; // or something to track breeder approvals
     userId?: string; // the user _id if you store it
     createdAt?: string | null;
     updatedAt?: string | null;

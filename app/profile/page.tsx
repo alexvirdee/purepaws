@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 import { getUserFavorites } from "@/lib/db/getUserFavorites";
-import { User as UserIcon, Dog as DogIcon } from "lucide-react";
+import { User as UserIcon, Dog as DogIcon, MailIcon, MapIcon, Contact, BabyIcon, DumbbellIcon, Users, Heart, NotebookPenIcon } from "lucide-react";
 import clientPromise from "@/lib/mongodb";
 import EditProfileDialog from "@/components/EditProfileDialog";
 import EditPuppyApplicationDialog from "@/components/EditPuppyApplicationDialog";
@@ -15,6 +15,7 @@ import Link from "next/link";
 import { DB_NAME } from "@/lib/constants";
 import DeletePuppyApplicationDialog from "@/components/DeletePuppyApplicationDialog";
 import BreederApprovalBanner from "@/components/breeders/BreederApprovalBanner";
+import { Button } from "@/components/ui/button";
 
 interface SerializedDog {
     _id: string;
@@ -61,7 +62,7 @@ export default async function ProfilePage() {
 
     // Serialize the breeder to ensure compatibility with client side components
     let serializedBreeder = null;
-    
+
     if (breeder) {
         serializedBreeder = {
             ...breeder,
@@ -132,14 +133,14 @@ export default async function ProfilePage() {
             {breederId &&
                 breeder &&
                 breeder.status === "approved" && (
-                <BreederApprovalBanner breeder={serializedBreeder} />
-            )}
+                    <BreederApprovalBanner breeder={serializedBreeder} />
+                )}
 
             {/* Profile Card */}
             <div className="bg-white rounded-lg shadow p-6 flex flex-col sm:flex gap-6 relative">
                 {/* Profile Image Placeholder */}
                 <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center text-2xl font-bold">
-                    {name?.[0] || email?.[0]}
+                    {name?.[0].toUpperCase() || email?.[0].toUpperCase()}
                 </div>
                 <div className="flex-1">
                     <h2 className="text-xl font-semibold mb-1">
@@ -166,34 +167,85 @@ export default async function ProfilePage() {
             */}
             {session?.user?.role !== "breeder" ? (
                 puppyApplication ? (
-                    <div className="bg-white rounded-lg shadow p-6 flex flex-col sm:flex gap-6 relative">
-                        <div className="p-2">
-                            <h2 className="text-xl font-semibold mb-4">Your Puppy Application</h2>
-                            <p><strong>Name:</strong> {puppyApplication.name}</p>
-                            <p><strong>Email:</strong> {puppyApplication.email}</p>
-                            <p><strong>City:</strong> {puppyApplication.city}</p>
-                            <p><strong>State:</strong> {puppyApplication.state}</p>
-                            <p><strong>Zip:</strong> {puppyApplication.zip}</p>
-                            <p><strong>Age:</strong> {puppyApplication.age}</p>
-                            <p><strong>Pets Owned:</strong> {puppyApplication.petsOwned}</p>
-                            <p><strong>Has Children:</strong>{puppyApplication.hasChildren === true ? 'Yes' : 'No'}</p>
-                            <p><strong>Puppy Preference:</strong>{puppyApplication.puppyPreference}</p>
-                            <p><strong>Gender Preference:</strong>{puppyApplication.genderPreference}</p>
-                            <p><strong>Training Planned:</strong>{puppyApplication.trainingPlanned === true ? 'Yes' : 'No'}</p>
-                            <p><strong>Desired Traits:</strong>{puppyApplication.desiredTraits}</p>
-                            <p><strong>Additional Comments:</strong>{puppyApplication.additionalComments}</p>
-                            <p><strong>Approvals:</strong> {puppyApplication.approvals?.length || 0}</p>
-
-                            {/* Puppy Application action buttons */}
-                            <div className="flex flex-row justify-between absolute top-4 right-4 gap-4">
-
-                                {/* Edit puppy application */}
-                                <EditPuppyApplicationDialog puppyApplication={serializedPuppyApplication} />
-
-                                {/* Delete application */}
-                                <DeletePuppyApplicationDialog applicationId={serializedPuppyApplication?._id || ""} />
+                    <div className="bg-white rounded-lg shadow p-6 relative">
+                        <div className="flex justify-between items-start mb-6">
+                            <div>
+                                <h2 className="text-2xl font-bold text-gray-800 mb-2">🐶 Your Puppy Application</h2>
+                                <p className="text-sm text-gray-500">Here’s what you’ve submitted.</p>
+                                   <div className="flex flex-col sm:flex-row gap-2 mt-4 md:absolute md:top-4 md:right-4">
+                            {/* Future: Save as PDF */}
+                            <Button className="text-sm text-blue-600 border border-blue-600 px-3 py-1 rounded hover:bg-blue-50 transition">
+                                Save as PDF
+                            </Button>
+                            <EditPuppyApplicationDialog puppyApplication={serializedPuppyApplication} />
+                            <DeletePuppyApplicationDialog applicationId={serializedPuppyApplication?._id || ""} />
+                        </div>
                             </div>
                         </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8">
+                            <div>
+                                <p className="flex items-center gap-2 text-gray-500">
+                                    <UserIcon />
+                                   <span className="pt-1">{puppyApplication.name}</span> 
+                                </p>
+                                <p className="flex items-center gap-2 text-gray-500">
+                                    <MailIcon />
+                                   <span className="pt-1">{puppyApplication.email}</span> 
+                                </p>
+                                <p className="flex items-center gap-2 text-gray-500">
+                                    <MapIcon />
+                                   <span className="pt-1">{puppyApplication.city}, {puppyApplication.state} {puppyApplication.zip}</span> 
+                                </p>
+
+                                <p className="flex items-center gap-2 text-gray-500">
+                                    <Contact />
+                                   <span className="pt-1">{puppyApplication.age}</span> 
+                                </p>
+
+                                <p className="flex items-center gap-2 text-gray-500">
+                                    <DogIcon />
+                                   <span className="pt-1">{puppyApplication.petsOwned}</span> 
+                                </p>
+
+                                <p className="flex items-center gap-2 text-gray-500">
+                                    <BabyIcon />
+                                   <span className="pt-1">{puppyApplication.hasChildren ? 'Yes' : 'No'}</span> 
+                                </p>
+
+                            </div>
+                            <div>
+                                  <p className="flex items-center gap-2 text-gray-500">
+                                    <DogIcon />
+                                   <span className="pt-1">{puppyApplication.puppyPreference}</span> 
+                                </p>
+
+                                  <p className="flex items-center gap-2 text-gray-500">
+                                    <Users />
+                                   <span className="pt-1">{puppyApplication.genderPreference}</span> 
+                                </p>
+                            
+                                  <p className="flex items-center gap-2 text-gray-500">
+                                    <DumbbellIcon />
+                                   <span className="pt-1">{puppyApplication.trainingPlanned ? 'Yes' : 'No'}</span> 
+                                </p>
+
+                                  <p className="flex items-center gap-2 text-gray-500">
+                                    <Heart />
+                                   <span className="pt-1">{puppyApplication.desiredTraits}</span> 
+                                </p>
+
+                                  <p className="flex items-center gap-2 text-gray-500">
+                                    <NotebookPenIcon />
+                                   <span className="pt-1">{puppyApplication.additionalComments}</span> 
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="border-t border-gray-200 mt-6 pt-4 text-sm text-gray-500">
+                            Need to make changes? You can edit your application anytime before you start sending it to breeders.
+                        </div>
+
                     </div>
                 ) : (
                     <div className="p-2">
