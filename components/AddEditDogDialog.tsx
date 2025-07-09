@@ -42,7 +42,7 @@ export default function AddEditDogDialog({
     initialData,
     onSubmitSuccess
 }: AddEditDogDialogProps) {
-    const [formData, setFormData] = useState<Omit<IDog, '_id'>>({
+    const initialFormData = {
         name: '',
         litter: '',
         breed: '',
@@ -53,10 +53,16 @@ export default function AddEditDogDialog({
         description: '',
         price: 0,
         location: ''
-    });
+    };
+
+    const [formData, setFormData] = useState<Omit<IDog, '_id'>>(initialFormData);
     const [open, setOpen] = useState(false);
 
     const router = useRouter();
+
+    const resetForm = () => {
+        setFormData(initialFormData);
+    }
 
     useEffect(() => {
         if (mode === 'edit' && initialData) {
@@ -79,7 +85,7 @@ export default function AddEditDogDialog({
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
     }
-    
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -108,6 +114,11 @@ export default function AddEditDogDialog({
 
             if (res.ok) {
                 toast.success(`Dog ${mode === 'edit' ? 'edited' : 'added'} successfully`);
+
+                if (mode === 'add') {
+                    resetForm();
+                }
+
                 setOpen(false);
 
                 router.refresh();

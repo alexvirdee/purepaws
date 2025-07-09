@@ -6,7 +6,9 @@ if (!uri) {
     throw new Error('MONGODB_URI is not set in the environment variables');
 }
 
-const options = {};
+const options = {
+    maxPoolSize: 5,
+};
 
 let client;
 let clientPromise: Promise<MongoClient>;
@@ -19,13 +21,16 @@ declare global {
 if (process.env.NODE_ENV === 'development') {
     if (!global._mongoClientPromise) {
         client = new MongoClient(uri, options);
+
         console.log('🗄️ Connecting to MongoDB Atlas...');
+
         global._mongoClientPromise = client.connect();
-        global._mongoClientPromise.then(() => 
+
+        global._mongoClientPromise.then(() =>
             console.log('🗄️ Connected to MongoDB Atlas successfully!')
-        ).catch((error) => 
+        ).catch((error) =>
             console.error('❌ Failed to connect to MongoDB Atlas:', error)
-        )
+        ).finally(() => console.log('🗄️ MongoDB Atlas connection attempt finished.'));
     }
 
     clientPromise = global._mongoClientPromise;
@@ -34,11 +39,11 @@ if (process.env.NODE_ENV === 'development') {
     console.log('🗄️ Connecting to MongoDB Atlas...');
 
     clientPromise = client.connect();
-    clientPromise.then(() => 
+    clientPromise.then(() =>
         console.log('🗄️ Connected to MongoDB Atlas successfully!')
-    ).catch((error) => 
+    ).catch((error) =>
         console.error('❌ Failed to connect to MongoDB Atlas:', error)
-    );
+    ).finally(() => console.log('🗄️ MongoDB Atlas connection attempt finished.'));
 }
 
 export default clientPromise;
