@@ -1,5 +1,4 @@
-'use client';
-
+// Note keep dog card list server rendered
 
 import DogCard from "@/components/DogCard";
 import { IDog } from "@/interfaces/dog";
