@@ -19,6 +19,7 @@ import { toast } from 'sonner';
 import Link from 'next/link';
 import FileDropzone from '@/components/FileDropzone';
 import { DOG_BREEDS } from '@/lib/constants/dogBreeds';
+import TermsAndConditionsDialog from './TermsAndConditionsDialog';
 
 interface FormData {
     name: string;
@@ -31,6 +32,7 @@ interface FormData {
     breeds: string[];
     about: string;
     supportingDocuments: string[];
+    termsAccepted: boolean;
 }
 
 
@@ -58,6 +60,7 @@ function validateForm(formData: FormData): string | null {
     if (!formData.supportingDocuments || formData.supportingDocuments.length === 0) {
         return "Please upload at least one supporting document.";
     }
+      if (!formData.termsAccepted) return "You must accept the terms and conditions.";
 
     return null; // All good!
 }
@@ -82,6 +85,7 @@ const ListYourKennelForm = ({
         breeds: [],
         about: '',
         supportingDocuments: [],
+        termsAccepted: false
     }
 
     const hasShown = useRef(false);
@@ -89,6 +93,7 @@ const ListYourKennelForm = ({
     const [formData, setFormData] = useState<FormData>(initialFormData);
     const [selectedBreed, setSelectedBreed] = useState<string | undefined>(undefined);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [termsAccepted, setTermsAccepted] = useState(false);
 
     useEffect(() => {
         if (hasBreederApplication && !hasShown.current) {
@@ -118,6 +123,8 @@ const ListYourKennelForm = ({
 
         if (validationError) {
             toast.error(validationError);
+            setIsSubmitting(false);
+
             return;
         }
 
@@ -141,6 +148,7 @@ const ListYourKennelForm = ({
 
                 router.push("/success");
             } else {
+                setIsSubmitting(false);
                 console.error('Error submitting application');
             }
         } catch (error) {
@@ -310,13 +318,6 @@ const ListYourKennelForm = ({
                                 ))}
                             </SelectContent>
                         </Select>
-                        {/* {DOG_BREEDS.map((breed, index) => ( */}
-                        {/* <Checkbox
-                                    checked={formData.breeds.includes(breed)}
-                                    onCheckedChange={() => handleBreedChange(breed)}
-                                />
-                                <span>{breed}</span> */}
-
                     </div>
                 </div>
                 <div>
@@ -341,14 +342,24 @@ const ListYourKennelForm = ({
                         multiple
                     />
                 </div>
+                <div>
+                    <TermsAndConditionsDialog termsAccepted={termsAccepted} onAccept={() => {
+                        setFormData((prev) => ({
+                            ...prev,
+                            termsAccepted: true
+                        }))
+                        setTermsAccepted(true);
+                        toast.success("Terms and conditions accepted.");
+                    }} />
+                </div>
                 <Button
                     type="submit"
                     className="bg-green-600 text-white px-4 py-2 rounded cursor-pointer hover:bg-green-700 transition-colors disabled:cursor-not-allowed"
                     disabled={isSubmitting}
                 >
-                  {
-                    isSubmitting ? 'Submitting...' : 'Submit Application'
-                  } 
+                    {
+                        isSubmitting ? 'Submitting...' : 'Submit Application'
+                    }
                 </Button>
             </form>
         </div>

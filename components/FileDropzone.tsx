@@ -125,7 +125,7 @@ export default function FileDropzone({
                 </div>
             ) : <div
                 {...getRootProps()}
-                className={`min-h-[100px] border border-dashed rounded p-4 text-center cursor-pointer ${isDragActive ? 'bg-blue-50 border-blue-400' : ''
+                className={`min-h-[100px] border border-dashed rounded p-4 text-center cursor-pointer flex items-center justify-center  ${isDragActive ? 'bg-blue-50 border-blue-400' : 'bg-gray-200'
                     }`}
             >
                 <Input {...getInputProps()} />

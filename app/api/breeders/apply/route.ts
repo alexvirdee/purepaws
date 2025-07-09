@@ -16,6 +16,7 @@ function formatBreederData(data: any) {
     zip: data.zip?.trim(),
     breeds: data.breeds || [],
     supportingDocuments: data.supportingDocuments || [],
+    termsAccepted: data.termsAccepted || false,
     about: data.about?.trim(),
   };
 }
@@ -30,7 +31,8 @@ function isValidBreederData(data: any) {
     zip,
     breeds,
     about,
-    supportingDocuments
+    supportingDocuments,
+    termsAccepted
   } = data;
 
   if (!name || name.trim() === "") return "Kennel name is required.";
@@ -49,18 +51,22 @@ function isValidBreederData(data: any) {
   if (!Array.isArray(supportingDocuments) || supportingDocuments.length === 0)
     return "At least one supporting document is required.";
 
+  if (!termsAccepted) {
+    return "You must accept the terms and conditions.";
+  }
+
   return null; // All good!
 }
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, breeds, address, city, state, zip, supportingDocuments, about } = formatBreederData(body);
+    const { name, breeds, address, city, state, zip, supportingDocuments, about, termsAccepted } = formatBreederData(body);
 
     const session = await getServerSession(authOptions);
     const email = session?.user?.email;
 
-    const validationError = isValidBreederData({ name, email, address, city, state, zip, breeds, about, supportingDocuments });
+    const validationError = isValidBreederData({ name, email, address, city, state, zip, breeds, about, supportingDocuments, termsAccepted });
 
     if (validationError) {
       return NextResponse.json(
@@ -111,6 +117,7 @@ export async function POST(request: Request) {
       latitude,
       longitude,
       supportingDocuments,
+      termsAccepted,
       about,
       status: "pending",
       submittedAt: new Date(),
