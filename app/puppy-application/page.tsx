@@ -5,6 +5,7 @@ import clientPromise from '@/lib/mongodb';
 import { DB_NAME } from "@/lib/constants";
 import { redirect } from "next/navigation";
 
+
 const PuppyApplication = async () => {
     const session = await getServerSession(authOptions);
 

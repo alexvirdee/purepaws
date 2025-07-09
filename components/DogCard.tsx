@@ -24,6 +24,7 @@ interface DogCardProps {
     isFavorited?: boolean;
     onUnfavorite?: (dogId: string) => void;
     loggedInUser?: string;
+    hasPuppyApplication?: boolean; // If the user has an application on their profile
 }
 
 type BadgeVariant = "default" | "secondary" | "destructive" | "outline";
@@ -50,7 +51,7 @@ const STATUS_STYLES: Record<string, StatusStyle> = {
     },
 };
 
-export default function DogCard({ dog, isFavorited, onUnfavorite, loggedInUser }: DogCardProps) {
+export default function DogCard({ hasPuppyApplication, dog, isFavorited, onUnfavorite, loggedInUser }: DogCardProps) {
     // const [showSignInDialog, setShowSignInDialog] = useState(false);
 
     // const { data: session } = useSession();
@@ -101,6 +102,7 @@ export default function DogCard({ dog, isFavorited, onUnfavorite, loggedInUser }
                     loggedInUser={loggedInUser}
                     breederId={dog.breederId ?? ""}
                     dogName={dog.name}
+                    hasPuppyApplication={hasPuppyApplication}
                 />
             </CardContent>
 

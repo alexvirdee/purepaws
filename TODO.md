@@ -20,6 +20,10 @@
   - Display application on user’s profile page
   - Add ability to update application (optional)
 
+- [ ] **Browser Issue**
+  - Ensure fallback with WebGL - Map currently doesn't work on Brave browser 
+
+
 ---
 
 ## 2️⃣ Admin Dashboard (Stretch)

@@ -10,7 +10,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -43,6 +43,7 @@ const PuppyApplicationForm = ({
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const router = useRouter();
+    const searchParams = useSearchParams();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value, type } = e.target;
@@ -88,8 +89,17 @@ const PuppyApplicationForm = ({
 
                 toast.success('Your puppy application was submitted! 🎉');
 
-                // Route to profile so user can view and make updates to their puppy application details
-                router.push('/profile');
+                // Check if there is a next page to redirect to
+                const next = searchParams.get('next');
+                if (next) {
+                    // If there is a next page, redirect to it
+                    router.push(next);
+                } else {
+                    // Otherwise, redirect to profile page
+                    // Route to profile so user can view and make updates to their puppy application details
+                    router.push('/profile');
+                }
+
                 router.refresh();
             } else {
                 toast.error(data.error || "Something went wrong. Please try again.");

@@ -11,8 +11,9 @@ import AddEditDogDialog from "./AddEditDogDialog";
 import DeleteDogDialog from "./DeleteDogDialog";
 import { IDog } from "@/interfaces/dog";
 
-export default function DogCardActions({ dog, dogId, isFavorited, loggedInUser, breederId, dogName }: {
-    dog: IDog
+export default function DogCardActions({ hasPuppyApplication, dog, dogId, isFavorited, loggedInUser, breederId, dogName }: {
+    hasPuppyApplication?: boolean;
+    dog: IDog;
     dogId: string;
     isFavorited?: boolean;
     loggedInUser?: string;
@@ -33,7 +34,7 @@ export default function DogCardActions({ dog, dogId, isFavorited, loggedInUser, 
     return (
         <div className="flex flex-col gap-2">
             {session?.user?.email ? (
-                <PuppyInterestDialog name={dogName} />
+                <PuppyInterestDialog dogId={dogId} breederId={breederId} hasPuppyApplication={!!hasPuppyApplication} name={dogName} />
             ) : (
                 <>
                     <Button

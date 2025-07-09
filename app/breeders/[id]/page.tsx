@@ -67,6 +67,26 @@ const Breeder = async ({ params }: BreederParams) => {
         .find({ breederId: ObjectId.isValid(breederId) ? new ObjectId(breederId) : breederId })
         .toArray();
 
+    // Find if the logged in user has a puppy application
+    let puppyApplication = null;
+    let hasPuppyApplication = false;
+    puppyApplication = await db.collection("puppyApplications").findOne({
+        userId: userFromDb?._id
+    })
+
+    // Serialize the puppy application to ensure compatibility with client side components
+    let serializedPuppyApplication = null;
+    if (puppyApplication) {
+        hasPuppyApplication = true;
+        serializedPuppyApplication = {
+            ...puppyApplication,
+            _id: puppyApplication._id?.toString() || null,
+            userId: puppyApplication.userId?.toString() || null,
+            createdAt: puppyApplication.createdAt ? puppyApplication.createdAt.toString() : null,
+            updatedAt: puppyApplication.updatedAt ? puppyApplication.updatedAt.toString() : null,
+        };
+    }
+
     // Serialize the dogs to ensure compatibility with Client Components
     const serializedDogs = dogs.map((dog) => ({
         ...dog,
@@ -102,7 +122,7 @@ const Breeder = async ({ params }: BreederParams) => {
             <h2 className="text-2xl font-bold mb-4 mx-auto text-center">Available Dogs</h2>
             {dogs.length > 0 ? (
                 // Note to future self - I am passing in the loggedInUser here so I don't show the favorite button if it's the breeder on the page
-                <DogCardList dogs={serializedDogs} favorites={favoriteDogs.map(dog => dog._id)} loggedInUser={loggedInUserBreederId} />
+                <DogCardList dogs={serializedDogs} favorites={favoriteDogs.map(dog => dog._id)} loggedInUser={loggedInUserBreederId} hasPuppyApplication={hasPuppyApplication} />
             ) : (
                 <p className="text-gray-500">No dogs available for this breeder.</p>
             )}
