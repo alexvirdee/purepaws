@@ -1,5 +1,7 @@
 'use client';
 
+import { useRouter } from "next/navigation";
+
 import { DOG_BREEDS } from "@/lib/constants/dogBreeds";
 import { Input } from "@/components/ui/input";
 import {
@@ -12,6 +14,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { Button } from "@/components/ui/button";
+import { Search } from "lucide-react";
 
 export default function FilterBar({
     selectedBreed,
@@ -19,28 +22,50 @@ export default function FilterBar({
     searchTerm,
     setSearchTerm,
     clearFilters,
-    resultsCount
 }: {
     searchTerm: string;
     setSearchTerm: (value: string) => void;
     selectedBreed: string;
     setSelectedBreed: (value: string) => void;
     clearFilters: () => void;
-    resultsCount?: number;
 }) {
+    const router = useRouter();
 
     const hasFilter = selectedBreed !== 'All' || searchTerm.trim() !== '';
 
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+
+        const query = new URLSearchParams();
+
+        if (searchTerm.trim()) {
+            query.append('zip', searchTerm.trim());
+        }
+        if (selectedBreed && selectedBreed !== 'All') {
+            query.append('breed', selectedBreed);
+        }
+
+
+        router.push(`/map-view?${query.toString()}`);
+    }
+
     return (
-        <div className="absolute top-4 left-4 z-20 bg-white shadow-md rounded-lg p-4 flex flex-col gap-2 max-w-md w-full">
-            <h2 className="text-lg font-semibold mb-2">Find Your Breeder</h2>
-            <Input
-                type="text"
-                placeholder="Search for your next puppy..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full p-2 border rounded mb-2"
-            />
+        <form onSubmit={handleSearch}>
+            <div className="relative mb-2">
+                <Input
+                    type="text"
+                    placeholder="Enter a breed or location"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full p-2 border rounded mb-2"
+                />
+                <Button
+                    type="submit"
+                    className="absolute bg-transparent absolute right-0.5 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer hover:bg-transparent"
+                >
+                    <Search className="text-black" size={16} />
+                </Button>
+            </div>
             <Select
                 value={selectedBreed}
                 onValueChange={(value) => setSelectedBreed(value)}
@@ -63,20 +88,15 @@ export default function FilterBar({
                 </SelectContent>
             </Select>
 
-             {resultsCount !== undefined && (
-        <span className="text-xs text-gray-600">
-          {resultsCount} breeder{resultsCount === 1 ? '' : 's'} found
-        </span>
-      )}
-
             {hasFilter && (
                 <Button
+                    type="button"
                     onClick={clearFilters}
                     className="mt-2 text-sm text-blue-600 hover:underline cursor-pointer"
                 >
                     Clear Filters
                 </Button>
             )}
-        </div>
+        </form>
     )
 }

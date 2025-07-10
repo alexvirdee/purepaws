@@ -2,9 +2,9 @@
 import SignInOutToast from "@/components/SignInOutToast";
 
 import clientPromise from "@/lib/mongodb";
-import MapWrapper from "@/components/MapWrapper";
 import FeaturedBreedersSection from "@/components/FeaturedBreedersSection";
 import { DB_NAME } from "@/lib/constants";
+import Hero from "@/components/Hero";
 
 interface RawBreeder {
   _id: any; // MongoDB ObjectId
@@ -39,9 +39,7 @@ export default async function Home() {
     <>
       <div>
         <SignInOutToast />
-        <div className="relative w-full">
-          <MapWrapper breeders={breedersData} />
-        </div>
+        <Hero breeders={breedersData} />
       </div>
       <div className="p-4">
         <FeaturedBreedersSection />
