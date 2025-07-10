@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 import { getUserFavorites } from "@/lib/db/getUserFavorites";
-import { User as UserIcon, Dog as DogIcon, } from "lucide-react";
+import { User as UserIcon, Dog as DogIcon, ArrowRight } from "lucide-react";
 import clientPromise from "@/lib/mongodb";
 import EditProfileDialog from "@/components/EditProfileDialog";
 import { ObjectId } from "mongodb";
@@ -195,15 +195,15 @@ export default async function ProfilePage() {
                 <PuppyApplicationDetails data={serializedPuppyApplication} />
             ) : (
                 <div className="bg-white rounded-lg shadow p-6 flex flex-col sm:flex gap-6 relative p-2">
-                    <p className="mb-4">You have not submitted a puppy application yet.</p>
-                    <div>
+                    <p className="mb-4">You don't have a puppy application yet.</p>
+                   
                     <Link
                         href="/puppy-application"
-                        className="inline-block bg-green-600 text-white text-sm px-3 py-1.5 rounded hover:bg-green-700 transition"
+                        className="inline-flex items-center text-blue-500 text-sm px-3 py-1.5 rounded hover:text-blue-600 transition"
                     >
-                        Submit Puppy Application
+                      <ArrowRight className="w-4 h-4 mr-2" /> <span>Complete Puppy Application</span>
                     </Link>
-                    </div>
+               
                 </div>
             )
             }

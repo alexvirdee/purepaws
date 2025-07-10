@@ -169,6 +169,7 @@ export default function MapView({ breeders }: { breeders: any[] }) {
         searchTerm={searchTerm}
         setSearchTerm={handleSearchChange}
         clearFilters={clearFilters}
+        layout="inline"
       />
 
       <Map

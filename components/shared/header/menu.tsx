@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from "react";
-import { PawPrint, UserIcon, EllipsisVertical, Dog, Search } from "lucide-react";
+import { PawPrint, UserIcon, EllipsisVertical, Dog, FlaskConicalIcon } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -48,9 +48,9 @@ const Menu: React.FC<MenuProps> = ({ notificationCount, puppyApplication }) => {
                 <nav className="hidden md:flex w-full gap-2 items-center">
                     {/* Public breed matcher feature */}
                     <Button asChild variant="ghost">
-                        <Link href="/breed-finder">
-                            <Search className="text-gray-500 hover:text-blue-600" />
-                            Find My Breed
+                        <Link href="/breed-selector">
+                            <FlaskConicalIcon className="text-gray-500" />
+                            Breed Selector Tool
                         </Link>
                     </Button>
                     {/* Note - admin role can see all navbar links */}
@@ -108,9 +108,9 @@ const Menu: React.FC<MenuProps> = ({ notificationCount, puppyApplication }) => {
                             <SheetTitle className="p-4">Menu</SheetTitle>
                              {/* Public breed matcher feature */}
                     <Button asChild variant="ghost">
-                        <Link href="/breed-finder">
-                            <Search className="text-gray-500 hover:text-blue-600" />
-                            Find My Breed
+                        <Link href="/breed-selector">
+                            <FlaskConicalIcon className="text-gray-500" />
+                             Breed Selector Tool
                         </Link>
                     </Button>
                             {!puppyApplication && (
