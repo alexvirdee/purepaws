@@ -1,4 +1,7 @@
+import clientPromise from "@/lib/mongodb"; // Reuse your pooled client
 import type { NextAuthOptions, User, Session, JWT } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import bcrypt from "bcrypt";
 import { IUser } from "@/interfaces/user";
 
 // Extend the User type to include the role property
@@ -11,12 +14,6 @@ declare module "next-auth" {
   }
 }
 
-import CredentialsProvider from "next-auth/providers/credentials";
-import { MongoClient } from "mongodb";
-import bcrypt from "bcrypt";
-
-const client = await MongoClient.connect(process.env.MONGODB_URI!);
-const userCollection = client.db().collection("users");
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -27,6 +24,9 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials, req) {
+        const client = await clientPromise; // Use the pooled client
+        const userCollection = client.db().collection("users");
+
         // Fetch user from DB
         const user = await userCollection.findOne({ email: credentials?.email });
 
@@ -41,7 +41,6 @@ export const authOptions: NextAuthOptions = {
         }
 
         const dbPassword = user.password;
-
 
         let isValidPassword = false;
 
@@ -59,13 +58,14 @@ export const authOptions: NextAuthOptions = {
         }
 
         // If everything is fine, return the user object
-        return { 
-          id: user._id.toString(), 
-          name: user.name,
-          email: user.email, 
+        // Exclude password from the returned user object for security, but ensure all required fields are present for NextAuth
+        const { password, ...safeUser } = user;
+        return {
+          ...safeUser,
+          id: user._id.toString(), // Ensure id is a string
           role: user.role || "viewer",
-          breederId: user.breederId || null, // Optional breederId 
-        };
+          breederId: user.breederId || null, // Optional breederId
+        } as User;
       },
     }),
   ],

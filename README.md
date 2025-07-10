@@ -25,13 +25,9 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 ## Seeding MongoDB
 Upload JSON seed files in mongodb compass to get collections if the db has been cleared or need new mock data 
 
-## Notes to remember
-Only breeders with "approved" status will render on map page
-
 Next Auth Generate Secret
 
 `openssl rand -base64 32`
-
 
 ## Learn More
 

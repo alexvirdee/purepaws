@@ -149,7 +149,7 @@ export default function MapView({ breeders }: { breeders: any[] }) {
 
   return (
     <div
-      className="relative w-full h-[600px]"
+      className="relative w-full h-[800px]"
       onClick={(e) => {
         if (showNoResults) {
           // Prevent clicks inside of the overlay closing it

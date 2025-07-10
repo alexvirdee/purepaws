@@ -63,14 +63,16 @@ export default function FilterBar({
                         placeholder="Enter a breed or location"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full p-2 border rounded mb-2"
+                        className="w-full p-2 border rounded mb-2 pr-10"
                     />
+                    <div>
                     <Button
                         type="submit"
-                        className="absolute bg-transparent absolute right-0.5 top-1/2 pb-4 transform -translate-y-1/2 text-gray-400 cursor-pointer hover:bg-transparent"
+                        className="absolute right-[1px] top-[18px] -translate-y-1/2 p-0 m-0 flex items-center justify-center text-gray-500 hover:text-black focus:outline-none focus:ring-2 focus:ring-blue-500 bg-transparent hover:bg-gray-100 active:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                     >
                         <Search className="text-black" size={16} />
                     </Button>
+                    </div>
                 </div>
                 <div className="w-auto">
                 <Select
