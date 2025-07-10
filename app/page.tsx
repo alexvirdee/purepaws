@@ -24,6 +24,7 @@ export default async function Home() {
 
   // Convert _id to string and map to the expected structure
   const breedersData = (breeders as RawBreeder[]).map((breeder) => ({
+    _id: breeder._id.toString(), // keep original ObjectId or convert to string if IBreeder expects string
     id: breeder._id.toString(),
     name: breeder.name || "",
     address: breeder.address || "",
@@ -33,6 +34,10 @@ export default async function Home() {
     breeds: breeder.breeds || [],
     latitude: breeder.latitude || 0,
     longitude: breeder.longitude || 0,
+    about: breeder.about || "",
+    email: breeder.email || "",
+    status: breeder.status || "",
+    submittedAt: breeder.submittedAt || null,
   }));
 
   return (
@@ -42,7 +47,7 @@ export default async function Home() {
         <Hero breeders={breedersData} />
       </div>
       <div className="p-4">
-        <FeaturedBreedersSection />
+        <FeaturedBreedersSection breeders={breedersData} />
       </div>
     </>
   );

@@ -3,21 +3,12 @@
 import { useState, useMemo } from 'react';
 import Image from 'next/image';
 import FilterBar from '@/components/FilterBar';
+import { IBreeder } from '@/interfaces/breeder';
 
 export default function Hero({
     breeders
 }: {
-    breeders: Array<{
-        id: string;
-        name: string;
-        address: string;
-        city: string;
-        state: string;
-        zip: string;
-        breeds: string[];
-        latitude: number;
-        longitude: number;
-    }>;
+     breeders: IBreeder[];
 }) {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedBreed, setSelectedBreed] = useState('All');

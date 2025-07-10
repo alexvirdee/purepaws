@@ -3,47 +3,58 @@ import { MongoClient } from 'mongodb';
 const uri = process.env.MONGODB_URI;
 
 if (!uri) {
-    throw new Error('MONGODB_URI is not set in the environment variables');
+    throw new Error('❌ MONGODB_URI is not set in the environment variables');
 }
 
 const options = {
     maxPoolSize: 5,
 };
 
-let client;
+let client: MongoClient;
 let clientPromise: Promise<MongoClient>;
 
-// In dev mode, use a global var so the client is not recreated on every hot reload
+// Add type to the globalThis to allow caching in dev mode
 declare global {
-    var _mongoClientPromise: Promise<MongoClient>;
+    // eslint-disable-next-line no-var
+    var _mongoClientPromise: Promise<MongoClient> | undefined;
 }
 
 if (process.env.NODE_ENV === 'development') {
     if (!global._mongoClientPromise) {
         client = new MongoClient(uri, options);
+        console.log('🗄️ Connecting to MongoDB Atlas (development)...');
 
-        console.log('🗄️ Connecting to MongoDB Atlas...');
+        global._mongoClientPromise = client.connect()
+            .then((connectedClient) => {
+                console.log('Connected to MongoDB Atlas successfully (development)');
+                return connectedClient;
+            })
+            .catch((error) => {
+                console.error('❌ Failed to connect to MongoDB Atlas:', error);
+                throw error;
+            })
+            .finally(() => {
+                console.log('🗄️ MongoDB Atlas connection attempt finished (development).');
+            });
 
-        global._mongoClientPromise = client.connect();
-
-        global._mongoClientPromise.then(() =>
-            console.log('🗄️ Connected to MongoDB Atlas successfully!')
-        ).catch((error) =>
-            console.error('❌ Failed to connect to MongoDB Atlas:', error)
-        ).finally(() => console.log('🗄️ MongoDB Atlas connection attempt finished.'));
     }
-
     clientPromise = global._mongoClientPromise;
 } else {
     client = new MongoClient(uri, options);
-    console.log('🗄️ Connecting to MongoDB Atlas...');
+    console.log('🗄️ Connecting to MongoDB Atlas (production)...');
 
-    clientPromise = client.connect();
-    clientPromise.then(() =>
-        console.log('🗄️ Connected to MongoDB Atlas successfully!')
-    ).catch((error) =>
-        console.error('❌ Failed to connect to MongoDB Atlas:', error)
-    ).finally(() => console.log('🗄️ MongoDB Atlas connection attempt finished.'));
+    clientPromise = client.connect()
+        .then((connectedClient) => {
+            console.log('✅ Connected to MongoDB Atlas successfully (production)');
+            return connectedClient;
+        })
+        .catch((error) => {
+            console.error('❌ Failed to connect to MongoDB Atlas:', error);
+            throw error;
+        })
+        .finally(() => {
+            console.log('🗄️ MongoDB Atlas connection attempt finished (production).');
+        });
 }
 
 export default clientPromise;
