@@ -43,22 +43,39 @@ export async function POST(req: Request) {
             dogId: new ObjectId(dogId)
         });
 
-        if (existing) {
+        if (existing && existing.status === 'pending') {
             return NextResponse.json(
                 { error: "You have already submitted an application for this puppy." },
                 { status: 400 }
             );
         }
 
-        const result = await db.collection("puppyInterests").insertOne({
-            userId: user._id,
-            breederId: new ObjectId(breederId),
-            puppyApplicationId: new ObjectId(puppyApplicationId),
-            dogId: new ObjectId(dogId),
-            message: message?.trim() || "",
-            status: "pending",
-            createdAt: new Date()
-        });
+        let result;
+
+        if (existing) {
+            // 🟢 User is reapplying → Update the existing interest
+            result = await db.collection("puppyInterests").updateOne(
+                { _id: existing._id },
+                {
+                    $set: {
+                        message: message?.trim() || "",
+                        status: "pending",
+                        updatedAt: new Date()
+                    }
+                }
+            );
+        } else {
+            // 🟢 New application → Insert fresh
+            result = await db.collection("puppyInterests").insertOne({
+                userId: user._id,
+                breederId: new ObjectId(breederId),
+                puppyApplicationId: new ObjectId(puppyApplicationId),
+                dogId: new ObjectId(dogId),
+                message: message?.trim() || "",
+                status: "pending",
+                createdAt: new Date()
+            });
+        }
 
         const hasFavorite = user.favorites?.includes(dogId);
 
@@ -75,7 +92,10 @@ export async function POST(req: Request) {
             }
         }
 
-        return NextResponse.json({ success: true, id: result.insertedId, removedFromFavorites }, { status: 201 });
+        return NextResponse.json({ 
+            success: true, 
+            id: existing ? existing._id : (result && "insertedId" in result ? result.insertedId : null), 
+            removedFromFavorites }, { status: 201 });
 
     } catch (error) {
         console.error("[API] Puppy Interest Error:", error);

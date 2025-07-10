@@ -12,6 +12,7 @@ import { DB_NAME } from "@/lib/constants";
 import BreederApprovalBanner from "@/components/breeders/BreederApprovalBanner";
 import PuppyApplicationDetails from "@/components/PuppyApplicationDetails";
 import AdoptionRequestsSection from "@/components/AdoptionRequestsSection";
+import ProfileContent from "@/components/ProfileContent";
 
 
 export default async function ProfilePage() {
@@ -23,7 +24,6 @@ export default async function ProfilePage() {
     }
 
     let puppyApplication = null;
-    let hasPuppyApplication = false;
 
     // connect to the db
     const client = await clientPromise;
@@ -74,7 +74,6 @@ export default async function ProfilePage() {
     // Serialize the puppy application to ensure compatibility with client side components
     let serializedPuppyApplication = null;
     if (puppyApplication) {
-        hasPuppyApplication = true; // Set flag if puppy application exists
 
         serializedPuppyApplication = {
             ...puppyApplication,
@@ -196,14 +195,14 @@ export default async function ProfilePage() {
             ) : (
                 <div className="bg-white rounded-lg shadow p-6 flex flex-col sm:flex gap-6 relative p-2">
                     <p className="mb-4">You don't have a puppy application yet.</p>
-                   
+
                     <Link
                         href="/puppy-application"
                         className="inline-flex items-center text-blue-500 text-sm px-3 py-1.5 rounded hover:text-blue-600 transition"
                     >
-                      <ArrowRight className="w-4 h-4 mr-2" /> <span>Complete Puppy Application</span>
+                        <ArrowRight className="w-4 h-4 mr-2" /> <span>Complete Puppy Application</span>
                     </Link>
-               
+
                 </div>
             )
             }
@@ -235,25 +234,13 @@ export default async function ProfilePage() {
                 </div>
             )}
 
-            {/* User Adoption Interests/Requests */}
-            <AdoptionRequestsSection requests={adoptionRequests} />
+            <ProfileContent
+                initialAdoptionRequests={adoptionRequests}
+                favoriteDogs={favoriteDogs}
+                puppyApplication={serializedPuppyApplication}
+                puppyInterests={serializedPuppyInterest || []}
+            />
 
-
-            {/* User Favorites */}
-            {favoriteDogs.length > 0 ? (
-                <div className="bg-white rounded shadow p-6">
-                    <h3 className="text-lg font-bold mb-4">Your Favorite Dogs</h3>
-                    <FavoriteDogsSection
-                        puppyApplication={serializedPuppyApplication}
-                        hasPuppyApplication={hasPuppyApplication}
-                        initialDogs={favoriteDogs}
-                        favorites={favoriteDogs}
-                        puppyInterests={serializedPuppyInterest || []}
-                    />
-                </div>
-            ) : (
-                <p className="text-gray-500">You have no favorite dogs yet.</p>
-            )}
         </main>
     );
 }

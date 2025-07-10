@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
     Dialog,
     DialogContent,
@@ -15,27 +15,48 @@ import { Textarea } from "@/components/ui/textarea";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { IDog } from "@/interfaces/dog";
 
 export default function PuppyInterestDialog({
-    hasPuppyInterest,
+    interestStatus,
     dogId,
+    dog,
     breederId,
     puppyApplication,
-    hasPuppyApplication,
-    name }:
+    name,
+    onNewRequest
+}:
     {
-        hasPuppyInterest?: boolean;
+        interestStatus?: string;
         dogId: string;
         breederId: string;
         puppyApplication?: any;
-        hasPuppyApplication: boolean,
-        name: string
+        name: string,
+        dog: IDog;
+        onNewRequest?: (request: {
+            _id: string;
+            dogId: string;
+            breederId: string;
+            puppyApplicationId?: string;
+            status: string;
+            createdAt: string;
+            message: string;
+            dog: {
+                _id: string;
+                name: string;
+                photos: any[];
+                breed?: string;
+                price?: number;
+                status?: string;
+            };
+        }) => void; // Callback for new request
     }) {
     const [open, setOpen] = useState(false);
     const [message, setMessage] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const router = useRouter();
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.stopPropagation();
@@ -62,6 +83,44 @@ export default function PuppyInterestDialog({
             console.log("[PuppyInterestDialog] Response:", data);
 
             if (res.ok) {
+                if (onNewRequest) {
+                    console.log("[PuppyInterestDialog] New request data:", {
+                        _id: data.insertedId,
+                        dogId,
+                        breederId,
+                        puppyApplicationId: puppyApplication?._id,
+                        status: "pending",
+                        createdAt: new Date().toISOString(),
+                        message: message.trim(),
+                        dog: {
+                            _id: dog._id,
+                            name: dog.name,
+                            photos: dog.photos || [],
+                            breed: dog.breed || "Unknown",
+                            price: dog.price || 0,
+                            status: dog.status || "Unknown",
+                        }
+                    });
+
+                    onNewRequest({
+                        _id: data.insertedId,
+                        dogId,
+                        breederId,
+                        puppyApplicationId: puppyApplication?._id,
+                        status: "pending",
+                        createdAt: new Date().toISOString(),
+                        message: message.trim(),
+                        dog: {
+                            _id: dog._id,
+                            name: dog.name,
+                            photos: dog.photos || [],
+                            breed: dog.breed || "Unknown",
+                            price: dog.price || 0,
+                            status: dog.status || "Unknown",
+                        }
+                    })
+                }
+
                 toast.success(`Your interest in ${name} has been submitted! 🎉`);
 
                 if (data.removedFromFavorites) {
@@ -90,16 +149,16 @@ export default function PuppyInterestDialog({
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger asChild>
                     <Button
-                        disabled={hasPuppyInterest}
-                        className={`w-full flex items-center justify-center gap-2 whitespace-nowrap text-sm px-3 py-2 ${hasPuppyInterest ? `bg-gray-500 hover:bg-gray-600` : `bg-blue-600 hover:bg-blue-700 text-white hover:text-white cursor-pointer`}`}
+                        disabled={interestStatus === 'pending'}
+                        className={`w-full flex items-center justify-center gap-2 whitespace-nowrap text-sm px-3 py-2 ${interestStatus === 'pending' ? `bg-gray-500 hover:bg-gray-600` : `bg-blue-600 hover:bg-blue-700 text-white hover:text-white cursor-pointer`}`}
                     >
                         <PawPrintIcon />
                         <span className="truncate max-w-[180px] block">
-                            {hasPuppyInterest ? `Applied` : `Apply for ${name}`}
+                            {interestStatus === 'pending' ? `Applied` : `Apply for ${name}`}
                         </span>
                     </Button>
                 </DialogTrigger>
-                {!hasPuppyApplication ? (
+                {!puppyApplication ? (
                     <DialogContent className="max-w-md mx-auto">
                         <DialogHeader>
                             <DialogTitle>Application Required</DialogTitle>
@@ -115,16 +174,30 @@ export default function PuppyInterestDialog({
                     </DialogContent>
                 ) : (
                     <DialogContent className="max-h-[80vh] overflow-y-auto">
-                        <DialogHeader>
-                            <DialogTitle>Apply for {name}</DialogTitle>
-                            <DialogDescription>
-                                <span className="text-sm text-gray-600">Your general puppy application will be sent along with this message to the breeder.</span>
-                                <br />
-                                <span className="text-sm text-gray-600">
-                                    Let the breeder know why you’re interested in {name} or any details you’d like to share.
-                                </span>
-                            </DialogDescription>
-                        </DialogHeader>
+                        {interestStatus ? (
+                            <DialogHeader>
+                                <DialogTitle className="text-blue-600">Looks like you have applied for {name} before</DialogTitle>
+                                <DialogDescription>
+                                    <span className="text-sm font-semibold text-black">Would you like to submit your application again?</span>
+                                    <br />
+                                    <span className="text-sm text-gray-600">
+                                        Let the breeder know why you’re interested in {name} or any details you’d like to share.
+                                    </span>
+                                </DialogDescription>
+                            </DialogHeader>
+                        ) : (
+
+                            <DialogHeader>
+                                <DialogTitle>Apply for {name}</DialogTitle>
+                                <DialogDescription>
+                                    <span className="text-sm text-gray-600">Your general puppy application will be sent along with this message to the breeder.</span>
+                                    <br />
+                                    <span className="text-sm text-gray-600">
+                                        Let the breeder know why you’re interested in {name} or any details you’d like to share.
+                                    </span>
+                                </DialogDescription>
+                            </DialogHeader>
+                        )}
                         <form onSubmit={handleSubmit} className="space-y-4 mt-2">
                             <Textarea
                                 value={message}

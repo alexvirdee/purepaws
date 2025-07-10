@@ -1,15 +1,15 @@
 'use client';
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DogCardList from "./DogCardList";
 import { IDog } from "@/interfaces/dog";
 
 interface FavoriteDogsSectionProps {
     puppyInterests?: any[]; // If you want to use puppy interests in the future
     puppyApplication?: any; // If you want to pass the puppy application data
-    hasPuppyApplication?: boolean; // If the user has an application on their profile
     initialDogs: IDog[];
     favorites: any;
+    onNewRequest: (newRequest: any) => void
 }
 
 interface HandleUnfavorite {
@@ -19,10 +19,15 @@ interface HandleUnfavorite {
 export default function FavoriteDogsSection({ 
     puppyInterests,
     puppyApplication, 
-    hasPuppyApplication, 
     initialDogs, 
-    favorites }: FavoriteDogsSectionProps) {
+    favorites,
+    onNewRequest
+}: FavoriteDogsSectionProps) {
     const [dogs, setDogs] = useState(initialDogs);
+
+    useEffect(() => {
+        setDogs(initialDogs)
+    }, [initialDogs])
 
     const handleUnfavorite: HandleUnfavorite = (dogId) => {
         setDogs(dogs.filter((dog: IDog) => dog._id !== dogId));
@@ -32,10 +37,11 @@ export default function FavoriteDogsSection({
         <DogCardList
             puppyInterests={puppyInterests}
             puppyApplication={puppyApplication}
-            hasPuppyApplication={hasPuppyApplication ?? false}
             dogs={dogs}
             favorites={favorites}
             onUnfavorite={handleUnfavorite}
+            onNewRequest={onNewRequest}
+            gridClassName="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2"
         />
     )
 }

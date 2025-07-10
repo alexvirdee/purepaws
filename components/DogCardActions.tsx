@@ -1,6 +1,5 @@
 "use client";
 
-
 import PuppyInterestDialog from "./PuppyInterestDialog";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
@@ -12,30 +11,26 @@ import DeleteDogDialog from "./DeleteDogDialog";
 import { IDog } from "@/interfaces/dog";
 
 export default function DogCardActions({
-    hasPuppyInterest,
+    interestStatus,
     puppyApplication,
-    hasPuppyApplication,
     dog,
     dogId,
-    isFavorited,
     loggedInUser,
     breederId,
-    dogName }: {
-        hasPuppyInterest?: boolean;
+    dogName,
+    onNewRequest
+}: {
+        interestStatus?: string;
         puppyApplication?: any;
-        hasPuppyApplication?: boolean;
         dog: IDog;
         dogId: string;
-        isFavorited?: boolean;
         loggedInUser?: string;
         breederId: string;
         dogName: string;
+        onNewRequest: (newRequest: any) => void
     }) {
     const { data: session } = useSession();
     const [showSignIn, setShowSignIn] = useState(false);
-
-    console.log('loggedInUser:', loggedInUser);
-    console.log('breederId:', breederId);
 
     // If they are the breeder, actions are edit/delete
     if (loggedInUser &&
@@ -53,11 +48,12 @@ export default function DogCardActions({
             {session?.user?.email ? (
                 <PuppyInterestDialog
                     dogId={dogId}
+                    dog={dog}
                     breederId={breederId}
                     puppyApplication={puppyApplication}
-                    hasPuppyApplication={!!hasPuppyApplication}
                     name={dogName}
-                    hasPuppyInterest={hasPuppyInterest}
+                    interestStatus={interestStatus}
+                    onNewRequest={onNewRequest} // Pass the callback for new request
                 />
             ) : (
                 <>

@@ -69,7 +69,6 @@ const Breeder = async ({ params }: BreederParams) => {
 
     // Find if the logged in user has a puppy application
     let puppyApplication = null;
-    let hasPuppyApplication = false;
     puppyApplication = await db.collection("puppyApplications").findOne({
         userId: userFromDb?._id
     })
@@ -77,7 +76,6 @@ const Breeder = async ({ params }: BreederParams) => {
     // Serialize the puppy application to ensure compatibility with client side components
     let serializedPuppyApplication = null;
     if (puppyApplication) {
-        hasPuppyApplication = true;
         serializedPuppyApplication = {
             ...puppyApplication,
             _id: puppyApplication._id?.toString() || null,
@@ -137,7 +135,6 @@ const Breeder = async ({ params }: BreederParams) => {
                     dogs={serializedDogs}
                     favorites={favoriteDogs.map(dog => dog._id)}
                     loggedInUser={loggedInUserBreederId}
-                    hasPuppyApplication={hasPuppyApplication}
                     puppyApplication={serializedPuppyApplication} 
                     puppyInterests={puppyInterests}
                 />

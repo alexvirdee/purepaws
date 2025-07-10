@@ -28,23 +28,25 @@ export default function FeaturedBreedersSection({
                 <Carousel className="w-full">
                     <CarouselContent>
                         {breeders.slice(0, 5).map((breeder, index) => (
-                            <Link href={`/breeders/${breeder._id}`} key={index} className="no-underline">
-                                <CarouselItem key={index} className="basis-2/3 md:basis-1/3 lg:basis-1/4">
+                            <div key={index}>
+                                <CarouselItem  className="basis-2/3 md:basis-1/3 lg:basis-1/4">
                                     <div className="p-2">
-                                        <Card className="hover:shadow-lg transition-shadow duration-200">
-                                            <CardContent className="flex flex-col items-start justify-start p-4">
-                                                <h3 className="text-lg font-semibold">{breeder.name}</h3>
-                                                <p className="text-sm text-gray-500">
-                                                    {breeder.city}, {breeder.state}
-                                                </p>
-                                                <p className="text-xs text-gray-400 mt-2">
-                                                    Breeds: {breeder.breeds.join(", ")}
-                                                </p>
-                                            </CardContent>
-                                        </Card>
+                                        <Link href={`/breeders/${breeder._id}`}  className="no-underline">
+                                            <Card className="hover:shadow-lg transition-shadow duration-200">
+                                                <CardContent className="flex flex-col items-start justify-start p-4">
+                                                    <h3 className="text-lg font-semibold">{breeder.name}</h3>
+                                                    <p className="text-sm text-gray-500">
+                                                        {breeder.city}, {breeder.state}
+                                                    </p>
+                                                    <p className="text-xs text-gray-400 mt-2">
+                                                        Breeds: {breeder.breeds.join(", ")}
+                                                    </p>
+                                                </CardContent>
+                                            </Card>
+                                        </Link>
                                     </div>
                                 </CarouselItem>
-                            </Link>
+                            </div>
                         ))}
                     </CarouselContent>
 

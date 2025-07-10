@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IDog } from "@/interfaces/dog";
 import DogCard from "./DogCard";
 import { Suspense } from "react";
@@ -35,14 +35,34 @@ interface AdoptionRequest {
   status: string;
   createdAt: string | null;
   dog: any | IDog | null; // Dog data, can be null if not available
+  onNewRequest?: (request: {
+    _id: string;
+    dogId: string;
+    breederId: string;
+    puppyApplicationId?: string;
+    status: string;
+    createdAt: string;
+    message: string;
+    dog: {
+      _id: string;
+      name: string;
+      photos: any[];
+    };
+  }) => void; // Callback for new request
 }
 
 export default function AdoptionRequestsSection({
-  requests
+  requests,
+  onNewRequest
 }: {
   requests: AdoptionRequest[];
+  onNewRequest?: (request: AdoptionRequest) => void; // Callback for new request
 }) {
   const [puppyInterestRequests, setPuppyInterestRequests] = useState(requests);
+
+  useEffect(() => {
+    setPuppyInterestRequests(requests);
+  }, [requests])
 
   const handleCancelRequest = async (requestId: string) => {
     try {
@@ -106,8 +126,12 @@ export default function AdoptionRequestsSection({
     }
   };
 
+  const hasActiveRequests = puppyInterestRequests.some(
+  request => request.status !== "cancelled"
+);
 
-  if (!requests.length) {
+
+  if (!hasActiveRequests) {
     return (
       <div className="bg-white rounded shadow p-6">
         <h3 className="text-lg font-bold mb-4">Your Adoption Requests</h3>
@@ -122,9 +146,9 @@ export default function AdoptionRequestsSection({
       <ul className="space-y-4">
         {puppyInterestRequests
           .filter(request => request.status !== "cancelled")
-          .map((request) => (
+          .map((request, index) => (
             <li
-              key={request._id}
+              key={index}
               className="border rounded shadow hover:shadow-md transition flex flex-col md:flex-row gap-4 p-4 relative"
             >
               {/* Dog image */}
