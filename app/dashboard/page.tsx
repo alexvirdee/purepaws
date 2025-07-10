@@ -7,8 +7,8 @@ import { DB_NAME } from "@/lib/constants";
 import { User as UserIcon } from "lucide-react";
 
 import AddEditDogDialog from "@/components/AddEditDogDialog";
-import DogCard from "@/components/DogCard";
 import BreederApprovalBanner from "@/components/breeders/BreederApprovalBanner";
+import BreederDogsTable from "@/components/breeder-dashboard/BreederDogsTable";
 
 interface SerializedDog {
     _id: string;
@@ -47,6 +47,7 @@ export default async function BreederDashboardPage() {
     const serializedBreeder = breeder
         ? {
             ...breeder,
+            name: breeder.name || "Unknown Breeder",
             status: breeder.status || "pending",
             _id: breeder._id.toString(),
             approvedAt: breeder.approvedAt ? breeder.approvedAt.toString() : null,
@@ -134,17 +135,13 @@ export default async function BreederDashboardPage() {
 
 
             {/* My Dogs - using dog card with actions currently */}
-            <div className="bg-white rounded-lg shadow p-6 flex flex-col gap-6 max-h-[60vh] overflow-y-auto">
+            <div className="bg-white rounded-lg shadow p-6 flex flex-col gap-6">
                 <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-bold">My Dogs</h2>
+                    <h2 className="text-xl font-bold">{serializedBreeder?.name} Dogs</h2>
                 </div>
 
                 {serializedDogs.length > 0 ? (
-                    <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {serializedDogs.map((dog) => (
-                            <DogCard key={dog._id} dog={dog} loggedInUser={breederId} />
-                        ))}
-                    </ul>
+                    <BreederDogsTable breederName={serializedBreeder?.name} dogs={serializedDogs} />
                 ) : (
                     <p className="text-gray-500">
                         You haven't listed any dogs yet. Click "Add Dog" to get started!
