@@ -21,6 +21,7 @@ export default function MapView({ breeders }: { breeders: any[] }) {
   const breedParam = searchParams.get('breed') || 'All';
 
   const [popupInfo, setPopupInfo] = useState<any | null>(null);
+  const [mapLoaded, setMapLoaded] = useState(false);
 
   // TODO: Update search param - just testing with zip for now 
   const [searchTerm, setSearchTerm] = useState(zipParam);
@@ -71,7 +72,7 @@ export default function MapView({ breeders }: { breeders: any[] }) {
   }, [breeders, normalizedSearchTerm, normalizedSelectedBreed])
 
   const hasFilter = selectedBreed !== 'All' || searchTerm.trim() !== '';
-  const debouncedFilteredBreeders = useDebounce(filteredBreeders, 400);
+  const debouncedFilteredBreeders = useDebounce(filteredBreeders, 300);
 
   const showNoResults = hasFilter && filteredBreeders.length === 0;
 
@@ -118,7 +119,8 @@ export default function MapView({ breeders }: { breeders: any[] }) {
       duration: 1000,
       essential: true
     });
-  }, [debouncedFilteredBreeders, hasFilter, breeders.length]);
+
+  }, [debouncedFilteredBreeders, mapLoaded]);
 
   // Clear filters function
   function clearFilters() {
@@ -170,14 +172,15 @@ export default function MapView({ breeders }: { breeders: any[] }) {
       />
 
       <Map
-        // scrollZoom={isMapInteractive}
-        interactive={true}
-        onMove={(evt) => setViewState(evt.viewState)}
         ref={mapRef}
+        // onMove={(evt) => setViewState(evt.viewState)}
         mapboxAccessToken={MAPBOX_TOKEN}
         initialViewState={viewState}
         mapStyle="mapbox://styles/mapbox/streets-v11"
         style={{ width: '100%', height: '100%' }}
+        onLoad={() => {
+          setMapLoaded(true);
+        }}
       >
         {debouncedFilteredBreeders.map((breeder, index) => {
           const { lat, lng } = getOffsetCoords(breeder.latitude, breeder.longitude, index);
@@ -195,20 +198,6 @@ export default function MapView({ breeders }: { breeders: any[] }) {
             </Marker>
           );
         })}
-        {/* {filteredBreeders.map((breeder) => (
-            // Use getOffsetCoords to avoid marker overlap
-            
-            <Marker
-              key={breeder.id}
-              longitude={breeder.longitude}
-              latitude={breeder.latitude}
-              anchor="bottom"
-            >
-              <div onClick={() => setPopupInfo(breeder)} style={{ cursor: 'pointer' }}>
-                <Image src="/images/paw-outline.svg" alt={`${APP_NAME} logo`} width={25} height={25} priority={true} />
-              </div>
-            </Marker>
-          ))} */}
 
         {popupInfo && (
           <Popup
