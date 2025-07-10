@@ -130,6 +130,7 @@ const Breeder = async ({ params }: BreederParams) => {
             )}
             {/* Available Dogs */}
             <h2 className="text-2xl font-bold mb-4 mx-auto text-center">Available Dogs</h2>
+            <div className="m-4">
             {dogs.length > 0 ? (
                 // Note to future self - I am passing in the loggedInUser here so I don't show the favorite button if it's the breeder on the page
                 <DogCardList
@@ -143,6 +144,7 @@ const Breeder = async ({ params }: BreederParams) => {
             ) : (
                 <p className="text-gray-500">No dogs available for this breeder.</p>
             )}
+            </div>
         </div>
     );
 }

@@ -2,30 +2,41 @@
 
 import Image from "next/image";
 
-export default function DogImage({ src, alt }: { src?: string; alt: string }) {
-  if (!src) {
-    return (
-      <div className="w-full h-48 flex items-center justify-center bg-gray-200 rounded mb-2">
-        {/* Your local placeholder */}
-        <Image
-          src="/images/dog-placeholder.jpg"
-          alt="Dog placeholder"
-          width={400}
-          height={200}
-          className="object-cover"
-        />
-      </div>
-    );
-  }
+interface DogImageProps {
+  src?: string;
+  alt: string;
+  width?: number;
+  height?: number;
+  aspectRatio?: string;
+}
 
+export default function DogImage({
+  src,
+  alt,
+  width = 400,
+  height = 200,
+  aspectRatio = "aspect-[4/3]",
+  additionalContainerStyles = ""
+}: {
+  src?: string;
+  alt: string;
+  width?: number;
+  height?: number;
+  aspectRatio?: string;
+  additionalContainerStyles?: string;
+}) {
   return (
-    <Image
-      src={src}
-      alt={alt}
-      width={400}
-      height={200}
-      className="w-full h-48 object-cover mb-2 rounded"
-      loading="lazy"
-    />
+    <div
+      className={`relative w-full overflow-hidden ${additionalContainerStyles ? ` ${additionalContainerStyles}` : ""}`}
+    >
+      <Image
+        src={src ? src : "/images/purepaws-placeholder.jpg"}
+        alt={alt}
+        width={width}
+        height={height}
+        className={`object-cover block ${aspectRatio ? `${aspectRatio}` : ""}`}
+        loading="lazy"
+      />
+    </div>
   );
 }

@@ -65,49 +65,56 @@ export default function DogCard({// If this is a request card, we can use this p
     loggedInUser }: DogCardProps) {
     const statusKey = dog.status?.charAt(0).toUpperCase() + dog.status?.slice(1).toLowerCase();
 
-    // if (dog && dog.photos) {
-    //     console.log("DogCard - dog photos:", dog.photos[0].path);
-    // }
-
     return (
-        <Card key={dog._id.toString()} className="transition relative hover:shadow-lg mb-4">
+        <Card
+            key={dog._id.toString()}
+            className="w-full max-w-xs relative overflow-hidden rounded-lg shadow hover:shadow-lg transition pt-0"
+        >
+            {/* Favorite button pinned to card corner */}
+            {loggedInUser !== dog.breederId && !hasPuppyInterest && (
+                <div className="absolute top-0.5 right-0.5 z-20 bg-white rounded-full p-2 shadow hover:bg-gray-100 transition">
+                    <FavoriteButton
+                        dogId={dog._id.toString()}
+                        initiallyFavorited={isFavorited}
+                        onUnfavorite={onUnfavorite}
+                    />
+                </div>
+            )}
+
+            {/* Flush top image */}
+            <Link href={`/dogs/${dog._id}`}>
+                <Suspense fallback={<Skeleton className="w-full aspect-[4/3]" />}>
+                    {dog.photos && dog.photos.length > 0 ? (
+                        <DogImage
+                            src={dog.photos?.[0]?.path}
+                            alt={dog.name}
+                            // aspectRatio="4/3"
+                            additionalContainerStyles="rounded-t-lg"
+                        />
+                    ) : (
+                        <div className="w-full aspect-[4/3] flex items-center justify-center bg-gray-200">
+                            <DogIcon className="w-16 h-16 text-gray-500" />
+                        </div>
+                    )}
+                </Suspense>
+            </Link>
+
             <CardContent>
-                {/* Favorite a dog */}
-                {/* Only show favorite button for either
-                1. Guests on application
-                2. Users logged in who are not the breeders who currently own the dogs
-            */}
-                {loggedInUser !== dog.breederId && !hasPuppyInterest && (
-                    <div className="absolute top-2 right-2 bg-white rounded-full p-2 shadow hover:bg-gray-100 transition">
-                        <FavoriteButton dogId={dog._id.toString()} initiallyFavorited={isFavorited} onUnfavorite={onUnfavorite} />
-                    </div>
-                )}
-
-                <Link href={`/dogs/${dog._id}`} >
-                    {/* Suspense for image */}
-                    <Suspense fallback={<Skeleton className="w-full h-48 rounded" />}>
-                        {dog.photos && dog.photos.length > 0 ? (
-                            <DogImage src={dog.photos?.[0]?.path} alt={dog.name} />
-                        ) : (
-                            <div className="w-full h-48 flex items-center justify-center bg-gray-200 rounded mb-2">
-                                <DogIcon className="w-16 h-16 text-gray-500" />
-                            </div>
-                        )}
-                    </Suspense>
-
-                    {/* Dog details */}
+                <Link href={`/dogs/${dog._id}`}>
                     <h2 className="text-xl font-semibold">{dog.name}</h2>
                     <p className="text-gray-600">{dog.litter}</p>
                     <p className="text-gray-600">{dog.breed}</p>
                     <p className="text-gray-500">dob: {dog.dob}</p>
                     <p className="text-gray-500">{dog.gender}</p>
 
-                    <Badge className={`${STATUS_STYLES[statusKey]?.className} mb-2`} variant={STATUS_STYLES[statusKey]?.variant}>
+                    <Badge
+                        className={`${STATUS_STYLES[statusKey]?.className} mb-2`}
+                        variant={STATUS_STYLES[statusKey]?.variant}
+                    >
                         {dog.status}
                     </Badge>
                     <p className="text-green-700 font-semibold mb-4">{formatPrice(dog.price)}</p>
                 </Link>
-
 
                 <DogCardActions
                     dog={dog}
@@ -121,8 +128,6 @@ export default function DogCard({// If this is a request card, we can use this p
                     hasPuppyInterest={hasPuppyInterest}
                 />
             </CardContent>
-
         </Card>
     )
-
 }

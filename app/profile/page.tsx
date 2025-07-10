@@ -248,7 +248,7 @@ export default async function ProfilePage() {
                         hasPuppyApplication={hasPuppyApplication}
                         initialDogs={favoriteDogs}
                         favorites={favoriteDogs}
-                        puppyInterests={serializedPuppyInterest}
+                        puppyInterests={serializedPuppyInterest || []}
                     />
                 </div>
             ) : (

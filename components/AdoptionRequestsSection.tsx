@@ -6,7 +6,7 @@ import DogCard from "./DogCard";
 import { Suspense } from "react";
 import DogImage from "./DogImage";
 import { Skeleton } from "@/components/ui/skeleton";
-
+import { Button } from "@/components/ui/button";
 
 interface AdoptionRequest {
   _id: string;
@@ -43,47 +43,61 @@ export default function AdoptionRequestsSection({
         {requests.map((request) => (
           <li
             key={request._id}
-            className="border rounded shadow hover:shadow-md transition flex flex-col md:flex-row gap-4 p-4"
+            className="border rounded shadow hover:shadow-md transition flex flex-col md:flex-row gap-4 p-4 relative"
           >
-            {/* Reuse DogCard with limited props */}
-            <div className="flex-shrink-0 md:w-1/3">
+            {/* Dog image */}
+            <div className="flex-shrink-0 w-full md:w-auto md:max-w-[200px] flex justify-center items-center md:justify-start">
               {request.dog ? (
-                <>
-                  <Suspense fallback={<Skeleton className="h-48 rounded" />}>
-                    <DogImage src={request.dog.photos?.[0]?.path} alt={request.dog.name} />
-                  </Suspense>
-                </>
+                <Suspense fallback={<Skeleton className="h-28 rounded" />}>
+                  <div className="w-full max-w-[200px] h-28 flex overflow-hiddens">
+                    <DogImage
+                      width={200}
+                      height={90}
+                      src={request.dog.photos?.[0]?.path}
+                      alt={request.dog.name}
+                      additionalContainerStyles="rounded-lg"
+                    />
+                  </div>
+                </Suspense>
               ) : (
-                <div className="bg-gray-200 h-48 w-full flex items-center justify-center">
+                <div className="bg-gray-200 h-28 w-full flex items-center justify-center">
                   <span className="text-gray-500">No dog data available</span>
                 </div>
               )}
-
             </div>
 
-            {/* Request details */}
-            <div className="flex-1">
-              <h4 className="text-md font-semibold mb-2">
-                {request.dog ? request.dog.name : "Unknown Dog"}
-              </h4>
-              <p className="text-sm text-gray-500 mb-1">
-                Status: <span className="capitalize font-medium">{request.status}</span>
-              </p>
-              <p className="text-sm text-gray-500 mb-1">
-                Message: {request.message || "(No message provided)"}
-              </p>
-              <p className="text-xs text-gray-400 mb-2">
-                Submitted:{" "}
-                {request.createdAt
-                  ? new Date(request.createdAt).toLocaleDateString()
-                  : "Unknown"}
-              </p>
-              <a
-                href={`/dogs/${request.dog?._id}`}
-                className="text-blue-600 underline text-sm"
-              >
-                View Dog
-              </a>
+            {/* Request details container */}
+            <div className="flex flex-col justify-between flex-1 relative">
+              {/* Details block */}
+              <div className="flex flex-col items-center text-center md:items-start md:text-left md:pr-28">
+                <h4 className="text-md font-semibold mb-1">
+                  {request.dog ? request.dog.name : "Unknown Dog"}
+                </h4>
+                <p className="text-sm text-gray-500 mb-1">
+                  Status: <span className="capitalize font-medium">{request.status}</span>
+                </p>
+                <p className="text-sm text-gray-500 mb-1">
+                  Message: {request.message || "(No message provided)"}
+                </p>
+                <p className="text-xs text-gray-400 mb-2">
+                  Submitted:{" "}
+                  {request.createdAt
+                    ? new Date(request.createdAt).toLocaleDateString()
+                    : "Unknown"}
+                </p>
+                <a
+                  href={`/dogs/${request.dog?._id}`}
+                  className="text-blue-600 underline text-sm"
+                >
+                  View Dog
+                </a>
+              </div>
+
+              {/* Action buttons */}
+              <div className="flex justify-center md:justify-end mt-4 md:mt-0 md:absolute md:right-0 md:top-1/2 md:-translate-y-1/2 gap-2">
+                <Button size="sm" variant="outline">Edit Message</Button>
+                <Button size="sm" variant="destructive">Cancel</Button>
+              </div>
             </div>
           </li>
         ))}
