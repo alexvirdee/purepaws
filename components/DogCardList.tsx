@@ -20,7 +20,7 @@ export default function DogCardList({
     favorites?: Favorite[];
     onUnfavorite?: (dogId: string) => void;
     loggedInUser?: string;
-    onNewRequest: (newRequest: any) => void;
+    onNewRequest?: (newRequest: any) => void;
     gridClassName?: string; // Optional className for the grid
   }) {
 

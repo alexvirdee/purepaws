@@ -137,6 +137,7 @@ const Breeder = async ({ params }: BreederParams) => {
                     loggedInUser={loggedInUserBreederId}
                     puppyApplication={serializedPuppyApplication} 
                     puppyInterests={puppyInterests}
+                    gridClassName="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
                 />
             ) : (
                 <p className="text-gray-500">No dogs available for this breeder.</p>

@@ -5,11 +5,38 @@ import Image from "next/image";
 import Link from "next/link";
 import { IDog } from "@/interfaces/dog";
 import { isValidImage } from "@/utils/isValidImage";
-import { Dog as DogIcon } from "lucide-react";
+import { Dog as DogIcon, TagIcon, MapPinIcon } from "lucide-react";
 import { DB_NAME } from "@/lib/constants";
 import FavoriteButton from "@/components/FavoriteButton";
 import { getServerSession } from "next-auth";
+import { Badge } from "@/components/ui/badge";
 import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
+import DogImageGallery from "@/components/DogImageGallery";
+
+type BadgeVariant = "default" | "secondary" | "destructive" | "outline";
+
+type StatusStyle = {
+    label: string;
+    variant: BadgeVariant;
+    className?: string;
+};
+
+
+const STATUS_STYLES: Record<string, StatusStyle> = {
+    Available: {
+        label: "Available",
+        variant: "secondary",
+        className: "bg-green-300 border border-green-300"
+    },
+    Pending: {
+        label: "Pending",
+        variant: "outline",
+    },
+    Sold: {
+        label: "Sold",
+        variant: "destructive",
+    },
+};
 
 
 export default async function DogDetailsPage({ params }: { params: { id: string } }) {
@@ -47,71 +74,59 @@ export default async function DogDetailsPage({ params }: { params: { id: string 
     // Optionally fetch breeder details if needed
     const breeder = await db.collection("breeders").findOne({ _id: new ObjectId(dog.breederId) });
 
+    const statusKey = dog.status?.charAt(0).toUpperCase() + dog.status?.slice(1).toLowerCase();
+
 
     return (
-        <div className="max-w-4xl mx-auto p-8">
-            <div className="flex justify-between mb-4">
-                <div className="flex items-center gap-2">
-                    <h1 className="text-3xl font-bold">{dog.name}</h1>
-                    {userBreederId !== dogBreederId && (
-                        <FavoriteButton dogId={dog._id.toString()} initiallyFavorited={isFavorited} />
-                    )
-                        }
-                    
+        <div className="max-w-6xl mx-auto px-4 py-8">
+            <div className="flex flex-col lg:flex-row gap-8">
+                {/* LEFT: Image gallery */}
+  <DogImageGallery
+    images={dog.photos}
+    dogName={dog.name}
+    dogId={dog._id.toString()}
+    userBreederId={userBreederId}
+    dogBreederId={dogBreederId}
+    isFavorited={isFavorited}
+  />
+
+                {/* Overview Card */}
+                <div className="flex-1 space-y-4">
+                    <div className="flex justify-between items-start">
+                        <h1 className="text-3xl font-bold">{dog.name}</h1>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+
+                        <div><strong>Breed:</strong> {dog.breed}</div>
+                        <div><strong>Location:</strong> {dog.location ? dog.location : "N/A"}</div>
+                        <Badge
+                            className={`${STATUS_STYLES[statusKey]?.className} mb-2`}
+                            variant={STATUS_STYLES[statusKey]?.variant}
+                        >
+                            {dog.status}
+                        </Badge>
+                        <div><strong>Price:</strong> ${dog.price}</div>
+                    </div>
+
+                    <p className="text-gray-700">{dog.description}</p>
+
+                    {breeder && (
+                        <div className="border-t pt-4 mt-4">
+                            <h2 className="text-xl font-semibold mb-2">Breeder Information</h2>
+                            <p><strong>Kennel:</strong> {breeder.name}</p>
+                            <p><strong>Email:</strong> {breeder.email}</p>
+                            <p><strong>Location:</strong> {breeder.location}</p>
+                            <Link
+                                href={`/breeders/${breeder._id}`}
+                                className="text-blue-600 underline mt-2 inline-block"
+                            >
+                                View Breeder Profile →
+                            </Link>
+                        </div>
+                    )}
                 </div>
             </div>
-
-
-            {dog.photos && dog.photos.length > 0 && isValidImage(dog.photos[0]) ? (
-                <Image
-                    src={typeof dog.photos[0] === 'string' ? dog.photos[0] : dog.photos[0]?.path}
-                    alt={dog.name}
-                    className="rounded mb-4"
-                    width={600}
-                    height={400}
-                />
-            ) : (
-                <div className="w-full h-48 flex items-center justify-center bg-gray-200 rounded mb-2">
-                    <DogIcon className="w-16 h-16 text-gray-500" />
-                </div>
-            )}
-
-            <p className="mb-2 text-lg">
-                <strong>Breed:</strong> {dog.breed}
-            </p>
-            <p className="mb-2 text-lg">
-                <strong>Location:</strong> {dog.location}
-            </p>
-            <p className="mb-2 text-lg">
-                <strong>Status:</strong> {dog.status}
-            </p>
-            <p className="mb-2 text-lg">
-                <strong>Price:</strong> ${dog.price}
-            </p>
-            <p className="mb-6">
-                {dog.description}
-            </p>
-
-            {breeder && (
-                <div className="border-t pt-4 mt-4">
-                    <h2 className="text-2xl font-semibold mb-2">Breeder Information</h2>
-                    <p className="mb-1">
-                        <strong>Kennel:</strong> {breeder.name}
-                    </p>
-                    <p className="mb-1">
-                        <strong>Email:</strong> {breeder.email}
-                    </p>
-                    <p className="mb-1">
-                        <strong>Location:</strong> {breeder.location}
-                    </p>
-                    <Link
-                        href={`/breeders/${breeder._id}`}
-                        className="text-blue-600 underline mt-2 inline-block"
-                    >
-                        View Breeder Profile →
-                    </Link>
-                </div>
-            )}
         </div>
     )
 }
