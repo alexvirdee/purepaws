@@ -18,13 +18,6 @@ export async function POST(req: Request) {
 
         const { dogId, breederId, puppyApplicationId, message } = await req.json();
 
-        console.log("[API] Puppy Interest Request:", {
-            dogId,
-            breederId,
-            puppyApplicationId,
-            message
-        });
-
         if (!dogId || !breederId || !puppyApplicationId) {
             return NextResponse.json({ error: "Missing required fields." }, { status: 400 });
         }

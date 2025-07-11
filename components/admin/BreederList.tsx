@@ -76,7 +76,6 @@ export default function BreederList({ breeders }: BreederListProps) {
 
                 if (emailRes.ok) {
                     const emailData = await emailRes.json();
-                    console.log("Email sent successfully:", emailData);
                 } else {
                     const emailErrorData = await emailRes.json();
                     console.error("Failed to send email:", emailErrorData);

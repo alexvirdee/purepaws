@@ -12,7 +12,6 @@ export async function POST(req: Request) {
 
   try {
     const result = await cloudinary.uploader.destroy(public_id);
-    console.log('Deleted:', result);
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Cloudinary delete error:', error);

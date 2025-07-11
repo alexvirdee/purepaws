@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import SignInRequiredDialog from "./SignInRequiredDialog";
+import { useRouter } from "next/navigation";
 
 interface FavoriteButtonProps {
     dogId: string;
@@ -26,6 +27,8 @@ export default function FavoriteButton({ dogId, initiallyFavorited = false, onUn
     const { data: session } = useSession();
     const [isFavorited, setIsFavorited] = useState(initiallyFavorited);
     const [showDialog, setShowDialog] = useState(false);
+
+    const router = useRouter();
 
     const handleFavoriteClick = async (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -47,6 +50,9 @@ export default function FavoriteButton({ dogId, initiallyFavorited = false, onUn
                 const data = await res.json();
                 const nowFavorited = data.favorites.includes(dogId);
                 setIsFavorited(nowFavorited);
+
+
+                router.refresh();
 
                 // Show toast
                 if (nowFavorited) {

@@ -22,34 +22,42 @@ export default function DogImageGallery({
   dogId,
   userBreederId,
   dogBreederId,
-  isFavorited
+  isFavorited,
+  requestedPuppy
 }: {
   images: any[],
   dogName: string,
   dogId: string,
   userBreederId?: string,
   dogBreederId?: string,
-  isFavorited: boolean
+  isFavorited: boolean,
+  requestedPuppy?: boolean
 }) {
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
+
+  console.log('requestedPuppy:', requestedPuppy);
 
   return (
     <>
       <div className="flex-1 relative">
         {images && images.length > 0 && isValidImage(images[0]) ? (
           <>
-            {userBreederId !== dogBreederId && (
+            {userBreederId !== dogBreederId && !requestedPuppy && (
               <div className="absolute top-2 left-2 z-10  rounded-full p-2">
                 <FavoriteButton dogId={dogId} initiallyFavorited={isFavorited} />
               </div>
             )}
-            <Image
-              src={typeof images[0] === 'string' ? images[0] : images[0]?.path}
-              alt={dogName}
-              className="rounded mb-4 w-full object-cover h-[400px]"
-              width={800}
-              height={600}
-            />
+            <>
+              <div onClick={() => setIsGalleryOpen(true)} className="cursor-pointer">
+                <Image
+                  src={typeof images[0] === 'string' ? images[0] : images[0]?.path}
+                  alt={dogName}
+                  className="rounded mb-4 w-full object-cover h-[400px]"
+                  width={800}
+                  height={600}
+                />
+              </div>
+            </>
           </>
         ) : (
           <div className="w-full h-64 flex items-center justify-center bg-gray-200 rounded mb-4">
@@ -92,13 +100,13 @@ export default function DogImageGallery({
               <CarouselContent>
                 {images.map((image, idx) => (
                   <CarouselItem key={idx} className="flex justify-center items-center max-h-[50vh]">
-                          <Image
-                            src={typeof image === 'string' ? image : image?.path}
-                            alt={`${dogName} photo ${idx + 1}`}
-                            className="rounded w-auto h-auto max-h-[650px] object-contain"
-                            width={800}
-                            height={600}
-                          />
+                    <Image
+                      src={typeof image === 'string' ? image : image?.path}
+                      alt={`${dogName} photo ${idx + 1}`}
+                      className="rounded w-auto h-auto max-h-[650px] object-contain"
+                      width={800}
+                      height={600}
+                    />
                   </CarouselItem>
                 ))}
               </CarouselContent>

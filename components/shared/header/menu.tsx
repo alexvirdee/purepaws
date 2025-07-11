@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from "react";
-import { PawPrint, UserIcon, EllipsisVertical, Dog, FlaskConicalIcon } from "lucide-react";
+import { PawPrint, UserIcon, EllipsisVertical, Dog, FlaskConicalIcon, MapIcon } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -53,6 +53,13 @@ const Menu: React.FC<MenuProps> = ({ notificationCount, puppyApplication }) => {
                             Breed Selector Tool
                         </Link>
                     </Button>
+                    {/* Map view - TODO: Remove */}
+                    <Button asChild variant="ghost">
+                        <Link href="/map-view">
+                            <MapIcon className="text-gray-500" />
+                             Map
+                        </Link>
+                    </Button>
                     {/* Note - admin role can see all navbar links */}
                     {!puppyApplication && (
                         <Button onClick={handlePuppyApplicationClick} asChild variant="ghost">
@@ -79,9 +86,9 @@ const Menu: React.FC<MenuProps> = ({ notificationCount, puppyApplication }) => {
                                 <Link href="/profile/notifications">
                                     <BellIcon className="text-gray-500 hover:text-blue-600" />
                                     {notificationCount > 0 && (
-                                    <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
-                                        {notificationCount}
-                                    </span>
+                                        <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
+                                            {notificationCount}
+                                        </span>
                                     )}
                                 </Link>
                             </Button>
@@ -106,13 +113,20 @@ const Menu: React.FC<MenuProps> = ({ notificationCount, puppyApplication }) => {
                         </SheetTrigger>
                         <SheetContent className="flex flex-col items-start">
                             <SheetTitle className="p-4">Menu</SheetTitle>
-                             {/* Public breed matcher feature */}
-                    <Button asChild variant="ghost">
-                        <Link href="/breed-selector">
-                            <FlaskConicalIcon className="text-gray-500" />
-                             Breed Selector Tool
-                        </Link>
-                    </Button>
+                            {/* Public breed matcher feature */}
+                            <Button asChild variant="ghost">
+                                <Link href="/breed-selector">
+                                    <FlaskConicalIcon className="text-gray-500" />
+                                    Breed Selector Tool
+                                </Link>
+                            </Button>
+                            {/* Map view - TODO: Remove */}
+                            <Button asChild variant="ghost">
+                                <Link href="/map-view">
+                                    <MapIcon className="text-gray-500" />
+                                    Map
+                                </Link>
+                            </Button>
                             {!puppyApplication && (
                                 <Button onClick={handlePuppyApplicationClick} asChild variant="ghost">
                                     <Link href="/puppy-application">

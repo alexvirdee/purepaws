@@ -56,13 +56,6 @@ export async function PUT(
             return NextResponse.json({ error: "Gender is required" }, { status: 400 });
         }
 
-        // TODO: Handle issues with photo updates 
-        // if (photo && !photo.startsWith("http")) {
-        //     console.log('issue with the photo');
-
-        //     return NextResponse.json({ error: "Invalid photo URL" }, { status: 400 });
-        // }
-
         if (price && (typeof price !== "number" || price < 0)) {
 
             return NextResponse.json({ error: "Price must be a positive number" }, { status: 400 });

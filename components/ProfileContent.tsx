@@ -19,7 +19,6 @@ export default function ProfileContent({
   const [adoptionRequests, setAdoptionRequests] = useState(initialAdoptionRequests);
 
   const handleNewRequest = (newRequest: any) => {
-    console.log("New request:", newRequest);
     setAdoptionRequests(prev => [...prev, newRequest]);
   };
 

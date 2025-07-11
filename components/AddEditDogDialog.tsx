@@ -103,11 +103,6 @@ export default function AddEditDogDialog({
             : addEndpoint
 
         try {
-            console.log(JSON.stringify({
-                ...formData,
-                breederId: mode === 'add' ? breederId : undefined
-            }, null, 2));
-
             const res = await fetch(endpoint, {
                 method: mode === 'edit' ? 'PUT' : 'POST',
                 headers: { 'Content-Type': 'application/json' },

@@ -9,6 +9,7 @@ import { User as UserIcon } from "lucide-react";
 import AddEditDogDialog from "@/components/AddEditDogDialog";
 import BreederApprovalBanner from "@/components/breeders/BreederApprovalBanner";
 import BreederDogsTable from "@/components/breeder-dashboard/BreederDogsTable";
+import AdoptionRequests from "@/components/breeder-dashboard/AdoptionRequests";
 
 interface SerializedDog {
     _id: string;
@@ -58,8 +59,6 @@ export default async function BreederDashboardPage() {
         .collection("dogs")
         .find({ breederId: new ObjectId(breederId) })
         .toArray();
-    
-    console.log('dogs #', dogs.length);
 
     // Serialize the dogs to ensure compatibility with client side components
     const serializedDogs: SerializedDog[] = JSON.parse(JSON.stringify(dogs)).map((dog: IDog): SerializedDog => ({
@@ -119,6 +118,8 @@ export default async function BreederDashboardPage() {
         };
     });
 
+
+
     return (
         <main className="max-w-5xl mx-auto p-8 space-y-8">
             <div className="flex justify-between items-center mb-4">
@@ -152,29 +153,7 @@ export default async function BreederDashboardPage() {
             </div>
 
             {/* Adoption Requests */}
-            <div className="bg-white rounded-lg shadow p-6 flex flex-col gap-4">
-                <h2 className="text-xl font-bold mb-2">Adoption Requests</h2>
-                {adoptionRequests.length > 0 ? (
-                    adoptionRequests.map((request) => (
-                        <div key={request._id} className="border p-4 rounded">
-                            <div className="flex items-center gap-4">
-                                {request.dog?.photos?.[0]?.path && (
-                                    <img src={request.dog.photos[0].path} alt={request.dog.name} className="w-20 h-20 object-cover rounded" />
-                                )}
-                                <div>
-                                    <h3 className="font-semibold">{request.dog?.name}</h3>
-                                    <p className="text-sm text-gray-500">From: {request.buyer?.name} ({request.buyer?.email})</p>
-                                    <p className="text-sm text-gray-500">Status: {request.status}</p>
-                                    <p className="text-sm">{request.message}</p>
-                                    <p className="text-xs text-gray-400">Submitted: {request.createdAt?.split('T')[0]}</p>
-                                </div>
-                            </div>
-                        </div>
-                    ))
-                ) : (
-                    <p className="text-gray-500">No adoption requests yet.</p>
-                )}
-            </div>
+            <AdoptionRequests adoptionRequests={adoptionRequests} />
 
             {/* ✅ Upcoming Litters */}
             <div className="mt-8 bg-white rounded-lg shadow p-6">

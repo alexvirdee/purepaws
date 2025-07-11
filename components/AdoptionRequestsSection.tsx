@@ -94,8 +94,6 @@ export default function AdoptionRequestsSection({
   }
 
   const handleUpdateMessage = async (requestId: string, newMessage: string) => {
-    console.log('are we updating the message?', requestId, newMessage);
-
     try {
       const res = await fetch(`/api/puppy-interests/${requestId}`, {
         method: "PATCH",

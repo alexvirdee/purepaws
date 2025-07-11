@@ -1,7 +1,6 @@
 import { ObjectId } from "mongodb";
 import clientPromise from "@/lib/mongodb";
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import { IDog } from "@/interfaces/dog";
 import { isValidImage } from "@/utils/isValidImage";
@@ -48,6 +47,7 @@ export default async function DogDetailsPage({ params }: { params: { id: string 
     const db = client.db(DB_NAME);
 
     let isFavorited = false;
+    let requestedPuppy = false;
 
     const user = await db.collection("users").findOne({ email: session?.user?.email });
     const userBreederId = user?.breederId?.toString();
@@ -58,6 +58,17 @@ export default async function DogDetailsPage({ params }: { params: { id: string 
     });
 
     const dogBreederId = dog?.breederId?.toString();
+
+    // Check if user has an active adoption request for this dog and display information
+    const existingRequest = await db.collection("puppyInterests").findOne({
+        userId: user?._id,
+        dogId: dog?._id,
+        status: { $ne: "cancelled" }
+    });
+
+    if (existingRequest) {
+        requestedPuppy = !!existingRequest;
+    }
 
     if (!dog) {
         notFound(); // 404 if no dog found
@@ -76,19 +87,22 @@ export default async function DogDetailsPage({ params }: { params: { id: string 
 
     const statusKey = dog.status?.charAt(0).toUpperCase() + dog.status?.slice(1).toLowerCase();
 
+    console.log('isFavorited:', isFavorited);
+
 
     return (
         <div className="max-w-6xl mx-auto px-4 py-8">
             <div className="flex flex-col lg:flex-row gap-8">
                 {/* LEFT: Image gallery */}
-  <DogImageGallery
-    images={dog.photos}
-    dogName={dog.name}
-    dogId={dog._id.toString()}
-    userBreederId={userBreederId}
-    dogBreederId={dogBreederId}
-    isFavorited={isFavorited}
-  />
+                <DogImageGallery
+                    images={dog.photos ?? []}
+                    dogName={dog.name}
+                    dogId={dog._id.toString()}
+                    userBreederId={userBreederId}
+                    dogBreederId={dogBreederId}
+                    isFavorited={isFavorited}
+                    requestedPuppy={requestedPuppy}
+                />
 
                 {/* Overview Card */}
                 <div className="flex-1 space-y-4">

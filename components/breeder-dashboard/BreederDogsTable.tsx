@@ -116,7 +116,6 @@ export default function BreederDogsTable({ breederName, dogs }: BreederDogTableP
                     dogName={deleteDog.name}
                     open={!!deleteDog}
                     onOpenChange={(v: any) => { if (!v) setDeleteDog(null) }}
-                    onSubmitSuccess={() => setDeleteDog(null)}
                 />
             )}
         </>

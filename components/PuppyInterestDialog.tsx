@@ -24,7 +24,8 @@ export default function PuppyInterestDialog({
     breederId,
     puppyApplication,
     name,
-    onNewRequest
+    onNewRequest,
+    isBackup = false, // New prop to indicate if this is a backup buyer
 }:
     {
         interestStatus?: string;
@@ -50,6 +51,7 @@ export default function PuppyInterestDialog({
                 status?: string;
             };
         }) => void; // Callback for new request
+        isBackup?: boolean; // Indicates if this is a backup buyer
     }) {
     const [open, setOpen] = useState(false);
     const [message, setMessage] = useState("");
@@ -149,6 +151,7 @@ export default function PuppyInterestDialog({
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger asChild>
                     <Button
+                        size="sm"
                         disabled={interestStatus === 'pending'}
                         className={`w-full flex items-center justify-center gap-2 whitespace-nowrap text-sm px-3 py-2 ${interestStatus === 'pending' ? `bg-gray-500 hover:bg-gray-600` : `bg-blue-600 hover:bg-blue-700 text-white hover:text-white cursor-pointer`}`}
                     >
@@ -186,9 +189,13 @@ export default function PuppyInterestDialog({
                                 </DialogDescription>
                             </DialogHeader>
                         ) : (
-
                             <DialogHeader>
                                 <DialogTitle>Apply for {name}</DialogTitle>
+                                {isBackup && (
+                                    <div className="mb-2 p-2 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 rounded">
+                                        🐾 A deposit has already been requested for this puppy. You can still apply and if {name} becomes available again, you’ll be next in line.
+                                    </div>
+                                )}
                                 <DialogDescription>
                                     <span className="text-sm text-gray-600">Your general puppy application will be sent along with this message to the breeder.</span>
                                     <br />
