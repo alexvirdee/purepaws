@@ -38,6 +38,24 @@ export default function AdoptionRequests({
         }
     };
 
+    const handleCancelDeposit = async (requestId: string) => {
+        console.log(`Canceling deposit for ${requestId}`);
+        // TODO: Call your API route here
+        try {
+            const res = await fetch(`/api/adoption-requests/${requestId}/cancelDeposit`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+            });
+
+            if (!res.ok) throw new Error("Failed to request deposit");
+
+            toast.success("Deposit request has been cancelled.");
+        } catch (error) {
+            console.error(error);
+            toast.error("Something went wrong. Please try again.");
+        }
+    };
+
 
     return (
         <div className="bg-white rounded-lg shadow p-6 flex flex-col gap-4">
@@ -60,15 +78,26 @@ export default function AdoptionRequests({
                         </div>
 
                         {/* Right: action buttons */}
-                        <div className="pt-4 md:p-0 flex flex-col gap-2">
-                                <Button
-                                    disabled={request.status === "deposit-requested"}
-                                    className="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600"
-                                    onClick={() => handleRequestDeposit(request._id)}
-                                >
-                                    {request.status === "deposit-requested" ? "Deposit Requested" : "Request Deposit"}
-                                </Button>
-                            {/* You can add more buttons here later if needed */}
+                        <div className="pt-4 md:p-0 flex flex-col md:flex-row gap-2">
+                            <Button
+                                disabled={request.status === "deposit-requested"}
+                                className="bg-blue-500 text-white px-2 py-1 rounded text-sm hover:bg-blue-600 cursor-pointer"
+                                onClick={() => handleRequestDeposit(request._id)}
+                            >
+                                {request.status === "deposit-requested" ? "Deposit Requested" : "Request Deposit"}
+                            </Button>
+                            {/* Cancel Deposit Request Button */}
+                            {/* This button will only show if the request is in deposit-requested state */}
+                            {request.status === "deposit-requested" && (
+                                <>
+                                    <Button
+                                        className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-sm cursor-pointer"
+                                        onClick={() => handleCancelDeposit(request._id)}
+                                    >
+                                        Cancel Deposit Request
+                                    </Button>
+                                </>
+                            )}
                         </div>
                     </div>
                 ))

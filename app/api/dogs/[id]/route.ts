@@ -15,7 +15,7 @@ export async function PUT(
 
         // ✅ Validate ID
         if (!ObjectId.isValid(dogId)) {
-        
+
             return NextResponse.json(
                 { error: "Invalid dog ID" },
                 { status: 400 }
@@ -39,12 +39,12 @@ export async function PUT(
         const price = Number(rawPrice);
 
         if (!name || name.trim().length === 0) {
-    
+
             return NextResponse.json({ error: "Name is required" }, { status: 400 });
         }
 
         if (!breed || breed.trim().length === 0) {
-      
+
             return NextResponse.json({ error: "Breed is required" }, { status: 400 });
         }
 
@@ -61,7 +61,7 @@ export async function PUT(
             return NextResponse.json({ error: "Price must be a positive number" }, { status: 400 });
         }
 
-        if (status && !["available", "pending", "sold"].includes(status)) {
+        if (status && !["available", "pending-reservation", "deposit-requested", "reserved", "sold"].includes(status)) {
 
             return NextResponse.json({ error: "Invalid status value" }, { status: 400 });
         }
@@ -70,6 +70,27 @@ export async function PUT(
         const client = await clientPromise;
         const db = client.db(DB_NAME);
         const dogs = db.collection("dogs");
+
+        const existingDog = await dogs.findOne({ _id: new ObjectId(dogId) });
+
+        if (!existingDog) {
+            return NextResponse.json({ error: "Dog not found." }, { status: 404 });
+        }
+
+        if (["pending-reservation", "deposit-requested", "reserved"].includes(existingDog.status)) {
+            if (
+                (status && status !== existingDog.status) ||
+                (price && price !== existingDog.price)
+            ) {
+                return NextResponse.json(
+                    {
+                        error:
+                            "This dog is currently under a reservation or deposit request. Price or status changes are not allowed. Cancel the request first."
+                    },
+                    { status: 400 }
+                );
+            }
+        }
 
         const updateFields: any = {
             name: name.trim(),

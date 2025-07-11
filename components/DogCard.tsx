@@ -48,8 +48,14 @@ const STATUS_STYLES: Record<string, StatusStyle> = {
         className: "bg-green-300 border border-green-300"
     },
     Pending: {
-        label: "Pending",
+        label: "Pending Reservation",
         variant: "outline",
+        className: "bg-yellow-200 border border-yellow-200"
+    },
+    Reserved: {
+        label: "Reserved",
+        variant: "outline",
+        className: "bg-blue-600 text-white border border-blue"
     },
     Sold: {
         label: "Sold",
@@ -117,7 +123,7 @@ export default function DogCard({// If this is a request card, we can use this p
                         className={`${STATUS_STYLES[statusKey]?.className} mb-2`}
                         variant={STATUS_STYLES[statusKey]?.variant}
                     >
-                        {dog.status}
+                        {dog.status === 'deposit-requested' ? 'Pending Reservation' : STATUS_STYLES[statusKey]?.label || 'Unknown Status'}
                     </Badge>
                     <p className="text-green-700 font-semibold mb-4">{formatPrice(dog.price)}</p>
                 </Link>

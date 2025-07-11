@@ -55,7 +55,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
   // Update the dog status to pending-reservation
   await db.collection("dogs").updateOne(
     { _id: new ObjectId(interest.dogId) },
-    { $set: { status: "pending-reservation" } }
+    { $set: { status: "deposit-requested" } }
   );
 
   return NextResponse.json(

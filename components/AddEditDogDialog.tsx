@@ -124,7 +124,8 @@ export default function AddEditDogDialog({
                 router.refresh();
                 onSubmitSuccess?.();
             } else {
-                toast.error(`Failed to ${mode === 'edit' ? 'update' : 'add'} dog. Please try again`);
+                const errorData = await res.json();
+                 toast.error(errorData?.error || `Failed to ${mode === 'edit' ? 'update' : 'add'} dog. Please try again.`);
             }
         } catch (error) {
             console.error('Error submitting form:', error);
