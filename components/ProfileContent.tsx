@@ -21,10 +21,12 @@ export default function ProfileContent({
   userId?: string | null; // Optional userId prop for future use
 }) {
   const [interestRequests, setInterestRequests] = useState(puppyInterests || []);
-  const [adoptionRequestsState, setAdoptionRequestsState] = useState(puppyInterests || []);
+  const [favoriteDogsState, setFavoriteDogs] = useState(favoriteDogs || []);
 
   const handleNewRequest = (newRequest: any) => {
     setInterestRequests(prev => [...prev, newRequest]);
+
+    setFavoriteDogs(prev => prev.filter(dog => dog._id !== newRequest.dog._id));
   };
 
   return (
@@ -40,8 +42,8 @@ export default function ProfileContent({
           <h3 className="text-lg font-bold mb-4">Your Favorite Dogs</h3>
           <FavoriteDogsSection
             puppyApplication={puppyApplication}
-            initialDogs={favoriteDogs}
-            favorites={favoriteDogs}
+            initialDogs={favoriteDogsState}
+            favorites={favoriteDogsState}
             puppyInterests={puppyInterests || []}
             onNewRequest={handleNewRequest}
             breederId={breederId} 

@@ -52,52 +52,85 @@ export default function BreederDogsTable({ breederName, dogs }: BreederDogTableP
                         <TableHead>Dog ID</TableHead>
                         <TableHead>Price</TableHead>
                         <TableHead>Submitted At</TableHead>
+                        <TableHead>Status</TableHead>
                         <TableHead>Actions</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {dogs.map((dog: IDog, index) => (
-                        <TableRow key={index}>
-                            <TableCell>{dog.name}</TableCell>
-                            <TableCell>{dog.litter}</TableCell>
-                            <TableCell>{dog.dob}</TableCell>
-                            <TableCell>
-                                <Link className="text-blue-500 hover:text-blue-600" href={`/dogs/${dog._id.toString()}`}>{dog._id.toString().slice(0, 12)}...</Link>
-                            </TableCell>
-                            <TableCell>
-                                ${dog.price.toLocaleString()}
-                            </TableCell>
-                            <TableCell> {dog.createdAt
-                                ? new Date(dog.createdAt).toLocaleString('en-US', {
-                                    month: '2-digit',
-                                    day: '2-digit',
-                                    year: 'numeric',
-                                })
-                                : "N/A"}</TableCell>
+                    {dogs.map((dog: IDog, index) => {
+                        const rowClass =
+                            dog.status === 'pending-reservation' ? 'bg-yellow-50'
+                                : dog.status === 'deposit-requested' ? 'bg-yellow-100'
+                                    : dog.status === 'reserved' ? 'bg-blue-50'
+                                        : dog.status === 'sold' ? 'bg-green-50'
+                                            : dog.status === 'available' ? 'bg-white'
+                                                : 'bg-gray-50';
 
-                            <TableCell>
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                        <Button variant="ghost" size="icon">
-                                            <MoreVertical className="h-4 w-4" /> {/* lucide-react icon */}
-                                        </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent className="w-56" align="end">
-                                        <DropdownMenuLabel>{dog.name}</DropdownMenuLabel>
-                                        <DropdownMenuSeparator />
-                                        <DropdownMenuGroup>
-                                            <DropdownMenuItem onClick={() => setEditDog(dog)}>
-                                                Edit
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem onClick={() => setDeleteDog(dog)}>
-                                                Delete
-                                            </DropdownMenuItem>
-                                        </DropdownMenuGroup>
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                            </TableCell>
-                        </TableRow>
-                    ))}
+                        return (
+                            <TableRow
+                                key={index}
+                                className={`${rowClass} hover:bg-gray-100 transition-colors`}
+                            >
+                                <TableCell>{dog.name}</TableCell>
+                                <TableCell>{dog.litter}</TableCell>
+                                <TableCell>{dog.dob}</TableCell>
+                                <TableCell>
+                                    <Link className="text-blue-500 hover:text-blue-600" href={`/dogs/${dog._id.toString()}`}>
+                                        {dog._id.toString().slice(0, 12)}...
+                                    </Link>
+                                </TableCell>
+                                <TableCell>${dog.price.toLocaleString()}</TableCell>
+                                <TableCell>
+                                    {dog.createdAt
+                                        ? new Date(dog.createdAt).toLocaleDateString('en-US', {
+                                            month: '2-digit',
+                                            day: '2-digit',
+                                            year: 'numeric',
+                                        })
+                                        : "N/A"}
+                                </TableCell>
+                                <TableCell>
+                                    {dog.status && (
+                                        <span
+                                            className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${dog.status === 'pending-reservation'
+                                                    ? 'bg-yellow-100 text-yellow-800'
+                                                    : dog.status === 'deposit-requested'
+                                                        ? 'bg-yellow-200 text-yellow-800'
+                                                        : dog.status === 'reserved'
+                                                            ? 'bg-blue-100 text-blue-800'
+                                                            : dog.status === 'sold'
+                                                                ? 'bg-green-100 text-green-800'
+                                                                : 'bg-gray-100 text-gray-800'
+                                                }`}
+                                        >
+                                            {dog.status.replace(/-/g, ' ')}
+                                        </span>
+                                    )}
+                                </TableCell>
+                                <TableCell>
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="ghost" size="icon">
+                                                <MoreVertical className="h-4 w-4" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent className="w-56" align="end">
+                                            <DropdownMenuLabel>{dog.name}</DropdownMenuLabel>
+                                            <DropdownMenuSeparator />
+                                            <DropdownMenuGroup>
+                                                <DropdownMenuItem onClick={() => setEditDog(dog)}>
+                                                    Edit
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem onClick={() => setDeleteDog(dog)}>
+                                                    Delete
+                                                </DropdownMenuItem>
+                                            </DropdownMenuGroup>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </TableCell>
+                            </TableRow>
+                        );
+                    })}
                 </TableBody>
             </Table>
             {/* Dialogs to render outside of the table */}

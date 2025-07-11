@@ -135,6 +135,9 @@ export default function PuppyInterestDialog({
                             status: dog.status || "Unknown",
                         }
                     })
+                } else {
+                    // Re-fetch server component data
+                    router.refresh();
                 }
 
                 toast.success(`Your interest in ${name} has been submitted! 🎉`);
@@ -143,8 +146,6 @@ export default function PuppyInterestDialog({
                     toast.info(`${name} has been removed from your favorites to your adoption requests.`);
                 }
 
-                // Re-fetch server component data
-                router.refresh();
 
                 setOpen(false);
                 setMessage("");

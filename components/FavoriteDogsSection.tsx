@@ -27,23 +27,12 @@ export default function FavoriteDogsSection({
     userId = null, // Optional userId prop for future use
     onNewRequest
 }: FavoriteDogsSectionProps) {
-    const [dogs, setDogs] = useState(initialDogs);
-
-    useEffect(() => {
-        setDogs(initialDogs)
-    }, [initialDogs])
-
-    const handleUnfavorite: HandleUnfavorite = (dogId) => {
-        setDogs(dogs.filter((dog: IDog) => dog._id !== dogId));
-    };
-
     return (
         <DogCardList
             puppyInterests={puppyInterests}
             puppyApplication={puppyApplication}
-            dogs={dogs}
+            dogs={initialDogs}
             favorites={favorites}
-            onUnfavorite={handleUnfavorite}
             onNewRequest={onNewRequest}
             breederId={breederId} // Pass breederId if needed
             userId={userId}

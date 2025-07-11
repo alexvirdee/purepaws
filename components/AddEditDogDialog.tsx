@@ -232,9 +232,9 @@ export default function AddEditDogDialog({
                                 <SelectGroup>
                                     <SelectLabel>Select dogs status</SelectLabel>
                                     <SelectItem value="available">Available</SelectItem>
-                                    <SelectItem value="pending">Pending</SelectItem>
+                                    <SelectItem value="pending-reservation">Pending</SelectItem>
+                                    <SelectItem value="reserved">Reserved</SelectItem>
                                     <SelectItem value="sold">Sold</SelectItem>
-                                    {/* TODO: Add a draft status state to not show the public */}
                                 </SelectGroup>
                             </SelectContent>
                         </Select>

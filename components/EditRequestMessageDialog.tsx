@@ -45,7 +45,7 @@ export default function EditRequestMessageDialog({
                         <DialogHeader>
                             <DialogTitle>Edit message to breeder</DialogTitle>
                             <DialogDescription>
-                                You can edit your message to the breeder here. This will update your adoption request.
+                                You can edit your message to the breeder here. Please include any specific details or questions you have.
                             </DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-4">
