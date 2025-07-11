@@ -27,6 +27,8 @@ interface DogCardProps {
     onUnfavorite?: (dogId: string) => void;
     loggedInUser?: string;
     puppyApplication?: any;
+    breederId?: string; // Optional breederId prop for future use
+    userId?: string; // Optional userId prop for future use
     interestStatus?: string;
     onNewRequest: (newRequest: any) => void
 }
@@ -60,6 +62,8 @@ export default function DogCard({// If this is a request card, we can use this p
     interestStatus,
     dog,
     isFavorited,
+    breederId,
+    userId,
     onUnfavorite,
     loggedInUser,
     onNewRequest
@@ -72,7 +76,8 @@ export default function DogCard({// If this is a request card, we can use this p
             className="w-full max-w-xs relative overflow-hidden rounded-lg shadow hover:shadow-lg transition pt-0"
         >
             {/* Favorite button pinned to card corner */}
-            {loggedInUser !== dog.breederId && interestStatus !== "pending" && (
+            {loggedInUser !== dog.breederId && 
+            (interestStatus !== "pending" && interestStatus !== "deposit-requested") && (
                 <div className="absolute top-0.5 right-0.5 z-20 bg-white rounded-full p-2 shadow hover:bg-gray-100 transition">
                     <FavoriteButton
                         dogId={dog._id.toString()}
@@ -121,6 +126,7 @@ export default function DogCard({// If this is a request card, we can use this p
                     dog={dog}
                     dogId={dog._id}
                     loggedInUser={loggedInUser}
+                    userId={userId}
                     breederId={dog.breederId ?? ""}
                     dogName={dog.name}
                     puppyApplication={puppyApplication}

@@ -9,12 +9,16 @@ export default function ProfileContent({
   favoriteDogs,
   puppyApplication,
   puppyInterests,
-  adoptionRequests
+  adoptionRequests,
+  breederId = null, // Optional breederId prop for future use
+  userId = null, // Optional userId prop for future use
 }: {
   favoriteDogs: IDog[];
   puppyApplication?: any;
   puppyInterests?: any[];
   adoptionRequests: any[];
+  breederId?: string | null; // Optional breederId prop for future use
+  userId?: string | null; // Optional userId prop for future use
 }) {
   const [interestRequests, setInterestRequests] = useState(puppyInterests || []);
   const [adoptionRequestsState, setAdoptionRequestsState] = useState(puppyInterests || []);
@@ -40,6 +44,8 @@ export default function ProfileContent({
             favorites={favoriteDogs}
             puppyInterests={puppyInterests || []}
             onNewRequest={handleNewRequest}
+            breederId={breederId} 
+            userId={userId}
           />
         </div>
       ) : (

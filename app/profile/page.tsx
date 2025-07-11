@@ -279,8 +279,9 @@ export default async function ProfilePage() {
                 adoptionRequests={adoptionRequestsWithDogs || []}
                 favoriteDogs={favoriteDogs}
                 puppyApplication={serializedPuppyApplication}
+                breederId={breederId}
+                userId={userFromDb?._id?.toString() || null}
             />
-
         </main>
     );
 }

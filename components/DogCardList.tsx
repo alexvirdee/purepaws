@@ -8,6 +8,8 @@ export default function DogCardList({
   puppyInterests,
   dogs,
   favorites,
+  breederId = null, // Optional breederId prop for future use
+  userId = null, // Optional userId prop for future use
   onUnfavorite,
   loggedInUser,
   onNewRequest,
@@ -18,6 +20,8 @@ export default function DogCardList({
     puppyInterests?: any[]; // If you want to use puppy interests in the future
     dogs: IDog[];
     favorites?: Favorite[];
+    breederId?: string | null; // Optional breederId prop for future use
+    userId?: string | null; // Optional userId prop for future use
     onUnfavorite?: (dogId: string) => void;
     loggedInUser?: string;
     onNewRequest?: (newRequest: any) => void;
@@ -45,6 +49,8 @@ export default function DogCardList({
               loggedInUser={loggedInUser}
               puppyApplication={puppyApplication}
               interestStatus={matchedInterest?.status}
+              breederId={breederId} // Pass breederId if needed
+              userId={userId}
               onNewRequest={onNewRequest} // Pass the callback for new request
             />
         );

@@ -9,6 +9,8 @@ interface FavoriteDogsSectionProps {
     puppyApplication?: any; // If you want to pass the puppy application data
     initialDogs: IDog[];
     favorites: any;
+    breederId?: string | null; // Optional breederId prop for future use
+    userId?: string | null; // Optional userId prop for future use
     onNewRequest: (newRequest: any) => void
 }
 
@@ -21,6 +23,8 @@ export default function FavoriteDogsSection({
     puppyApplication, 
     initialDogs, 
     favorites,
+    breederId = null, 
+    userId = null, // Optional userId prop for future use
     onNewRequest
 }: FavoriteDogsSectionProps) {
     const [dogs, setDogs] = useState(initialDogs);
@@ -41,6 +45,8 @@ export default function FavoriteDogsSection({
             favorites={favorites}
             onUnfavorite={handleUnfavorite}
             onNewRequest={onNewRequest}
+            breederId={breederId} // Pass breederId if needed
+            userId={userId}
             gridClassName="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2"
         />
     )

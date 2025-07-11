@@ -16,6 +16,7 @@ export default function DogCardActions({
     dogId,
     loggedInUser,
     breederId,
+    userId,
     dogName,
     onNewRequest
 }: {
@@ -25,6 +26,7 @@ export default function DogCardActions({
     dogId: string;
     loggedInUser?: string;
     breederId: string;
+    userId: string;
     dogName: string;
     onNewRequest: (newRequest: any) => void
 }) {
@@ -42,6 +44,14 @@ export default function DogCardActions({
     )
 
     const dogStatus = dog?.status || "available";
+
+    // console.log("Dog Status:", dogStatus);
+
+    // console.log("🐶 session:", session);
+    // console.log("🐶 interestStatus:", interestStatus);
+    // console.log("🐶 dogStatus:", dogStatus);
+    // console.log("🐶 breederId:", breederId);
+    // console.log("🐶 loggedInUser:", loggedInUser);
 
     return (
         <div className="flex flex-col gap-2">
@@ -64,6 +74,21 @@ export default function DogCardActions({
                             dogId={dogId}
                             dog={dog}
                             breederId={breederId}
+                            userId={userId}
+                            puppyApplication={puppyApplication}
+                            name={dogName}
+                            interestStatus={interestStatus}
+                            onNewRequest={onNewRequest}
+                            isBackup={true}
+                        />
+                    )}
+
+                    {dogStatus === "available" && (interestStatus === "pending" || interestStatus === "cancelled") && (
+                        <PuppyInterestDialog
+                            dogId={dogId}
+                            dog={dog}
+                            breederId={breederId}
+                            userId={userId}
                             puppyApplication={puppyApplication}
                             name={dogName}
                             interestStatus={interestStatus}
@@ -83,6 +108,7 @@ export default function DogCardActions({
                             dogId={dogId}
                             dog={dog}
                             breederId={breederId}
+                            userId={userId}
                             puppyApplication={puppyApplication}
                             name={dogName}
                             interestStatus={interestStatus}

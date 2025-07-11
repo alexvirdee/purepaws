@@ -64,9 +64,25 @@ export default function AdoptionRequestsSection({
   const [puppyInterestsState, setPuppyInterestsState] = useState(puppyInterests || []);
   const [adoptionRequestsState, setAdoptionRequestsState] = useState(adoptionRequests || []);
 
+  const activePuppyInterests = puppyInterestsState.filter(
+    (r) => r.status !== "cancelled" && r.status !== "deposit-requested"
+  );
+
+  const adoptionRequestsActive = adoptionRequestsState.filter(r => r.status !== "cancelled");
+
+  // Add puppyInterests that are deposit-requested AND don’t already exist in adoptionRequests
+  const depositRequestedInterests = puppyInterestsState.filter(
+    r =>
+      r.status === "deposit-requested" &&
+      !adoptionRequestsActive.some(a => a.dogId === r.dogId)
+  );
+
+  const depositRequests = [...adoptionRequestsActive, ...depositRequestedInterests];
+
+  
   useEffect(() => {
-    setPuppyInterestsState(puppyInterestsState);
-  }, [puppyInterestsState])
+    setPuppyInterestsState(puppyInterests);
+  }, [puppyInterests])
 
   useEffect(() => {
     setAdoptionRequestsState(adoptionRequests);
@@ -136,8 +152,8 @@ export default function AdoptionRequestsSection({
     console.log('Complete deposit button clicked');
   }
 
-  const hasActiveInterests = puppyInterestsState.some((r: { status: string; }) => r.status !== "cancelled");
-  const hasActiveAdoptions = adoptionRequestsState.some(r => r.status !== "cancelled");
+  const hasActiveInterests = activePuppyInterests.length > 0;
+  const hasActiveAdoptions = depositRequests.length > 0;
 
   if (!hasActiveInterests && !hasActiveAdoptions) {
     return (
@@ -154,7 +170,7 @@ export default function AdoptionRequestsSection({
         <div>
           <h3 className="text-lg font-bold mb-4">Deposit Requests</h3>
           <ul className="space-y-4">
-            {adoptionRequestsState.filter(r => r.status !== "cancelled").map(request => (
+            {depositRequests.filter(r => r.status !== "cancelled").map(request => (
               <RequestCard
                 key={request._id}
                 request={request}
@@ -170,7 +186,7 @@ export default function AdoptionRequestsSection({
         <div className="mt-8">
           <h3 className="text-lg font-bold mb-4">Puppy Interests</h3>
           <ul className="space-y-4">
-            {puppyInterestsState.filter(r => r.status !== "cancelled").map(request => (
+            {activePuppyInterests.filter(r => r.status !== "cancelled").map(request => (
               <RequestCard
                 key={request._id}
                 request={request}

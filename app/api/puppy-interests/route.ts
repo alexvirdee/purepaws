@@ -87,7 +87,7 @@ export async function POST(req: Request) {
 
         return NextResponse.json({ 
             success: true, 
-            id: existing ? existing._id : (result && "insertedId" in result ? result.insertedId : null), 
+            id: existing ? existing._id : ('insertedId' in result ? result.insertedId : undefined),
             removedFromFavorites }, { status: 201 });
 
     } catch (error) {

@@ -22,6 +22,7 @@ export default function PuppyInterestDialog({
     dogId,
     dog,
     breederId,
+    userId,
     puppyApplication,
     name,
     onNewRequest,
@@ -31,11 +32,13 @@ export default function PuppyInterestDialog({
         interestStatus?: string;
         dogId: string;
         breederId: string;
+        userId: string;
         puppyApplication?: any;
         name: string,
         dog: IDog;
         onNewRequest?: (request: {
             _id: string;
+            userId: string;
             dogId: string;
             breederId: string;
             puppyApplicationId?: string;
@@ -66,6 +69,13 @@ export default function PuppyInterestDialog({
 
         setIsSubmitting(true);
 
+        console.log("[🐶 handleSubmit] Fields:", {
+            dogId,
+            breederId,
+            puppyApplicationId: puppyApplication?._id,
+            puppyApplication,
+        });
+
         try {
             const res = await fetch('/api/puppy-interests', {
                 method: 'POST',
@@ -85,9 +95,12 @@ export default function PuppyInterestDialog({
             console.log("[PuppyInterestDialog] Response:", data);
 
             if (res.ok) {
+                const newId = data.id || data.insertedId;
+
                 if (onNewRequest) {
                     console.log("[PuppyInterestDialog] New request data:", {
-                        _id: data.insertedId,
+                        _id: newId,
+                        userId: userId,
                         dogId,
                         breederId,
                         puppyApplicationId: puppyApplication?._id,
@@ -105,7 +118,8 @@ export default function PuppyInterestDialog({
                     });
 
                     onNewRequest({
-                        _id: data.insertedId,
+                        _id: newId,
+                        userId: userId,
                         dogId,
                         breederId,
                         puppyApplicationId: puppyApplication?._id,
