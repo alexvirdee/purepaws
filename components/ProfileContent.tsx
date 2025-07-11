@@ -6,26 +6,30 @@ import FavoriteDogsSection from "@/components/FavoriteDogsSection";
 import { IDog } from "@/interfaces/dog";
 
 export default function ProfileContent({
-  initialAdoptionRequests,
   favoriteDogs,
   puppyApplication,
-  puppyInterests
+  puppyInterests,
+  adoptionRequests
 }: {
-  initialAdoptionRequests: any[];
   favoriteDogs: IDog[];
   puppyApplication?: any;
   puppyInterests?: any[];
+  adoptionRequests: any[];
 }) {
-  const [adoptionRequests, setAdoptionRequests] = useState(initialAdoptionRequests);
+  const [interestRequests, setInterestRequests] = useState(puppyInterests || []);
+  const [adoptionRequestsState, setAdoptionRequestsState] = useState(puppyInterests || []);
 
   const handleNewRequest = (newRequest: any) => {
-    setAdoptionRequests(prev => [...prev, newRequest]);
+    setInterestRequests(prev => [...prev, newRequest]);
   };
 
   return (
     <>
-      <AdoptionRequestsSection requests={adoptionRequests} onNewRequest={handleNewRequest} />
-
+      <AdoptionRequestsSection
+        adoptionRequests={adoptionRequests}
+        puppyInterests={interestRequests}
+        onNewRequest={handleNewRequest}
+      />
 
       {favoriteDogs.length > 0 ? (
         <div className="bg-white rounded shadow p-6">

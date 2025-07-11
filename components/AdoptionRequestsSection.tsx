@@ -7,6 +7,7 @@ import { Suspense } from "react";
 import DogImage from "./DogImage";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -25,7 +26,7 @@ import { Label } from "@/components/ui/label"
 import EditRequestMessageDialog from "./EditRequestMessageDialog";
 
 
-interface AdoptionRequest {
+interface InterestRequest {
   _id: string;
   userId: string;
   breederId: string;
@@ -52,19 +53,26 @@ interface AdoptionRequest {
 }
 
 export default function AdoptionRequestsSection({
-  requests,
+  puppyInterests,
+  adoptionRequests,
   onNewRequest
 }: {
-  requests: AdoptionRequest[];
-  onNewRequest?: (request: AdoptionRequest) => void; // Callback for new request
+  puppyInterests: InterestRequest[];
+  adoptionRequests: InterestRequest[];
+  onNewRequest?: (request: InterestRequest) => void; // Callback for new request
 }) {
-  const [puppyInterestRequests, setPuppyInterestRequests] = useState(requests);
+  const [puppyInterestsState, setPuppyInterestsState] = useState(puppyInterests || []);
+  const [adoptionRequestsState, setAdoptionRequestsState] = useState(adoptionRequests || []);
 
   useEffect(() => {
-    setPuppyInterestRequests(requests);
-  }, [requests])
+    setPuppyInterestsState(puppyInterestsState);
+  }, [puppyInterestsState])
 
-  const handleCancelRequest = async (requestId: string) => {
+  useEffect(() => {
+    setAdoptionRequestsState(adoptionRequests);
+  }, [adoptionRequests]);
+
+  const handleCancelPuppyInterest = async (requestId: string) => {
     try {
       const res = await fetch(`/api/puppy-interests/${requestId}`, {
         method: "PATCH",
@@ -77,7 +85,7 @@ export default function AdoptionRequestsSection({
       if (res.ok) {
         toast.success(`Adoption request cancelled successfully.`);
 
-        setPuppyInterestRequests(prev =>
+        setPuppyInterestsState(prev =>
           prev.map(r =>
             r._id === requestId ? { ...r, status: "cancelled" } : r
           )
@@ -106,7 +114,7 @@ export default function AdoptionRequestsSection({
       if (res.ok) {
         toast.success("Message updated successfully!");
 
-        setPuppyInterestRequests(prev =>
+        setPuppyInterestsState(prev =>
           prev.map(r =>
             r._id === requestId ? { ...r, message: newMessage } : r
           )
@@ -124,116 +132,161 @@ export default function AdoptionRequestsSection({
     }
   };
 
-  const hasActiveRequests = puppyInterestRequests.some(
-  request => request.status !== "cancelled"
-);
+  const handleCompleteDeposit = () => {
+    console.log('Complete deposit button clicked');
+  }
 
+  const hasActiveInterests = puppyInterestsState.some((r: { status: string; }) => r.status !== "cancelled");
+  const hasActiveAdoptions = adoptionRequestsState.some(r => r.status !== "cancelled");
 
-  if (!hasActiveRequests) {
+  if (!hasActiveInterests && !hasActiveAdoptions) {
     return (
       <div className="bg-white rounded shadow p-6">
         <h3 className="text-lg font-bold mb-4">Your Adoption Requests</h3>
-        <p className="text-gray-500">You haven’t submitted any adoption requests yet.</p>
+        <p className="text-gray-500">You haven’t submitted any requests yet.</p>
       </div>
     );
   }
 
   return (
     <>
-      <h3 className="text-lg font-bold mb-4">Your Adoption Requests</h3>
-      <ul className="space-y-4">
-        {puppyInterestRequests
-          .filter(request => request.status !== "cancelled")
-          .map((request, index) => (
-            <li
-              key={index}
-              className="border rounded shadow hover:shadow-md transition flex flex-col md:flex-row gap-4 p-4 relative"
-            >
-              {/* Dog image */}
-              <div className="flex-shrink-0 w-full md:w-auto md:max-w-[200px] flex justify-center items-center md:justify-start">
-                {request.dog ? (
-                  <Suspense fallback={<Skeleton className="h-28 rounded" />}>
-                    <div className="w-full max-w-[200px] h-28 flex overflow-hiddens">
-                      <DogImage
-                        width={200}
-                        height={90}
-                        src={request.dog.photos?.[0]?.path}
-                        alt={request.dog.name}
-                        additionalContainerStyles="rounded-lg"
-                      />
-                    </div>
-                  </Suspense>
-                ) : (
-                  <div className="bg-gray-200 h-28 w-full flex items-center justify-center">
-                    <span className="text-gray-500">No dog data available</span>
-                  </div>
-                )}
-              </div>
+      {hasActiveAdoptions && (
+        <div>
+          <h3 className="text-lg font-bold mb-4">Deposit Requests</h3>
+          <ul className="space-y-4">
+            {adoptionRequestsState.filter(r => r.status !== "cancelled").map(request => (
+              <RequestCard
+                key={request._id}
+                request={request}
+                isDeposit
+                onCompleteDeposit={handleCompleteDeposit}
+              />
+            ))}
+          </ul>
+        </div>
+      )}
 
-              {/* Request details container */}
-              <div className="flex flex-col justify-between flex-1 relative">
-                {/* Details block */}
-                <div className="flex flex-col items-center text-center md:items-start md:text-left md:pr-28">
-                  <h4 className="text-md font-semibold mb-1">
-                    {request.dog ? request.dog.name : "Unknown Dog"}
-                  </h4>
-                  <p className="text-sm text-gray-500 mb-1">
-                    Status: <span className="capitalize font-medium">{request.status}</span>
-                  </p>
-                  <p className="text-sm text-gray-500 mb-1">
-                    Message: {request.message || "(No message provided)"}
-                  </p>
-                  <p className="text-xs text-gray-400 mb-2">
-                    Submitted:{" "}
-                    {request.createdAt
-                      ? new Date(request.createdAt).toLocaleDateString()
-                      : "Unknown"}
-                  </p>
-                  <a
-                    href={`/dogs/${request.dog?._id}`}
-                    className="text-blue-600 underline text-sm"
-                  >
-                    View Dog
-                  </a>
-                </div>
-
-                {/* Action buttons */}
-                <div className="flex justify-center md:justify-end mt-4 md:mt-0 md:absolute md:right-0 md:top-1/2 md:-translate-y-1/2 gap-2">
-                  <EditRequestMessageDialog
-                    request={request}
-                    onSave={handleUpdateMessage}
-                  />
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button className="bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 focus:ring-offset-red-200 disabled:opacity-50 disabled:pointer-events-none cursor-pointer" size="sm" variant="destructive">Cancel Request</Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Cancel this request?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          You can always submit a new request later if you change your mind.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={() => handleCancelRequest(request._id)}
-                          className="bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 focus:ring-offset-red-200 disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
-                        >
-                          Confirm Cancel
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-
-
-
-
-                </div>
-              </div>
-            </li>
-          ))}
-      </ul>
+      {hasActiveInterests && (
+        <div className="mt-8">
+          <h3 className="text-lg font-bold mb-4">Puppy Interests</h3>
+          <ul className="space-y-4">
+            {puppyInterestsState.filter(r => r.status !== "cancelled").map(request => (
+              <RequestCard
+                key={request._id}
+                request={request}
+                onCancel={handleCancelPuppyInterest}
+                onUpdateMessage={handleUpdateMessage}
+              />
+            ))}
+          </ul>
+        </div>
+      )}
     </>
+  );
+}
+
+function RequestCard({
+  request,
+  isDeposit = false,
+  onCancel,
+  onUpdateMessage,
+  onCompleteDeposit,
+}: {
+  request: InterestRequest;
+  isDeposit?: boolean;
+  onCancel?: (id: string) => void;
+  onUpdateMessage?: (id: string, message: string) => void;
+  onCompleteDeposit?: () => void;
+}) {
+  return (
+    <li className="border rounded shadow hover:shadow-md transition flex flex-col md:flex-row gap-4 p-4 relative">
+      <div className="flex-shrink-0 w-full md:w-auto md:max-w-[200px] flex justify-center items-center md:justify-start">
+        {request.dog ? (
+          <Suspense fallback={<Skeleton className="h-28 rounded" />}>
+            <div className="w-full max-w-[200px] h-28 flex overflow-hidden">
+              <DogImage
+                width={200}
+                height={90}
+                src={request.dog.photos?.[0]?.path}
+                alt={request.dog.name}
+                additionalContainerStyles="rounded-lg"
+              />
+            </div>
+          </Suspense>
+        ) : (
+          <div className="bg-gray-200 h-28 w-full flex items-center justify-center">
+            <span className="text-gray-500">No dog data available</span>
+          </div>
+        )}
+      </div>
+
+      <div className="flex flex-col justify-between flex-1 relative">
+        <div className="flex flex-col items-center text-center md:items-start md:text-left md:pr-28">
+          <h4 className="text-md font-semibold mb-1">
+            {request.dog ? request.dog.name : "Unknown Dog"}
+          </h4>
+          <Badge>{request.status}</Badge>
+          <p className="text-sm text-gray-500 mb-1">
+            Message: {request.message || "(No message)"}
+          </p>
+          <p className="text-xs text-gray-400 mb-2">
+            Submitted:{" "}
+            {request.createdAt
+              ? new Date(request.createdAt).toLocaleDateString()
+              : "Unknown"}
+          </p>
+          <a
+            href={`/dogs/${request.dog?._id}`}
+            className="text-blue-600 underline text-sm"
+          >
+            View Dog
+          </a>
+        </div>
+
+        <div className="flex justify-center md:justify-end mt-4 md:mt-0 md:absolute md:right-0 md:top-1/2 md:-translate-y-1/2 gap-2">
+          {isDeposit ? (
+            <div className="flex flex-col items-start gap-2 max-w-xs text-left">
+              <Button onClick={onCompleteDeposit} className="bg-green-600 text-white hover:bg-green-700">
+                Complete Deposit
+              </Button>
+              <p className="text-xs text-gray-500">
+                Holds {request.dog.name} until your expiration. If you don’t pay, your request will expire.
+              </p>
+            </div>
+          ) : (
+            <>
+              <EditRequestMessageDialog
+                request={request}
+                onSave={(newMsg) => onUpdateMessage && onUpdateMessage(request._id, newMsg)}
+              />
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button size="sm" className="bg-red-600 text-white hover:bg-red-700">
+                    Cancel Request
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Cancel this request?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      You can always apply again later.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Nevermind</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => onCancel && onCancel(request._id)}
+                      className="bg-red-600 text-white hover:bg-red-700"
+                    >
+                      Confirm Cancel
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </>
+          )}
+        </div>
+      </div>
+    </li>
   );
 }

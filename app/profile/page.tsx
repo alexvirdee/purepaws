@@ -6,12 +6,10 @@ import { User as UserIcon, Dog as DogIcon, ArrowRight } from "lucide-react";
 import clientPromise from "@/lib/mongodb";
 import EditProfileDialog from "@/components/EditProfileDialog";
 import { ObjectId } from "mongodb";
-import FavoriteDogsSection from "@/components/FavoriteDogsSection";
 import Link from "next/link";
 import { DB_NAME } from "@/lib/constants";
 import BreederApprovalBanner from "@/components/breeders/BreederApprovalBanner";
 import PuppyApplicationDetails from "@/components/PuppyApplicationDetails";
-import AdoptionRequestsSection from "@/components/AdoptionRequestsSection";
 import ProfileContent from "@/components/ProfileContent";
 
 
@@ -105,6 +103,48 @@ export default async function ProfilePage() {
         }));
     }
 
+    // Raw requests from Mongo
+    const adoptionRequests = await db.collection("adoptionRequests")
+        .find({ userId: userFromDb?._id })
+        .toArray();
+
+    // Get dog IDs and dogs in bulk
+    const adoptionRequestDogIds = adoptionRequests.map(r => r.dogId);
+
+    const dogsForAdoptionRequests = await db.collection("dogs")
+        .find({ _id: { $in: adoptionRequestDogIds.map(id => new ObjectId(id)) } })
+        .toArray();
+
+    // Combine and serialize with dog details
+    const adoptionRequestsWithDogs = adoptionRequests.map(request => {
+        const dog = dogsForAdoptionRequests.find(
+            d => d._id.toString() === request.dogId.toString()
+        );
+
+        return {
+            ...request,
+            _id: request._id.toString(),
+            interestId: request.interestId?.toString() || null,
+            userId: request.userId.toString(),
+            breederId: request.breederId?.toString() || null,
+            dogId: request.dogId.toString(),
+            createdAt: request.createdAt?.toISOString() || null,
+            expiresAt: request.expiresAt?.toISOString() || null,
+            dog: dog
+                ? {
+                    _id: dog._id.toString(),
+                    name: dog.name || "Unknown",
+                    photos: dog.photos || [],
+                    breed: dog.breed || "Unknown",
+                    status: dog.status || "Unknown",
+                    price: dog.price || 0,
+                }
+                : null,
+            status: request.status || "pending",
+            message: request.message || "",
+        };
+    });
+
     // Get unique dog IDs to join with dogs collection
     const puppyInterestDogIds = puppyInterests.map(interest => interest.dogId);
 
@@ -114,7 +154,7 @@ export default async function ProfilePage() {
         .toArray();
 
     // Build final adoption requests array with dog + interest merged
-    const adoptionRequests = puppyInterests.map(interest => {
+    const puppyInterestRequests = puppyInterests.map(interest => {
         const dog = dogsForInterests.find(d => d._id.toString() === interest.dogId.toString());
 
         return {
@@ -235,10 +275,10 @@ export default async function ProfilePage() {
             )}
 
             <ProfileContent
-                initialAdoptionRequests={adoptionRequests}
+                puppyInterests={puppyInterestRequests || []}
+                adoptionRequests={adoptionRequestsWithDogs || []}
                 favoriteDogs={favoriteDogs}
                 puppyApplication={serializedPuppyApplication}
-                puppyInterests={serializedPuppyInterest || []}
             />
 
         </main>
