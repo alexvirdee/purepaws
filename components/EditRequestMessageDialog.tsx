@@ -21,7 +21,7 @@ export default function EditRequestMessageDialog({
     request,
     onSave }: {
         request: any,
-        onSave: (id: string, msg: string) => void
+        onSave: (msg: string) => void
     }) {
     const [message, setMessage] = useState(request.message);
     const [open, setOpen] = useState(false);
@@ -29,7 +29,7 @@ export default function EditRequestMessageDialog({
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        await onSave(request._id, message);
+        await onSave(message);
         setOpen(false);
     };
 
