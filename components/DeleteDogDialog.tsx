@@ -3,32 +3,34 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
+    AlertDialog,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { CircleX } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
 type DeleteDogDialogProps = {
-  dogId: string;      // ID to delete
-  dogName: string;    // optional, for the title
-  onDeleteSuccess?: () => void; // optional callback to refresh UI
+    dogId: string;      // ID to delete
+    dogName: string;    // optional, for the title
+    onDeleteSuccess?: () => void;
+    open?: boolean; // controlled open state
+    onOpenChange?: (open: boolean) => void;
 };
 
 export default function DeleteDogDialog({
     dogId,
     dogName,
-    onDeleteSuccess
+    onDeleteSuccess,
+    open,
+    onOpenChange,
 }: DeleteDogDialogProps) {
-    const [open, setOpen] = useState(false);
-
     const router = useRouter();
 
     const handleDelete = async (e: React.FormEvent) => {
@@ -41,7 +43,7 @@ export default function DeleteDogDialog({
 
             if (res.ok) {
                 toast.success(`Deleted ${dogName} successfully!`);
-                setOpen(false);
+                onOpenChange?.(false);
                 onDeleteSuccess?.();
 
                 router.refresh();
@@ -56,13 +58,7 @@ export default function DeleteDogDialog({
     };
 
     return (
-
-        <AlertDialog open={open} onOpenChange={setOpen}>
-            <AlertDialogTrigger asChild>
-                <Button className="text-sm bg-red-500 hover:bg-red-600 cursor-pointer">
-                    <CircleX /> Delete Dog
-                </Button>
-            </AlertDialogTrigger>
+        <AlertDialog open={open} onOpenChange={onOpenChange}>
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>Are you sure?</AlertDialogTitle>

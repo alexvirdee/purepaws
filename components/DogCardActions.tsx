@@ -6,8 +6,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import SignInRequiredDialog from "./SignInRequiredDialog";
 import { PawPrintIcon } from "lucide-react";
-import AddEditDogDialog from "./AddEditDogDialog";
-import DeleteDogDialog from "./DeleteDogDialog";
 import { IDog } from "@/interfaces/dog";
 
 export default function DogCardActions({
@@ -32,15 +30,12 @@ export default function DogCardActions({
     const { data: session } = useSession();
     const [showSignIn, setShowSignIn] = useState(false);
 
-    // If they are the breeder, actions are edit/delete
-    if (loggedInUser &&
+    // If they are the breeder, no need to show interest/action button
+    if (loggedInUser && 
         breederId &&
         loggedInUser === breederId
     ) return (
-        <div className="flex gap-2 mt-2">
-            <AddEditDogDialog mode="edit" initialData={dog} />
-            <DeleteDogDialog dogId={dogId} dogName={dogName} />
-        </div>
+        null
     )
 
     return (

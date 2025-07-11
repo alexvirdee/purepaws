@@ -58,6 +58,8 @@ export default async function BreederDashboardPage() {
         .collection("dogs")
         .find({ breederId: new ObjectId(breederId) })
         .toArray();
+    
+    console.log('dogs #', dogs.length);
 
     // Serialize the dogs to ensure compatibility with client side components
     const serializedDogs: SerializedDog[] = JSON.parse(JSON.stringify(dogs)).map((dog: IDog): SerializedDog => ({

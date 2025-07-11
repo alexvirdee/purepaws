@@ -34,13 +34,17 @@ type AddEditDogDialogProps = {
     initialData?: IDog;
     triggerButton?: React.ReactNode;
     onSubmitSuccess?: () => void;
+    open?: boolean; // controlled open state
+    onOpenChange?: (open: boolean) => void; // controlled open change handler
 }
 
 export default function AddEditDogDialog({
     mode,
     breederId,
     initialData,
-    onSubmitSuccess
+    onSubmitSuccess,
+    open: controlledOpen,
+  onOpenChange,
 }: AddEditDogDialogProps) {
     const initialFormData = {
         name: '',
@@ -56,7 +60,8 @@ export default function AddEditDogDialog({
     };
 
     const [formData, setFormData] = useState<Omit<IDog, '_id'>>(initialFormData);
-    const [open, setOpen] = useState(false);
+    const [internalOpen, setInternalOpen] = useState(false);
+    const open = controlledOpen ?? internalOpen;
 
     const router = useRouter();
 
@@ -119,7 +124,7 @@ export default function AddEditDogDialog({
                     resetForm();
                 }
 
-                setOpen(false);
+                setInternalOpen(false);
 
                 router.refresh();
                 onSubmitSuccess?.();
@@ -136,12 +141,15 @@ export default function AddEditDogDialog({
     };
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog open={open} onOpenChange={onOpenChange ?? setInternalOpen}>
             <DialogTrigger asChild>
-                <Button className="bg-green-500 hover:bg-green-600 text-white cursor-pointer">
-                    {mode === 'edit' ? <Pencil /> : <Plus />}
-                    {mode === 'edit' ? 'Edit Dog' : 'Add Dog'}
-                </Button>
+                {mode === 'edit' && initialData ? (
+                    <span>Edit</span>
+                ) : (
+                    <Button className="bg-green-500 hover:bg-green-600 text-white cursor-pointer">
+                        <Plus /> Add Dog
+                    </Button>
+                )}
             </DialogTrigger>
             <DialogContent className="max-h-[80vh] overflow-y-auto">
                 <DialogHeader>
