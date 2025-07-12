@@ -5,9 +5,6 @@ import { DB_NAME } from "@/lib/constants";
 
 export async function POST(request: Request) {
     try {
-
-        console.log('Trying to add a new dog...');
-
         const body = await request.json();
         const { name, litter, breed, dob, gender, status, price, photos, breederId } = body;
 
@@ -22,6 +19,13 @@ export async function POST(request: Request) {
         if (!status) missingFields.push("status");
         if (!price) missingFields.push("price");
         if (!breederId) missingFields.push("breederId");
+
+        if (name.length > 30) {
+            return NextResponse.json(
+                { error: "Dog name cannot be longer than 30 characters." },
+                { status: 400 }
+            );
+        }
 
         if (missingFields.length > 0) {
             console.warn("[API] Add Dog: Missing required fields:", missingFields);

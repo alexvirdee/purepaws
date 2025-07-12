@@ -23,6 +23,7 @@ import { Button } from "@/components/ui/button";
 import DashboardStatCard from "@/components/breeder-dashboard/DashboardStatCard";
 import { SidebarLink } from "@/components/breeder-dashboard/SidebarLink";
 import Image from "next/image";
+import BreederDashboardSidebar from "@/components/breeder-dashboard/BreederDashboardSidebar";
 import { getBreederDashboardData } from "@/lib/fetchBreederData";
 
 
