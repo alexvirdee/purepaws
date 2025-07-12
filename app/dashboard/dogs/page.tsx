@@ -5,8 +5,6 @@ import AddEditDogDialog from "@/components/AddEditDogDialog";
 export default async function BreederDogsPage() {
     const { breeder, dogs } = await getBreederDashboardData({ includeDogs: true });
 
-    console.log('breeder', breeder);
-
     return (
         <>
             <div className="flex flex-row justify-between items-center mb-6">

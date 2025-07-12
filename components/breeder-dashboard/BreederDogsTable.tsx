@@ -29,6 +29,7 @@ import { Button } from "../ui/button";
 import Link from "next/link";
 import AddEditDogDialog from "../AddEditDogDialog";
 import DeleteDogDialog from "../DeleteDogDialog";
+import { truncate } from "@/utils/truncateString";
 
 interface BreederDogTableProps {
     breederName: string;
@@ -71,7 +72,7 @@ export default function BreederDogsTable({ breederName, dogs }: BreederDogTableP
                                 key={index}
                                 className={`${rowClass} hover:bg-gray-100 transition-colors`}
                             >
-                                <TableCell>{dog.name}</TableCell>
+                                <TableCell>{truncate(dog.name, 12)}</TableCell>
                                 <TableCell>{dog.litter}</TableCell>
                                 <TableCell>{dog.dob}</TableCell>
                                 <TableCell>
@@ -115,7 +116,7 @@ export default function BreederDogsTable({ breederName, dogs }: BreederDogTableP
                                             </Button>
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent className="w-56" align="end">
-                                            <DropdownMenuLabel>{dog.name}</DropdownMenuLabel>
+                                            <DropdownMenuLabel>{truncate(dog.name, 12)}</DropdownMenuLabel>
                                             <DropdownMenuSeparator />
                                             <DropdownMenuGroup>
                                                 <DropdownMenuItem onClick={() => setEditDog(dog)}>
