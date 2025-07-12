@@ -70,9 +70,20 @@ export async function getBreederDashboardData({
         const dogsForInterests = await db.collection("dogs").find({ _id: { $in: puppyInterestDogIds } }).toArray();
         const usersForInterests = await db.collection("users").find({ _id: { $in: puppyInterestUserIds } }).toArray();
 
+        // Users puppy application 
+        const puppyApplications = await db.collection("puppyApplications")
+            .find({ userId: { $in: puppyInterestUserIds } })
+            .toArray();
+
         const interests = puppyInterests.map((interest) => {
             const dog = dogsForInterests.find((d) => d._id.toString() === interest.dogId.toString());
-            const buyer = usersForInterests.find((u) => u._id.toString() === interest.userId.toString());
+
+            const buyerInterest = usersForInterests.find((u) => u._id.toString() === interest.userId.toString());
+
+            const buyerApp = puppyApplications.find(
+                (app) => app.userId.toString() === interest.userId.toString()
+            );
+
             const adoptionRequest = adoptionRequests.find(
                 (ar) => ar.interestId.toString() === interest._id.toString()
             );
@@ -88,11 +99,21 @@ export async function getBreederDashboardData({
                         breed: dog.breed || "Unknown",
                     }
                     : null,
-                buyer: buyer
+                buyer: buyerInterest
                     ? {
-                        _id: buyer._id.toString(),
-                        name: buyer.name || "Unknown Buyer",
-                        email: buyer.email || "",
+                        _id: buyerInterest._id.toString(),
+                        name: buyerInterest.name || "Unknown Buyer",
+                        email: buyerInterest.email || "",
+                        city: buyerApp?.city || "",
+                        state: buyerApp?.state || "",
+                        age: buyerApp?.age || "",
+                        petsOwned: buyerApp?.petsOwned || "",
+                        hasChildren: buyerApp?.hasChildren || "",
+                        puppyPreference: buyerApp?.puppyPreference || "",
+                        genderPreference: buyerApp?.genderPreference || "",
+                        trainingPlanned: buyerApp?.trainingPlanned || "",
+                        desiredTraits: buyerApp?.desiredTraits || "",
+                        additionalComments: buyerApp?.additionalComments || "",
                     }
                     : null,
                 message: interest.message || "",
