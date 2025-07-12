@@ -4,12 +4,23 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 import { DB_NAME } from "@/lib/constants";
-import { User as UserIcon } from "lucide-react";
+import { PlusIcon, User as UserIcon } from "lucide-react";
 
 import AddEditDogDialog from "@/components/AddEditDogDialog";
 import BreederApprovalBanner from "@/components/breeders/BreederApprovalBanner";
 import BreederDogsTable from "@/components/breeder-dashboard/BreederDogsTable";
 import AdoptionRequests from "@/components/breeder-dashboard/AdoptionRequests";
+import {
+    Card,
+    CardAction,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card"
+import { Button } from "@/components/ui/button";
+import DashboardStatCard from "@/components/breeder-dashboard/DashboardStatCard";
 
 interface SerializedDog {
     _id: string;
@@ -83,9 +94,9 @@ export default async function BreederDashboardPage() {
         .toArray();
 
     const adoptionRequests = await db
-  .collection("adoptionRequests")
-  .find({ breederId: new ObjectId(breederId) })
-  .toArray();
+        .collection("adoptionRequests")
+        .find({ breederId: new ObjectId(breederId) })
+        .toArray();
 
     // Get unique dog IDs in these requests
     const puppyInterestDogIds = puppyInterests.map(interest => interest.dogId);
@@ -104,8 +115,8 @@ export default async function BreederDashboardPage() {
         const dog = dogsForInterests.find(d => d._id.toString() === interest.dogId.toString());
         const buyer = usersForInterests.find(u => u._id.toString() === interest.userId.toString());
         const adoptionRequest = adoptionRequests.find(
-    ar => ar.interestId.toString() === interest._id.toString()
-  );
+            ar => ar.interestId.toString() === interest._id.toString()
+        );
 
         return {
             _id: interest._id.toString(),
@@ -127,19 +138,59 @@ export default async function BreederDashboardPage() {
         };
     });
 
+    const totalDogs = serializedDogs.length;
+    const totalPuppyInterests = puppyInterests.length;
+    const totalRequestsSent = adoptionRequests.length;
 
+    let breederJoinedText = "Pending Approval";
+
+if (serializedBreeder?.approvedAt) {
+  const approvedDate = new Date(serializedBreeder.approvedAt);
+  const now = new Date();
+  const diffInMs = now.getTime() - approvedDate.getTime();
+  const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+  breederJoinedText = `Joined ${diffInDays} day${diffInDays !== 1 ? "s" : ""} ago`;
+}
 
     return (
         <main className="max-w-5xl mx-auto p-8 space-y-8">
-            <div className="flex justify-between items-center mb-4">
-                <div className="flex items-center gap-2 text-3xl font-bold">
-                    <UserIcon className="w-8 text-gray-700" /> Breeder Dashboard
+            <div className="flex flex-col md:flex-row justify-between items-center ml-6 mb-4">
+                <div className="flex items-center gap-2 text-xl font-bold">
+                    <UserIcon className="w-8 text-gray-700" /> {serializedBreeder?.name} Dashboard
                 </div>
                 {/* Breeder action buttons */}
-                <div className="flex flex-row justify-end">
+                <div className="flex flex-row justify-end gap-4">
                     <AddEditDogDialog mode="add" breederId={breederId} />
+                    <Button className="cursor-pointer"><PlusIcon />Create Litter</Button>
+                    {/* <AddEditDogDialog mode="add" breederId={breederId} />
+                    <AddEditDogDialog mode="add" breederId={breederId} /> */}
                 </div>
             </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <DashboardStatCard
+                    title="Dogs Listed"
+                    value={totalDogs}
+                    description="Currently active"
+                />
+                <DashboardStatCard
+                    title="Puppy Interests"
+                    value={totalPuppyInterests}
+                    description="Families interested"
+                />
+                <DashboardStatCard
+                    title="Requests Sent"
+                    value={totalRequestsSent}
+                    description="Follow-ups sent"
+                />
+                <DashboardStatCard
+                    title="Profile Status"
+                    value={serializedBreeder?.status}
+                    description="Breeder Profile"
+                    trend={breederJoinedText}
+                />
+            </div>
+
 
             {serializedBreeder && serializedBreeder?.status === "approved" && (
                 <BreederApprovalBanner breeder={serializedBreeder} />
