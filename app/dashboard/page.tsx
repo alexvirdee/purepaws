@@ -25,6 +25,7 @@ import { SidebarLink } from "@/components/breeder-dashboard/SidebarLink";
 import Image from "next/image";
 import BreederDashboardSidebar from "@/components/breeder-dashboard/BreederDashboardSidebar";
 import { getBreederDashboardData } from "@/lib/fetchBreederData";
+import Link from "next/link";
 
 
 export default async function BreederDashboardPage() {
@@ -51,6 +52,7 @@ export default async function BreederDashboardPage() {
             <section className="flex-1">
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-xl font-bold">{breeder?.name}</h2>
+                    <Link className="text-blue-500 hover:text-blue-600 cursor-pointer" href={`/breeders/${breeder?._id}`}>Public Profile</Link>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2">
                     <DashboardStatCard

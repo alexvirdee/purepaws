@@ -339,7 +339,10 @@ export default function AdoptionRequests({
             )}
 
             {activeConversation && (
-                <ChatWidget conversationId={activeConversation._id} />
+                <ChatWidget
+                    conversationId={activeConversation._id}
+                    onClose={() => setActiveConversation(null)}
+                />
             )}
         </div>
     )

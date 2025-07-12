@@ -140,11 +140,31 @@ export async function DELETE(
         const db = client.db(DB_NAME);
         const dogs = db.collection("dogs");
 
+        // Check if the dog had any user interests or adoptionRequests and remove them 
+        const interests = db.collection("puppyInterests");
+        const adoptionRequests = db.collection("adoptionRequests");
+
         const result = await dogs.deleteOne({ _id: new ObjectId(dogId) });
 
         if (result.deletedCount === 0) {
             return NextResponse.json({ error: "Dog not found." }, { status: 404 })
         }
+
+        // DB Cleanup associated with the dog being deleted 
+        // Delete any puppyInterests tied to this dog
+        const interestResult = await db
+            .collection("puppyInterests")
+            .deleteMany({ dogId: new ObjectId(dogId) });
+
+        // Delete any adoptionRequests tied to this dog
+        const adoptionRequestResult = await db
+            .collection("adoptionRequests")
+            .deleteMany({ dogId: new ObjectId(dogId) });
+
+        console.log(
+            `Deleted dog ${dogId}. Removed ${interestResult.deletedCount} puppyInterests and ${adoptionRequestResult.deletedCount} adoptionRequests.`
+        );
+
 
         return NextResponse.json({
             success: true,
