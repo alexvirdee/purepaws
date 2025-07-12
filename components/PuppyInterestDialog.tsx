@@ -161,6 +161,8 @@ export default function PuppyInterestDialog({
         setIsSubmitting(false);
     }
 
+    // console.log('what is the interest status?', interestStatus);
+
     return (
         <>
             <Dialog open={open} onOpenChange={setOpen}>

@@ -91,8 +91,7 @@ const Breeder = async ({ params }: BreederParams) => {
     if (userFromDb?._id) {
         puppyInterests = await db.collection("puppyInterests").find({
             userId: userFromDb._id,
-            breederId: ObjectId.isValid(breederId) ? new ObjectId(breederId) : breederId,
-            status: { $nin: ["cancelled"] }
+            breederId: ObjectId.isValid(breederId) ? new ObjectId(breederId) : breederId
         }).toArray();
     }
 
