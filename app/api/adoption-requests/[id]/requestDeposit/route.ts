@@ -13,6 +13,8 @@ export async function POST(req: Request, { params }: { params: { id: string } })
   const interest = await db.collection("puppyInterests").findOne({ _id: new ObjectId(id) });
 
   if (!interest) {
+    console.error("[RequestDeposit API] Puppy interest not found for ID:", id);
+
     return NextResponse.json({ message: "Puppy interest was not found." }, { status: 404 });
   }
 
@@ -23,7 +25,12 @@ export async function POST(req: Request, { params }: { params: { id: string } })
 
   if (existingRequest) {
     return NextResponse.json(
-      { message: "Deposit already requested for this interest." },
+      {
+        message: "Deposit already requested for this interest.",
+        adoptionRequestId: existingRequest._id,
+        expiresAt: existingRequest.expiresAt,
+        status: existingRequest.status,
+      },
       { status: 400 }
     );
   }
@@ -59,8 +66,10 @@ export async function POST(req: Request, { params }: { params: { id: string } })
   );
 
   return NextResponse.json(
-    { message: "Deposit requested created successfully", 
+    {
+      message: "Deposit requested created successfully",
       adoptionRequestId: insertResult.insertedId,
-      expiresAt: adoptionRequest.expiresAt, }, 
+      expiresAt: adoptionRequest.expiresAt,
+    },
     { status: 200 });
 }

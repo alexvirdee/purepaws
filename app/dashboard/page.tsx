@@ -82,6 +82,11 @@ export default async function BreederDashboardPage() {
         .find({ breederId: new ObjectId(breederId) })
         .toArray();
 
+    const adoptionRequests = await db
+  .collection("adoptionRequests")
+  .find({ breederId: new ObjectId(breederId) })
+  .toArray();
+
     // Get unique dog IDs in these requests
     const puppyInterestDogIds = puppyInterests.map(interest => interest.dogId);
 
@@ -95,12 +100,16 @@ export default async function BreederDashboardPage() {
         .find({ _id: { $in: puppyInterestUserIds } })
         .toArray();
 
-    const adoptionRequests = puppyInterests.map(interest => {
+    const interests = puppyInterests.map(interest => {
         const dog = dogsForInterests.find(d => d._id.toString() === interest.dogId.toString());
         const buyer = usersForInterests.find(u => u._id.toString() === interest.userId.toString());
+        const adoptionRequest = adoptionRequests.find(
+    ar => ar.interestId.toString() === interest._id.toString()
+  );
 
         return {
             _id: interest._id.toString(),
+            adoptionRequestId: adoptionRequest?._id.toString() || null,
             dog: dog ? {
                 _id: dog._id.toString(),
                 name: dog.name || "Unknown",
@@ -153,7 +162,7 @@ export default async function BreederDashboardPage() {
             </div>
 
             {/* Adoption Requests */}
-            <AdoptionRequests adoptionRequests={adoptionRequests} />
+            <AdoptionRequests interests={interests} />
 
             {/* ✅ Upcoming Litters */}
             <div className="mt-8 bg-white rounded-lg shadow p-6">
