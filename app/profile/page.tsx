@@ -72,7 +72,6 @@ export default async function ProfilePage() {
     // Serialize the puppy application to ensure compatibility with client side components
     let serializedPuppyApplication = null;
     if (puppyApplication) {
-
         serializedPuppyApplication = {
             ...puppyApplication,
             _id: puppyApplication._id?.toString() || null,

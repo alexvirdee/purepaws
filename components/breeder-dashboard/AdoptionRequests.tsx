@@ -17,6 +17,8 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { CheckIcon, MessageCircleIcon } from "lucide-react";
+import ChatWidget from "../ChatWidget";
 
 
 type PuppyInterest = {
@@ -44,6 +46,7 @@ export default function AdoptionRequests({
         status?: string;
     } | undefined>(undefined);
     const [reviewBuyer, setReviewBuyer] = useState<PuppyInterest | null>(null);
+    const [activeConversation, setActiveConversation] = useState<any>(null);
 
     useEffect(() => {
         // Initialize state with the provided interests prop
@@ -139,7 +142,39 @@ export default function AdoptionRequests({
         }
     };
 
-    console.log('interests state', interestsState)
+    // Breeder starts chat with buyer
+    const handleStartChat = async (interestId: string, buyerId: string) => {
+        try {
+            const res = await fetch("/api/conversations/start", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ puppyInterestId: interestId, buyerId }),
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                // toast.success("Chat started!");
+
+                // Close the review buyer dialog
+                setReviewBuyer(null);
+
+                setActiveConversation({
+                    _id: data.conversationId,
+                    buyerId: data.buyerId,
+                    breederId: data.breederId,
+                    puppyInterestId: data.puppyInterestId,
+                    createdAt: data.createdAt,
+                });
+                console.log("Conversation:", data);
+            } else {
+                toast.error(data.error || "Failed to start chat");
+            }
+        } catch (err) {
+            console.error(err);
+            toast.error("Something went wrong starting the chat");
+        }
+    };
 
 
     return (
@@ -223,7 +258,10 @@ export default function AdoptionRequests({
                     <DialogContent className="max-w-[500px]">
                         <DialogHeader>
                             <DialogTitle>Buyer Application: {reviewBuyer.buyer?.name}</DialogTitle>
-                            <DialogDescription>{reviewBuyer.buyer?.email}</DialogDescription>
+                            <DialogDescription>{reviewBuyer.buyer?.email}
+
+                                {reviewBuyer._id}, {reviewBuyer.buyer?._id}
+                            </DialogDescription>
                         </DialogHeader>
 
                         {/* Here: display puppyApplication info nicely */}
@@ -241,12 +279,15 @@ export default function AdoptionRequests({
                         </div>
 
                         <DialogFooter>
-                            <Button onClick={() => {
+                            <Button className="bg-green-500 hover:bg-green-600 cursor-pointer" onClick={() => {
                                 // call your API to approve puppyInterest
                                 // update status to "approved"
                                 toast.success("Buyer approved!")
                                 setReviewBuyer(null)
-                            }}>Approve Application</Button>
+                            }}><CheckIcon />Approve</Button>
+                            <Button className="bg-blue-500 hover:bg-blue-600 cursor-pointer" onClick={() => {
+                                handleStartChat(reviewBuyer._id, reviewBuyer.buyer?._id);
+                            }}><MessageCircleIcon /> Chat with buyer</Button>
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>
@@ -295,6 +336,10 @@ export default function AdoptionRequests({
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>
+            )}
+
+            {activeConversation && (
+                <ChatWidget conversationId={activeConversation._id} />
             )}
         </div>
     )
