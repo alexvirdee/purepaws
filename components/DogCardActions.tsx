@@ -45,14 +45,6 @@ export default function DogCardActions({
 
     const dogStatus = dog?.status || "available";
 
-    // console.log("Dog Status:", dogStatus);
-
-    // console.log("🐶 session:", session);
-    // console.log("🐶 interestStatus:", interestStatus);
-    // console.log("🐶 dogStatus:", dogStatus);
-    // console.log("🐶 breederId:", breederId);
-    // console.log("🐶 loggedInUser:", loggedInUser);
-
     return (
         <div className="flex flex-col gap-2">
             {session?.user?.email ? (

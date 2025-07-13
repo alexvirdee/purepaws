@@ -1,5 +1,4 @@
 // Keep this file server rendered
-
 import { Suspense } from "react";
 import Link from "next/link";
 import { IDog } from "@/interfaces/dog";
@@ -132,7 +131,7 @@ export default function DogCard({// If this is a request card, we can use this p
                     dog={dog}
                     dogId={dog._id}
                     loggedInUser={loggedInUser}
-                    userId={userId}
+                    userId={userId ?? ""}
                     breederId={dog.breederId ?? ""}
                     dogName={dog.name}
                     puppyApplication={puppyApplication}
