@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
     Dialog,
     DialogContent,
@@ -69,13 +69,6 @@ export default function PuppyInterestDialog({
 
         setIsSubmitting(true);
 
-        console.log("[🐶 handleSubmit] Fields:", {
-            dogId,
-            breederId,
-            puppyApplicationId: puppyApplication?._id,
-            puppyApplication,
-        });
-
         try {
             const res = await fetch('/api/puppy-interests', {
                 method: 'POST',
@@ -92,31 +85,10 @@ export default function PuppyInterestDialog({
 
             const data = await res.json();
 
-            console.log("[PuppyInterestDialog] Response:", data);
-
             if (res.ok) {
                 const newId = data.id || data.insertedId;
 
                 if (onNewRequest) {
-                    console.log("[PuppyInterestDialog] New request data:", {
-                        _id: newId,
-                        userId: userId,
-                        dogId,
-                        breederId,
-                        puppyApplicationId: puppyApplication?._id,
-                        status: "pending",
-                        createdAt: new Date().toISOString(),
-                        message: message.trim(),
-                        dog: {
-                            _id: dog._id,
-                            name: dog.name,
-                            photos: dog.photos || [],
-                            breed: dog.breed || "Unknown",
-                            price: dog.price || 0,
-                            status: dog.status || "Unknown",
-                        }
-                    });
-
                     onNewRequest({
                         _id: newId,
                         userId: userId,
@@ -160,8 +132,6 @@ export default function PuppyInterestDialog({
 
         setIsSubmitting(false);
     }
-
-    // console.log('what is the interest status?', interestStatus);
 
     return (
         <>

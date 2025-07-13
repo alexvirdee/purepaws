@@ -1,5 +1,5 @@
 import { User as UserIcon, Dog as DogIcon, ArrowRight } from "lucide-react";
-import EditProfileDialog from "@/components/EditProfileDialog";
+import EditProfileDialog from "@/components/dialogs/EditProfileDialog";
 import Link from "next/link";
 import BreederApprovalBanner from "@/components/breeders/BreederApprovalBanner";
 import PuppyApplicationDetails from "@/components/PuppyApplicationDetails";

@@ -2,7 +2,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { IDog } from "@/interfaces/dog";
-import FavoriteButton from "./FavoriteButton";
+import FavoriteButton from "@/components/FavoriteButton";
 import { Badge } from "@/components/ui/badge";
 import { formatPrice } from "@/utils/formatPrice";
 import {
@@ -14,9 +14,9 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import DogImage from "./DogImage";
+import DogImage from "@/components/DogImage";
 import { Skeleton } from "@/components/ui/skeleton";
-import DogCardActions from "./DogCardActions";
+import DogCardActions from "@/components/dog-card/DogCardActions";
 import { DogIcon } from "lucide-react";
 
 interface DogCardProps {

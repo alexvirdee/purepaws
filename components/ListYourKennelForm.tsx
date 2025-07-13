@@ -4,7 +4,6 @@ import { useEffect, useState, useRef } from 'react';
 import { US_STATES } from '@/lib/constants/usStates';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import {
@@ -19,7 +18,7 @@ import { toast } from 'sonner';
 import Link from 'next/link';
 import FileDropzone from '@/components/FileDropzone';
 import { DOG_BREEDS } from '@/lib/constants/dogBreeds';
-import TermsAndConditionsDialog from './TermsAndConditionsDialog';
+import TermsAndConditionsDialog from './dialogs/TermsAndConditionsDialog';
 
 interface FormData {
     name: string;

@@ -1,6 +1,6 @@
 import BreederDogsTable from "@/components/breeder-dashboard/BreederDogsTable";
 import { getBreederDashboardData } from "@/lib/fetchBreederData";
-import AddEditDogDialog from "@/components/AddEditDogDialog";
+import AddEditDogDialog from "@/components/dialogs/AddEditDogDialog";
 
 export default async function BreederDogsPage() {
     const { breeder, dogs } = await getBreederDashboardData({ includeDogs: true });

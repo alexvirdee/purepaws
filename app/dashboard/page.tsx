@@ -1,29 +1,5 @@
-import { getServerSession } from "next-auth";
-import { redirect } from "next/navigation";
-import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
-import clientPromise from "@/lib/mongodb";
-import { ObjectId } from "mongodb";
-import { DB_NAME } from "@/lib/constants";
-import { PlusIcon, User as UserIcon } from "lucide-react";
-
-import AddEditDogDialog from "@/components/AddEditDogDialog";
 import BreederApprovalBanner from "@/components/breeders/BreederApprovalBanner";
-import BreederDogsTable from "@/components/breeder-dashboard/BreederDogsTable";
-import AdoptionRequests from "@/components/breeder-dashboard/AdoptionRequests";
-import {
-    Card,
-    CardAction,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card"
-import { Button } from "@/components/ui/button";
 import DashboardStatCard from "@/components/breeder-dashboard/DashboardStatCard";
-import { SidebarLink } from "@/components/breeder-dashboard/SidebarLink";
-import Image from "next/image";
-import BreederDashboardSidebar from "@/components/breeder-dashboard/BreederDashboardSidebar";
 import { getBreederDashboardData } from "@/lib/fetchBreederData";
 import Link from "next/link";
 

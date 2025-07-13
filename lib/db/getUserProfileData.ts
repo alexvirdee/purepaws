@@ -77,27 +77,35 @@ export async function getUserProfileData() {
         };
     });
 
-    const puppyInterestRequests = puppyInterests.map((interest) => {
-        const dog = dogs.find(d => d._id.toString() === interest.dogId.toString());
-        return {
-            ...interest,
-            _id: interest._id.toString(),
-            userId: interest.userId?.toString(),
-            breederId: interest.breederId?.toString(),
-            puppyApplicationId: interest.puppyApplicationId?.toString(),
-            dogId: interest.dogId?.toString(),
-            createdAt: interest.createdAt?.toString(),
-            updatedAt: interest.updatedAt?.toString(),
-            dog: dog ? {
-                _id: dog._id.toString(),
-                name: dog.name,
-                photos: dog.photos || [],
-                breed: dog.breed,
-                status: dog.status,
-                price: dog.price,
-            } : null,
-        };
-    });
+    const puppyInterestRequests = await Promise.all(
+        puppyInterests.map(async (interest) => {
+            const dog = dogs.find(d => d._id.toString() === interest.dogId.toString());
+
+            const conversation = await db.collection("conversations").findOne({
+                puppyInterestId: interest._id
+            });
+
+            return {
+                ...interest,
+                _id: interest._id.toString(),
+                userId: interest.userId?.toString(),
+                breederId: interest.breederId?.toString(),
+                puppyApplicationId: interest.puppyApplicationId?.toString(),
+                dogId: interest.dogId?.toString(),
+                createdAt: interest.createdAt?.toString(),
+                updatedAt: interest.updatedAt?.toString(),
+                conversationId: conversation?._id.toString() || null,
+                dog: dog ? {
+                    _id: dog._id.toString(),
+                    name: dog.name,
+                    photos: dog.photos || [],
+                    breed: dog.breed,
+                    status: dog.status,
+                    price: dog.price,
+                } : null,
+            };
+        })
+    )
 
     return {
         user,

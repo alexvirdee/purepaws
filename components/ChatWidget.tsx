@@ -1,15 +1,16 @@
 'use client';
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { XIcon } from "lucide-react";
+import { toast } from "sonner";
 
 type ChatMessage = {
     _id: string;
-    sender: "breeder" | "buyer";
+    senderRole: "breeder" | "buyer";
     text: string;
     createdAt: string;
 };
@@ -30,22 +31,58 @@ export default function ChatWidget({
     const [messages, setMessages] = useState(initialMessages);
     const [newMessage, setNewMessage] = useState("");
 
+    useEffect(() => {
+        async function fetchMessages() {
+            const res = await fetch(`/api/conversations/${conversationId}/messages`);
+
+            if (!res.ok) {
+                setMessages([]);
+
+                return;
+            }
+
+            const data = await res.json();
+            setMessages(data.messages);
+        }
+
+        if (conversationId) fetchMessages();
+
+    }, [conversationId]);
+
     const handleSend = async () => {
         if (!newMessage.trim()) return;
 
-        // In a real app, you’d POST this to an API route
-        const fakeMessage: ChatMessage = {
-            _id: Date.now().toString(),
-            sender: "breeder",
-            text: newMessage.trim(),
-            createdAt: new Date().toISOString(),
-        };
+        try {
+            const res = await fetch(`/api/conversations/${conversationId}/messages`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ text: newMessage.trim() })
+            });
 
-        setMessages(prev => [...prev, fakeMessage]);
-        setNewMessage("");
+            const data = await res.json();
 
-        if (onSendMessage) {
-            onSendMessage(newMessage.trim());
+            if (res.ok) {
+                // Append the new message from response
+                setMessages(prev => [...prev, {
+                    _id: data.message._id,
+                    senderRole: data.message.senderRole,
+                    text: data.message.text,
+                    createdAt: data.message.createdAt,
+                }]);
+
+                setNewMessage("");
+
+                if (onSendMessage) {
+                    onSendMessage(data.message.text);
+                }
+            } else {
+                toast.error(data.error || "Failed to send message");
+                console.error("Failed to send message:", data.error);
+            }
+        } catch (error) {
+            console.error("Error sending message:", error);
         }
     };
 
@@ -72,9 +109,9 @@ export default function ChatWidget({
                         messages.map(msg => (
                             <div
                                 key={msg._id}
-                                className={`p-2 mb-1 rounded ${msg.sender === "breeder"
-                                        ? "bg-green-100 text-right"
-                                        : "bg-blue-100 text-left"
+                                className={`p-2 mb-1 rounded ${msg.senderRole === "breeder"
+                                    ? "bg-green-100 text-right"
+                                    : "bg-blue-100 text-left"
                                     }`}
                             >
                                 <p className="text-sm">{msg.text}</p>

@@ -12,7 +12,6 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { CircleX } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 

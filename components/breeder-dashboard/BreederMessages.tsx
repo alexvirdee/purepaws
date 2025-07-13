@@ -16,7 +16,6 @@ export default function BreederMessages({
     const router = useRouter();
     const [messages, setMessages] = useState([]);
 
-
     return (
         <div className="flex border rounded-lg shadow overflow-hidden">
             {/* Left: Conversations */}

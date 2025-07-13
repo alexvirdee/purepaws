@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useSession, signOut } from "next-auth/react";
 import { BellIcon, LogOut } from "lucide-react";
-import SignInRequiredDialog from "@/components/SignInRequiredDialog";
+import SignInRequiredDialog from "@/components/dialogs/SignInRequiredDialog";
 
 interface MenuProps {
     puppyApplication: any;

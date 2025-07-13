@@ -1,4 +1,4 @@
-import DogCard from "@/components/DogCard";
+import DogCard from "@/components/dog-card/DogCard";
 import { IDog } from "@/interfaces/dog";
 
 type Favorite = string | { _id: string };

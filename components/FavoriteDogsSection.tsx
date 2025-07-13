@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from "react";
-import DogCardList from "./DogCardList";
+import DogCardList from "./dog-card/DogCardList";
 import { IDog } from "@/interfaces/dog";
 
 interface FavoriteDogsSectionProps {

@@ -1,10 +1,10 @@
 "use client";
 
-import PuppyInterestDialog from "./PuppyInterestDialog";
+import PuppyInterestDialog from "@/components/dialogs/PuppyInterestDialog";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import SignInRequiredDialog from "./SignInRequiredDialog";
+import SignInRequiredDialog from "@/components/dialogs/SignInRequiredDialog";
 import { PawPrintIcon } from "lucide-react";
 import { IDog } from "@/interfaces/dog";
 import { useRouter } from "next/navigation";

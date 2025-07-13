@@ -14,7 +14,7 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import SignInRequiredDialog from "./SignInRequiredDialog";
+import SignInRequiredDialog from "./dialogs/SignInRequiredDialog";
 import { useRouter } from "next/navigation";
 
 interface FavoriteButtonProps {

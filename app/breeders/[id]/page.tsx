@@ -3,7 +3,7 @@ import clientPromise from "@/lib/mongodb";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 import { getUserFavorites } from "@/lib/db/getUserFavorites";
-import DogCardList from "@/components/DogCardList";
+import DogCardList from "@/components/dog-card/DogCardList";
 import { IDog } from "@/interfaces/dog";
 import { DB_NAME } from "@/lib/constants";
 import { notFound } from "next/navigation";

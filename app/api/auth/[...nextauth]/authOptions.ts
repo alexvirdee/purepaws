@@ -3,14 +3,35 @@ import type { NextAuthOptions, User, Session, JWT } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
 import { IUser } from "@/interfaces/user";
+import { ObjectId } from "mongodb";
 
 // Extend the User type to include the role property
 declare module "next-auth" {
-  interface User extends IUser {}
+  interface User extends IUser {
+    id: string; // always string
+    role: "viewer" | "breeder" | "admin";
+    breederId?: string | null;
+  }
 
   interface JWT {
+    id?: string | null; // Ensure id is a string or null
+    sub?: string | null; // Ensure sub (user id) is a string or null
     role?: string;
     breederId?: string | null;
+  }
+
+  interface Session {
+    user: {
+      id: string;
+      name?: string;
+      email: string;
+      password: string;
+      role: "viewer" | "breeder" | "admin";
+      breederId?: ObjectId | string | null;
+      favorites?: string[]; // Or ObjectId[] if you prefer
+      about?: string;
+      createdAt?: Date;
+    }
   }
 }
 
@@ -79,15 +100,18 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
+        token.id = token.sub // trust the sub as the user ID
         token.role = user.role || "viewer"; // Default to viewer if no role is provided
         token.breederId = user.breederId || null; // Optional breederId
       }
       return token;
     },
     async session({ session, token }: { session: Session; token: JWT }) {
-      if (token) {
-        (session.user as User).role = token.role || "viewer"; // Default to viewer if no role is provided
-        session.user.breederId = token.breederId || null; // Optional breederId
+      if (token && session.user) {
+        session.user.id = token.sub || ""; // Ensure id is a string
+        const allowedRoles = ["viewer", "breeder", "admin"] as const;
+        (session.user as User).role = allowedRoles.includes(token.role as any) ? token.role as typeof allowedRoles[number] : "viewer"; // Default to viewer if no role is provided
+        session.user.breederId = token.breederId ?? undefined; // Optional breederId
       }
       return session;
     },

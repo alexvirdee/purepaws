@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { IDog } from "@/interfaces/dog";
-import DogCard from "./DogCard";
 import { Suspense } from "react";
 import DogImage from "./DogImage";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -20,10 +19,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import EditRequestMessageDialog from "./EditRequestMessageDialog";
+import Link from "next/link";
 
 
 interface InterestRequest {
@@ -35,6 +32,7 @@ interface InterestRequest {
   message: string;
   status: string;
   createdAt: string | null;
+  conversationId?: string | null; // Conversation ID for this request
   dog: any | IDog | null; // Dog data, can be null if not available
   onNewRequest?: (request: {
     _id: string;
@@ -214,6 +212,8 @@ function RequestCard({
   onUpdateMessage?: (id: string, message: string) => void;
   onCompleteDeposit?: () => void;
 }) {
+  console.log('request', request)
+
   return (
     <li className="border rounded shadow hover:shadow-md transition flex flex-col md:flex-row gap-4 p-4 relative">
       <div className="flex-shrink-0 w-full md:w-auto md:max-w-[200px] flex justify-center items-center md:justify-start">
@@ -251,12 +251,20 @@ function RequestCard({
               ? new Date(request.createdAt).toLocaleDateString()
               : "Unknown"}
           </p>
-          <a
+          <div className="flex flex-row gap-4">
+          <Link
             href={`/dogs/${request.dog?._id}`}
             className="text-blue-600 underline text-sm"
           >
             View Dog
-          </a>
+          </Link>
+          <Link
+            href={`/profile/messages?conversation=${request.conversationId}`} 
+            className="text-blue-600 underline text-sm"
+          >
+            Chat with Breeder
+          </Link>
+          </div>
         </div>
 
         <div className="flex justify-center md:justify-end mt-4 md:mt-0 md:absolute md:right-0 md:top-1/2 md:-translate-y-1/2 gap-2">

@@ -26,7 +26,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { Plus, Pencil } from "lucide-react";
-import FileDropzone from "./FileDropzone";
+import FileDropzone from "@/components/FileDropzone";
 
 type AddEditDogDialogProps = {
     mode: "add" | "edit";

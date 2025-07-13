@@ -1,5 +1,3 @@
-import { SidebarLink } from "@/components/breeder-dashboard/SidebarLink";
-import Image from "next/image";
 import BreederDashboardSidebar from "@/components/breeder-dashboard/BreederDashboardSidebar";
 import { ReactNode } from "react";
 
