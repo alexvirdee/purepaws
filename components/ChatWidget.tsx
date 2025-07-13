@@ -1,3 +1,8 @@
+// Note - currently not making user of this component, but it can be used in the future
+//       to display a chat widget for breeders and buyers to communicate in real-time.
+//       It can be used in the dashboard or anywhere else in the app where you want to
+//       allow users to chat with each other.
+
 'use client';
 
 import { useState } from "react";

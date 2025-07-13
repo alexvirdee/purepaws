@@ -42,6 +42,7 @@ export default function BreederDashboardSidebar() {
         <img src="/images/purepaws-logo-transparent.png" alt="PurePaws" width={120} />
         <nav className="mt-6 flex flex-col gap-4">
           <SidebarLink href="/dashboard" text="Dashboard" />
+          <SidebarLink href="/dashboard/messages" text="Messages" />
           <SidebarLink href="/dashboard/dogs" text="Dogs" />
           <SidebarLink href="/dashboard/litters" text="Litters" />
           <SidebarLink href="/dashboard/requests" text="Adoption Requests" />

@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dialog";
 import { CheckIcon, MessageCircleIcon } from "lucide-react";
 import ChatWidget from "../ChatWidget";
+import { useRouter } from "next/navigation";
 
 
 type PuppyInterest = {
@@ -45,6 +46,8 @@ export default function AdoptionRequests({
     } | undefined>(undefined);
     const [reviewBuyer, setReviewBuyer] = useState<PuppyInterest | null>(null);
     const [activeConversation, setActiveConversation] = useState<any>(null);
+
+    const router = useRouter();
 
     useEffect(() => {
         // Initialize state with the provided interests prop
@@ -157,14 +160,17 @@ export default function AdoptionRequests({
                 // Close the review buyer dialog
                 setReviewBuyer(null);
 
-                setActiveConversation({
-                    _id: data.conversationId,
-                    buyerId: data.buyerId,
-                    breederId: data.breederId,
-                    puppyInterestId: data.puppyInterestId,
-                    createdAt: data.createdAt,
-                });
-                console.log("Conversation:", data);
+                // Route breeder to the messages page in their dashboard
+                router.push(`/dashboard/messages?conversation=${data.conversationId}`);
+
+                // setActiveConversation({
+                //     _id: data.conversationId,
+                //     buyerId: data.buyerId,
+                //     breederId: data.breederId,
+                //     puppyInterestId: data.puppyInterestId,
+                //     createdAt: data.createdAt,
+                // });
+                // console.log("Conversation:", data);
             } else {
                 toast.error(data.error || "Failed to start chat");
             }

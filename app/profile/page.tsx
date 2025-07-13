@@ -1,13 +1,6 @@
-import { getServerSession } from "next-auth";
-import { redirect } from "next/navigation";
-import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
-import { getUserFavorites } from "@/lib/db/getUserFavorites";
 import { User as UserIcon, Dog as DogIcon, ArrowRight } from "lucide-react";
-import clientPromise from "@/lib/mongodb";
 import EditProfileDialog from "@/components/EditProfileDialog";
-import { ObjectId } from "mongodb";
 import Link from "next/link";
-import { DB_NAME } from "@/lib/constants";
 import BreederApprovalBanner from "@/components/breeders/BreederApprovalBanner";
 import PuppyApplicationDetails from "@/components/PuppyApplicationDetails";
 import ProfileContent from "@/components/ProfileContent";
@@ -28,7 +21,6 @@ export default async function ProfilePage() {
   const email = user?.email;
   const role = user?.role;
   const breederId = user?.breederId?.toString() || null;
-
 
     return (
         <main className="max-w-5xl mx-auto p-8 space-y-8">
@@ -79,7 +71,7 @@ export default async function ProfilePage() {
             </div>
 
             {/* Puppy Application Details
-                Note - Only showing this section for regular users i.e. not breeders since they won't be submitting puppy applications
+                Note - Both breeders and users can have a puppy application. (Breeders may want puppies from other breeders)
             */}
             {puppyApplication ? (
                 <PuppyApplicationDetails data={puppyApplication} />
