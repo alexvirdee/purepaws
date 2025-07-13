@@ -1,8 +1,3 @@
-// Note - currently not making user of this component, but it can be used in the future
-//       to display a chat widget for breeders and buyers to communicate in real-time.
-//       It can be used in the dashboard or anywhere else in the app where you want to
-//       allow users to chat with each other.
-
 'use client';
 
 import { useState } from "react";
@@ -55,10 +50,10 @@ export default function ChatWidget({
     };
 
     return (
-        <Card className="w-full max-w-md shadow-lg fixed bottom-4 right-4 z-50">
-            <CardHeader className="flex flex-row justify-between items-start">
+        <div className="w-full">
+            <div className="flex flex-row justify-between items-start">
                 <div>
-                    <CardTitle>Conversation</CardTitle>
+                    <h1>Conversation</h1>
                     <p className="text-xs text-gray-500">ID: {conversationId}</p>
                 </div>
                 {onClose && (
@@ -69,9 +64,9 @@ export default function ChatWidget({
                         <XIcon className="cursor-pointer w-5 h-5" />
                     </button>
                 )}
-            </CardHeader>
+            </div>
 
-            <CardContent className="flex flex-col h-[300px]">
+            <div className="flex flex-col h-[300px]">
                 <ScrollArea className="flex-1 mb-4 p-2 border rounded bg-gray-50 overflow-y-auto">
                     {messages.length > 0 ? (
                         messages.map(msg => (
@@ -101,7 +96,7 @@ export default function ChatWidget({
                     />
                     <Button onClick={handleSend}>Send</Button>
                 </div>
-            </CardContent>
-        </Card>
+            </div>
+        </div>
     );
 }

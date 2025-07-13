@@ -12,7 +12,7 @@ export default async function MessagesPage({
     const activeConversationId = (await searchParams).conversation || null;
 
     return (
-        <main className="max-w-5xl mx-auto p-8">
+        <main className="w-full">
             <BreederMessages
                 conversations={breederMessages}
                 activeConversationId={activeConversationId}

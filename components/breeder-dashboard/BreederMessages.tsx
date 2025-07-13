@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import ChatWidget from "../ChatWidget";
 
 export default function BreederMessages({
     conversations,
@@ -14,6 +15,7 @@ export default function BreederMessages({
 }) {
     const router = useRouter();
     const [messages, setMessages] = useState([]);
+
 
     return (
         <div className="flex border rounded-lg shadow overflow-hidden">
@@ -37,7 +39,9 @@ export default function BreederMessages({
             {/* Right: Chat panel */}
             <div className="flex-1 p-4">
                 {activeConversationId ? (
-                    <div>Conversation ID: {activeConversationId}</div>
+                    <>
+                        <ChatWidget conversationId={activeConversationId} />
+                    </>
                 ) : (
                     <p>Select a conversation</p>
                 )}
