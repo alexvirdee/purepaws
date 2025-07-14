@@ -5,12 +5,14 @@ import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 import { DB_NAME } from "@/lib/constants";
 
+
 export async function GET(
   req: NextRequest,
   { params }: { params: { conversationId: string } }
 ) {
   try {
     const session = await getServerSession(authOptions);
+
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -28,6 +30,17 @@ export async function GET(
     const conversation = await db.collection("conversations").findOne({
       _id: new ObjectId(conversationId)
     });
+
+    // Check that the conversation belongs to the user
+    if (session?.user?.role === "viewer") {
+      if (conversation?.buyerId.toString() !== session.user.id) {
+        return NextResponse.json({ errror: "Unauthorized" }, { status: 401 });
+      }
+    } else if (session.user?.role === "breeder") {
+      if (conversation?.breederId.toString() !== session.user.breederId) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+    }
 
     if (!conversation) {
       return NextResponse.json({ error: "Conversation not found" }, { status: 404 });
@@ -100,6 +113,17 @@ export async function POST(
     const conversation = await db.collection("conversations").findOne({
       _id: new ObjectId(conversationId)
     });
+
+     // Check that the conversation belongs to the user
+    if (session?.user?.role === "viewer") {
+      if (conversation?.buyerId.toString() !== session.user.id) {
+        return NextResponse.json({ errror: "Unauthorized" }, { status: 401 });
+      }
+    } else if (session.user?.role === "breeder") {
+      if (conversation?.breederId.toString() !== session.user.breederId) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+    }
 
     if (!conversation) {
       return NextResponse.json({ error: "Conversation not found" }, { status: 404 });

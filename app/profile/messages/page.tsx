@@ -52,9 +52,11 @@ export default async function MessagesPage({ searchParams }: MessagesPageProps) 
 
   const groupedConversations = Array.from(grouped.values());
 
-  console.log('groupedConversations:', groupedConversations);
-
   const activeConversationId = (await searchParams).conversation || null;
+
+  const valid = groupedConversations.find(
+  (c) => c.conversationId === activeConversationId
+);
 
   return (
     <main className="max-w-6xl mx-auto p-8">
@@ -92,7 +94,7 @@ export default async function MessagesPage({ searchParams }: MessagesPageProps) 
 
           {/* Right column: Chat widget */}
           <div className="flex-1 p-4">
-            {activeConversationId ? (
+            {activeConversationId && valid ? (
               <ChatWidget conversationId={activeConversationId} />
             ) : (
               <p className="text-gray-500">Select a conversation</p>
