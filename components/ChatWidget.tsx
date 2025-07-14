@@ -36,25 +36,44 @@ export default function ChatWidget({
     const handleSend = async () => {
         if (!newMessage.trim()) return;
 
+        const text = newMessage.trim();
+        setNewMessage("");
+
         try {
             const res = await fetch(`/api/conversations/${conversationId}/messages`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ text: newMessage.trim() })
+                body: JSON.stringify({ text })
             });
 
             const data = await res.json();
 
             if (res.ok) {
-                setNewMessage("");
+                await mutate(
+                    async (currentMessages: ChatMessage[]) => {
+                        const safeMessages = Array.isArray(currentMessages) ? currentMessages : [];
+
+                        return [
+                            ...safeMessages,
+                            {
+                                _id: data.message._id,
+                                senderRole: data.message.senderRole,
+                                text: data.message.text,
+                                createdAt: data.message.createdAt
+                            }
+                        ];
+                    },
+                    false // prevents automatic revalidation, keeps optimistic update in place
+                );
+
+                // Then force a real revalidation to ensure it matches server state:
+                await mutate();
 
                 if (onSendMessage) {
                     onSendMessage(data.message.text);
                 }
-
-                mutate(); // Re-fetch messages to ensure we have the latest
             } else {
                 toast.error(data.error || "Failed to send message");
                 console.error("Failed to send message:", data.error);

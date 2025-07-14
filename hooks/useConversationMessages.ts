@@ -6,7 +6,7 @@ export function useConversationMessages(conversationId: string) {
     const { data, mutate, isLoading } = useSWR(
         conversationId ? `/api/conversations/${conversationId}/messages` : null,
         fetcher, // your fetcher function
-        { refreshInterval: 3000 } // every 3 sec
+        { refreshInterval: 1000 } // every 3 sec
     );
 
     return { messages: data?.messages || [], mutate, isLoading };
