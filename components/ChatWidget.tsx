@@ -1,12 +1,13 @@
 'use client';
 
-import { useEffect, useState } from "react";
+import { JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { XIcon } from "lucide-react";
 import { toast } from "sonner";
+import { useConversationMessages } from "@/hooks/useConversationMessages";
 
 type ChatMessage = {
     _id: string;
@@ -28,26 +29,9 @@ export default function ChatWidget({
     onSendMessage,
     onClose
 }: ChatWidgetProps) {
-    const [messages, setMessages] = useState(initialMessages);
     const [newMessage, setNewMessage] = useState("");
 
-    useEffect(() => {
-        async function fetchMessages() {
-            const res = await fetch(`/api/conversations/${conversationId}/messages`);
-
-            if (!res.ok) {
-                setMessages([]);
-
-                return;
-            }
-
-            const data = await res.json();
-            setMessages(data.messages);
-        }
-
-        if (conversationId) fetchMessages();
-
-    }, [conversationId]);
+    const { messages: fetchedMessages, mutate } = useConversationMessages(conversationId);
 
     const handleSend = async () => {
         if (!newMessage.trim()) return;
@@ -64,19 +48,13 @@ export default function ChatWidget({
             const data = await res.json();
 
             if (res.ok) {
-                // Append the new message from response
-                setMessages(prev => [...prev, {
-                    _id: data.message._id,
-                    senderRole: data.message.senderRole,
-                    text: data.message.text,
-                    createdAt: data.message.createdAt,
-                }]);
-
                 setNewMessage("");
 
                 if (onSendMessage) {
                     onSendMessage(data.message.text);
                 }
+
+                mutate(); // Re-fetch messages to ensure we have the latest
             } else {
                 toast.error(data.error || "Failed to send message");
                 console.error("Failed to send message:", data.error);
@@ -105,8 +83,8 @@ export default function ChatWidget({
 
             <div className="flex flex-col h-[300px]">
                 <ScrollArea className="flex-1 mb-4 p-2 border rounded bg-gray-50 overflow-y-auto">
-                    {messages.length > 0 ? (
-                        messages.map(msg => (
+                    {fetchedMessages.length > 0 ? (
+                        fetchedMessages.map((msg: ChatMessage) => (
                             <div
                                 key={msg._id}
                                 className={`p-2 mb-1 rounded ${msg.senderRole === "breeder"

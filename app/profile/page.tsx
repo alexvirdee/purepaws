@@ -9,18 +9,18 @@ import { getUserProfileData } from "@/lib/db/getUserProfileData";
 
 export default async function ProfilePage() {
     const {
-    user,
-    breeder,
-    favoriteDogs,
-    puppyApplication,
-    puppyInterests,
-    adoptionRequests,
-  } = await getUserProfileData();
+        user,
+        breeder,
+        favoriteDogs,
+        puppyApplication,
+        puppyInterests,
+        adoptionRequests,
+    } = await getUserProfileData();
 
-  const name = user?.name || "";
-  const email = user?.email;
-  const role = user?.role;
-  const breederId = user?.breederId?.toString() || null;
+    const name = user?.name || "";
+    const email = user?.email;
+    const role = user?.role;
+    const breederId = user?.breederId?.toString() || null;
 
     return (
         <main className="max-w-5xl mx-auto p-8 space-y-8">
@@ -29,11 +29,20 @@ export default async function ProfilePage() {
                     <UserIcon className="w-8 text-gray-700" /> Profile
                 </div>
                 {role === "admin" && (
-                    <Link className="text-blue-600" href="/admin">Admin Dashboard</Link>
+                    <Link className="text-blue-600 flex items-center gap-2" href="/admin">
+                        Admin Dashboard
+                        <ArrowRight className="w-4 h-4 mr-2" />
+                    </Link>
                 )}
 
                 {role === "breeder" && (
-                    <Link className="text-blue-600" href="/dashboard">View my Dashboard</Link>
+                    <Link className="text-blue-600 flex items-center gap-2" href="/dashboard">  View my Dashboard <ArrowRight className="w-4 h-4 mr-2" /></Link>
+                )}
+
+                {role === "viewer" && (
+                    <Link className="text-blue-600 flex items-center gap-2" href="/profile/messages">  View my Messages
+                        <ArrowRight className="w-4 h-4 mr-2" />
+                    </Link>
                 )}
             </div>
 
@@ -83,7 +92,8 @@ export default async function ProfilePage() {
                         href="/puppy-application"
                         className="inline-flex items-center text-blue-500 text-sm px-3 py-1.5 rounded hover:text-blue-600 transition"
                     >
-                        <ArrowRight className="w-4 h-4 mr-2" /> <span>Complete Puppy Application</span>
+                        <span>Complete Puppy Application</span>
+                        <ArrowRight className="w-4 h-4 ml-2" />
                     </Link>
 
                 </div>
