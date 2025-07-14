@@ -18,11 +18,22 @@ export default async function BreederDashboardLayout({ children }: { children: R
                     height={200}
                     className="mb-1"
                 />
-                <h1 className="text-2xl font-bold mb-2">Your breeder application is under review</h1>
-                <p className="text-gray-600 mb-4">
-                    Thanks for submitting your breeder application. Our team is reviewing your details.
+                <h1 className="text-2xl font-bold mb-2">Your breeder application is <span className={breeder.status === 'rejected' ? 'text-red-600' : 'text-blue-500'}>{breeder.status}</span></h1>
+                <div className="max-w-lg mx-auto">
+                     {breeder.status === "pending" && (
+                        <p className="text-gray-600 mb-4">
+                            Thanks for submitting your breeder application. Our team is reviewing your details.
                     You’ll be notified by email once your account is approved.
-                </p>
+                        </p>
+                    )}
+
+                    {breeder.status === "rejected" && (
+                        <p className="text-gray-600 mb-4">
+                            Unfortunately, your breeder application was rejected. If you believe this was in error,
+                            please email    <a href="mailto:woofpurepaws@gmail.com">woofpurepaws@gmail.com</a>  for assistance.
+                        </p>
+                    )}
+                </div>
                 <Link className="text-blue-500 hover:text-blue-600 flex items-center gap-2" href="/profile">
                 <ArrowLeftIcon className="w-4 h-4" />
                 Back to Profile

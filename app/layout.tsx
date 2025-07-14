@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Roboto, Inter, Merriweather, Dancing_Script } from "next/font/google";
 import { APP_NAME, APP_DESCRIPTION } from "@/lib/constants";
 import NextAuthSessionProvider from "@/components/SessionProvider";
 import "./globals.css";
@@ -7,14 +7,30 @@ import { Toaster } from "sonner";
 import Header from "@/components/shared/header";
 import Footer from "@/components/footer";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const roboto = Roboto({
+  variable: "--font-roboto",
+  weight: '400',
+  subsets: ['latin'],
+})
+
+// Primary Sans
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+// Secondary Serif/Display
+const merriweather = Merriweather({
+  variable: "--font-merriweather",
   subsets: ["latin"],
+  weight: ["400", "700"],
+});
+
+// Cursive accent
+const dancingScript = Dancing_Script({
+  variable: "--font-dancing",
+  subsets: ["latin"],
+  weight: ["400", "700"],
 });
 
 export const metadata: Metadata = {
@@ -30,12 +46,17 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}
+        className={`
+        ${roboto.variable} 
+        ${inter.variable} 
+        ${merriweather.variable}
+        ${dancingScript.variable}
+        antialiased flex flex-col min-h-screen`}
       >
         <NextAuthSessionProvider>
           <Toaster richColors />
           <Header></Header>
-         <main className="flex-1 wrapper">{children}</main> 
+          <main className="flex-1 wrapper">{children}</main>
           <Footer></Footer>
         </NextAuthSessionProvider>
       </body>
