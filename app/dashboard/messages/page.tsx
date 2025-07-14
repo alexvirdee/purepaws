@@ -13,10 +13,16 @@ export default async function MessagesPage({
 
     return (
         <main className="w-full">
-            <BreederMessages
-                conversations={breederMessages}
-                activeConversationId={activeConversationId}
-            />
+            {breederMessages.length > 0 ? (
+                <BreederMessages
+                    conversations={breederMessages}
+                    activeConversationId={activeConversationId}
+                />
+            ) : (
+                <div className="p-4 text-gray-500">
+                    You haven't started any conversations yet.
+                </div>
+            )}
         </main>
     );
 }

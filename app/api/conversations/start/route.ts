@@ -29,22 +29,40 @@ export async function POST(req: Request) {
         const client = await clientPromise;
         const db = client.db(DB_NAME);
 
-        // Does conversation already exist for this interest?
+        // Does conversation already exist between the breeder and buyer?
         const existing = await db.collection("conversations").findOne({
             breederId: new ObjectId(breederId),
-            buyerId: new ObjectId(buyerId),
-            puppyInterestId: new ObjectId(puppyInterestId),
+            buyerId: new ObjectId(buyerId)
         });
 
         if (existing) {
-            return NextResponse.json({ conversationId: existing._id.toString(), message: "Conversation already exists." });
+            // Only add puppyInterestId if it's not already in the array
+            const alreadyLinked = existing.puppyInterestIds?.some(
+                (id: ObjectId) => id.toString() === puppyInterestId
+            );
+
+            if (!alreadyLinked) {
+                await db.collection("conversations").updateOne(
+                    { _id: existing._id },
+                    { $addToSet: { puppyInterestIds: new ObjectId(puppyInterestId) } }
+                );
+                return NextResponse.json({
+                    conversationId: existing._id.toString(),
+                    message: "Conversation already exists. Added new puppy interest.",
+                });
+            } else {
+                return NextResponse.json({
+                    conversationId: existing._id.toString(),
+                    message: "Conversation already exists for this puppy interest.",
+                });
+            }
         }
 
         // Create new conversation
         const result = await db.collection("conversations").insertOne({
             breederId: new ObjectId(breederId),
             buyerId: new ObjectId(buyerId),
-            puppyInterestId: new ObjectId(puppyInterestId),
+            puppyInterestIds: [new ObjectId(puppyInterestId)],
             createdAt: new Date(),
             lastMessageAt: null,
         });

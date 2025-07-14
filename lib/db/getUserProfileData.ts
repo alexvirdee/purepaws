@@ -77,19 +77,36 @@ export async function getUserProfileData() {
         };
     });
 
+    // Get unique breederIds from puppyInterests
+    const breederIds = puppyInterests.map((p) => p.breederId).filter(Boolean);
+    const uniqueBreederIds = [...new Set(breederIds.map(id => id.toString()))];
+
+    // Query breeders in one go
+    const breeders = uniqueBreederIds.length > 0
+        ? await db.collection("breeders").find({
+            _id: { $in: uniqueBreederIds.map(id => new ObjectId(id)) }
+        }).toArray()
+        : [];
+
     const puppyInterestRequests = await Promise.all(
         puppyInterests.map(async (interest) => {
             const dog = dogs.find(d => d._id.toString() === interest.dogId.toString());
 
             const conversation = await db.collection("conversations").findOne({
-                puppyInterestId: interest._id
+                puppyInterestIds: { $in: [interest._id] }
             });
+
+            // Find the breeder for this interest
+            const breeder = breeders.find(
+                b => b._id.toString() === interest.breederId?.toString()
+            );
 
             return {
                 ...interest,
                 _id: interest._id.toString(),
                 userId: interest.userId?.toString(),
                 breederId: interest.breederId?.toString(),
+                breederName: breeder?.name || "Unknown Breeder",
                 puppyApplicationId: interest.puppyApplicationId?.toString(),
                 dogId: interest.dogId?.toString(),
                 createdAt: interest.createdAt?.toString(),

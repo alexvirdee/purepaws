@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Card } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import ChatWidget from "../ChatWidget";
 
 export default function BreederMessages({
@@ -15,6 +13,8 @@ export default function BreederMessages({
 }) {
     const router = useRouter();
     const [messages, setMessages] = useState([]);
+
+    console.log('conversations', conversations);
 
     return (
         <div className="flex border rounded-lg shadow overflow-hidden">
@@ -29,8 +29,10 @@ export default function BreederMessages({
                         className={`p-4 cursor-pointer ${activeConversationId === c._id ? "bg-gray-100" : ""
                             }`}
                     >
-                        <p>{c.buyerName}</p>
-                        <p className="text-xs text-gray-500">{c.dogName}</p>
+                        <p className="text-md text-gray-600">{c.buyerName}</p>
+                        <p className="text-xs text-gray-500 pt-2">
+                          Regarding:  {c.dogs.map((dog: any) => dog.name).join(", ")}
+                        </p>
                     </div>
                 ))}
             </div>

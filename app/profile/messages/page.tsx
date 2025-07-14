@@ -31,6 +31,30 @@ export default async function MessagesPage({ searchParams }: MessagesPageProps) 
     (pi) => typeof pi.conversationId === "string" && pi.conversationId
   );
 
+  // Group puppyInterests by conversationId
+  const grouped = new Map<string, { conversationId: string; dogs: string[]; breederName: string }>();
+
+  for (const pi of puppyInterestsWithConversations) {
+    if (!pi.conversationId) continue;
+
+    if (!grouped.has(pi.conversationId)) {
+      grouped.set(pi.conversationId, {
+        conversationId: pi.conversationId,
+        dogs: [],
+        breederName: pi.breederName || "Unknown Breeder",
+      });
+    }
+
+    const entry = grouped.get(pi.conversationId);
+    if (pi.dog?.name && !entry!.dogs.includes(pi.dog.name)) {
+      entry!.dogs.push(pi.dog.name);
+    }
+  }
+
+  const groupedConversations = Array.from(grouped.values());
+
+  console.log('groupedConversations:', groupedConversations);
+
   const activeConversationId = (await searchParams).conversation || null;
 
   return (
@@ -42,22 +66,26 @@ export default async function MessagesPage({ searchParams }: MessagesPageProps) 
           <span>Back to Profile</span>
         </Link>
       </div>
-      {puppyInterestsWithConversations.length > 0 ? (
+      {groupedConversations.length > 0 ? (
         <div className="flex border rounded-lg shadow overflow-hidden">
           {/* Left column: Conversations list */}
           <div className="w-1/3 border-r">
-            {puppyInterestsWithConversations.map((interest) => (
+            {groupedConversations.map((interest, index) => (
               <Link
-                key={interest._id}
+                key={index}
                 href={`/profile/messages?conversation=${interest.conversationId}`}
                 className={`block p-4 cursor-pointer hover:bg-gray-50 ${activeConversationId === interest.conversationId
                   ? "bg-gray-100"
                   : ""
                   }`}
               >
-                <p className="font-semibold">{interest.dog?.name || "Unknown Dog"}</p>
-                <p className="text-xs text-gray-500">
-                  ID: {interest.conversationId}
+                <p className="font-semibold text-gray-800">
+                  {interest.breederName}
+                </p>
+                 <p className="text-xs text-gray-500">
+                  {interest.dogs.length > 0
+                    ? `Regarding ${interest.dogs.join(", ")}`
+                    : "No dogs specified"}
                 </p>
               </Link>
             ))}
