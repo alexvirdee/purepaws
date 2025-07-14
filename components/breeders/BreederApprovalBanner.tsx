@@ -29,7 +29,7 @@ export default function BreederApprovalBanner({ breeder }: { breeder: any }) {
         <AlertDescription className="text-green-700">
           Congratulations, your breeder profile was approved on&nbsp;
           {format(new Date(breeder.approvedAt), "PPP p")}. 
-          You can now add dogs, upcoming litters and manage your kennel profile.
+          You can now add puppies, litters, and manage your kennel profile.
         </AlertDescription>
       </div>
       <button

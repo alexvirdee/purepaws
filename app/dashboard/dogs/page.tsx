@@ -11,9 +11,11 @@ export default async function BreederDogsPage() {
                 <h2 className="text-xl font-bold">{breeder?.name}</h2>
                 <AddEditDogDialog mode="add" breederId={breeder?._id} />
             </div>
-            <div className="bg-white rounded-lg shadow flex flex-col">
+            <div className="flex flex-col">
                 {dogs.length > 0 ? (
-                    <BreederDogsTable breederName={breeder?.name} dogs={dogs} />
+                    <div className="bg-white rounded-lg shadow">
+                        <BreederDogsTable breederName={breeder?.name} dogs={dogs} />
+                    </div>
                 ) : (
                     <p className="text-gray-500">
                         You haven't listed any dogs yet. Click "Add Dog" to get started!

@@ -6,7 +6,7 @@ import { DB_NAME } from "@/lib/constants";
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { name, litter, breed, dob, gender, status, price, photos, breederId } = body;
+        const { name, litter, breed, dob, gender, status, description, price, photos, breederId } = body;
 
         console.log("[API] Add Dog Request Body:", JSON.stringify(body, null, 2));
 
@@ -18,6 +18,7 @@ export async function POST(request: Request) {
         if (!gender) missingFields.push("gender");
         if (!status) missingFields.push("status");
         if (!price) missingFields.push("price");
+        if (!description) missingFields.push("description");
         if (!breederId) missingFields.push("breederId");
 
         if (name.length > 30) {
@@ -55,6 +56,7 @@ export async function POST(request: Request) {
             gender,
             status: status.trim(),
             price: Number(price),
+            description: description.trim(),
             photos: photos || [],
             breederId: new ObjectId(breederId),
             createdAt: new Date(),
