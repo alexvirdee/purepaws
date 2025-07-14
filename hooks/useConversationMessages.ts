@@ -13,7 +13,7 @@ export function useConversationMessages(conversationId: string) {
         { refreshInterval: 3000, // poll every 3 seconds
           revalidateOnFocus: true,
           revalidateOnReconnect: true,
-          isPaused: () => document.hidden || !conversationId  // pause when the tab is hidden or no conversationId
+          isPaused: () => document.hidden 
         } 
     );
 

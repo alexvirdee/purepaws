@@ -125,6 +125,12 @@ export async function PUT(
     }
 }
 
+// Note currently allowing the breeder to do a hard delete of a dog and casdcade/clean up any associated puppyInterests and adoptionRequests as well as messages.
+// TODO: Consider soft delete instead of hard delete in the future.
+// This would mean setting a deletedAt timestamp and not actually removing the dog from the database.
+// This way we can keep historical data and prevent orphaned interests/requests/messages.
+// This is useful for reporting and analytics purposes, as well as maintaining a complete history of interactions
+// with the dog.
 export async function DELETE(
     req: NextRequest,
     context: { params: { id: string } }
@@ -138,11 +144,13 @@ export async function DELETE(
 
         const client = await clientPromise;
         const db = client.db(DB_NAME);
-        const dogs = db.collection("dogs");
 
-        // Check if the dog had any user interests or adoptionRequests and remove them 
+        // Collections
+        const dogs = db.collection("dogs");
         const interests = db.collection("puppyInterests");
         const adoptionRequests = db.collection("adoptionRequests");
+        const conversations = db.collection("conversations");
+        const messages = db.collection("messages");
 
         const result = await dogs.deleteOne({ _id: new ObjectId(dogId) });
 
@@ -150,25 +158,63 @@ export async function DELETE(
             return NextResponse.json({ error: "Dog not found." }, { status: 404 })
         }
 
-        // DB Cleanup associated with the dog being deleted 
-        // Delete any puppyInterests tied to this dog
-        const interestResult = await db
-            .collection("puppyInterests")
-            .deleteMany({ dogId: new ObjectId(dogId) });
+        // Delete puppyInterests for this dog
+        const interestsToDelete = await interests.find({
+            dogId: new ObjectId(dogId)
+        }).toArray();
 
-        // Delete any adoptionRequests tied to this dog
-        const adoptionRequestResult = await db
-            .collection("adoptionRequests")
-            .deleteMany({ dogId: new ObjectId(dogId) });
+        const interestIds = interestsToDelete.map(i => i._id);
+
+        const interestResult = await interests.deleteMany({
+            dogId: new ObjectId(dogId)
+        });
+
+        // Delete adoptionRequests for this dog
+        const adoptionRequestResult = await adoptionRequests.deleteMany({
+            dogId: new ObjectId(dogId)
+        });
+
+        // Handle related conversations + messages
+        if (interestIds.length > 0) {
+            const relatedConversations = await conversations.find({
+                puppyInterestIds: { $in: interestIds }
+            }).toArray();
+
+            for (const convo of relatedConversations) {
+                const updatedPuppyInterestIds = convo.puppyInterestIds.filter(
+                    (id: ObjectId) =>
+                        !interestIds.some(deletedId => deletedId.equals(id))
+                );
+
+                if (updatedPuppyInterestIds.length === 0) {
+                    // No interests left => delete conversation & its messages
+                    await messages.deleteMany({
+                        conversationId: convo._id
+                    });
+                    await conversations.deleteOne({ _id: convo._id });
+
+                    console.log(`Deleted orphaned conversation ${convo._id}`);
+                } else {
+                    // Still has other interests, just update it
+                    await conversations.updateOne(
+                        { _id: convo._id },
+                        { $set: { puppyInterestIds: updatedPuppyInterestIds } }
+                    );
+
+                    console.log(
+                        `Updated conversation ${convo._id} to remove deleted puppyInterests`
+                    );
+                }
+            }
+        }
 
         console.log(
-            `Deleted dog ${dogId}. Removed ${interestResult.deletedCount} puppyInterests and ${adoptionRequestResult.deletedCount} adoptionRequests.`
+            `Deleted dog ${dogId}. Removed ${interestResult.deletedCount} puppyInterests, ${adoptionRequestResult.deletedCount} adoptionRequests, and cleaned up related conversations/messages.`
         );
-
 
         return NextResponse.json({
             success: true,
-            message: "Dog deleted successfully"
+            message: "Dog and related data deleted successfully."
         });
     } catch (error) {
         console.error("Error deleting dog:", error);
