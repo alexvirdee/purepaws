@@ -1,5 +1,5 @@
 import BreederApprovalBanner from "@/components/breeders/BreederApprovalBanner";
-import DashboardStatCard from "@/components/breeder-dashboard/DashboardStatCard";
+import DashboardStatCard from "@/components/dashboards/breeder/DashboardStatCard";
 import { getBreederDashboardData } from "@/lib/fetchBreederData";
 import Link from "next/link";
 
@@ -54,10 +54,6 @@ export default async function BreederDashboardPage() {
                         textColor="text-green-500"
                     />
                 </div>
-
-                {breeder && breeder?.status === "approved" && (
-                    <BreederApprovalBanner breeder={breeder} />
-                )}
             </section>
         </main>
     );

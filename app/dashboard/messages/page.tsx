@@ -1,4 +1,4 @@
-import BreederMessages from "@/components/breeder-dashboard/BreederMessages";
+import BreederMessages from "@/components/dashboards/breeder/BreederMessages";
 import { getBreederMessages } from "@/lib/db/getBreederMessages";
 
 export default async function MessagesPage({

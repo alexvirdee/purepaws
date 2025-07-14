@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import ChatWidget from "../ChatWidget";
+import ChatWidget from "../../ChatWidget";
 
 export default function BreederMessages({
     conversations,

@@ -24,6 +24,13 @@ export default async function ProfilePage() {
 
     return (
         <main className="max-w-5xl mx-auto p-8 space-y-8">
+            {/* Breeder approval banner */}
+            {breederId &&
+                breeder &&
+                breeder.status === "approved" && (
+                    <BreederApprovalBanner breeder={breeder} />
+                )}
+
             <div className="flex flex-row justify-between mb-4">
                 <div className="flex items-center gap-2 text-3xl font-bold">
                     <UserIcon className="w-8 text-gray-700" /> Profile
@@ -35,23 +42,18 @@ export default async function ProfilePage() {
                     </Link>
                 )}
 
-                {role === "breeder" && (
+                {/* Approved or pending breeder */}
+                {breederId !== null && (
                     <Link className="text-blue-600 flex items-center gap-2" href="/dashboard">  View my Dashboard <ArrowRight className="w-4 h-4 mr-2" /></Link>
                 )}
 
-                {role === "viewer" && (
+                {/* Regular viewer with no breeder application */}
+                {breederId === null && role === "viewer" && (
                     <Link className="text-blue-600 flex items-center gap-2" href="/profile/messages">  View my Messages
                         <ArrowRight className="w-4 h-4 mr-2" />
                     </Link>
                 )}
             </div>
-
-            {/* Breeder approval banner */}
-            {breederId &&
-                breeder &&
-                breeder.status === "approved" && (
-                    <BreederApprovalBanner breeder={breeder} />
-                )}
 
             {/* Profile Card */}
             <div className="bg-white rounded-lg shadow p-6 flex flex-col sm:flex gap-6 relative">

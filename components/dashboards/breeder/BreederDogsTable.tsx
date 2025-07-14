@@ -25,10 +25,10 @@ import {
     DropdownMenuGroup,
 } from "@/components/ui/dropdown-menu";
 import { Badge, Check, CircleDashed, MoreVertical, XCircle } from "lucide-react";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 import Link from "next/link";
 import AddEditDogDialog from "@/components/dialogs/AddEditDogDialog";
-import DeleteDogDialog from "../dialogs/DeleteDogDialog";
+import DeleteDogDialog from "../../dialogs/DeleteDogDialog";
 import { truncate } from "@/utils/truncateString";
 
 interface BreederDogTableProps {

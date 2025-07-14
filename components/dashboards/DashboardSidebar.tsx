@@ -3,11 +3,20 @@
 import { useState, useRef } from "react";
 import { SidebarLink } from "./SidebarLink";
 
-export default function BreederDashboardSidebar() {
+type SidebarLinkProps = {
+  href: string;
+  text: string;
+};
+
+interface DashboardSidebarProps {
+  links: SidebarLinkProps[];
+}
+
+
+export default function DashboardSidebar({ links }: DashboardSidebarProps) {
   const [width, setWidth] = useState(250); // default width in px
   const [isResizing, setIsResizing] = useState(false);
-
-   const sidebarRef = useRef<HTMLDivElement>(null);
+  const sidebarRef = useRef<HTMLDivElement>(null);
 
    const handleMouseDown = () => {
     setIsResizing(true);
@@ -41,11 +50,9 @@ export default function BreederDashboardSidebar() {
       <div className="p-4">
         <img src="/images/purepaws-logo-transparent.png" alt="PurePaws" width={120} />
         <nav className="mt-6 flex flex-col gap-4">
-          <SidebarLink href="/dashboard" text="Dashboard" />
-          <SidebarLink href="/dashboard/messages" text="Messages" />
-          <SidebarLink href="/dashboard/dogs" text="Dogs" />
-          <SidebarLink href="/dashboard/litters" text="Litters" />
-          <SidebarLink href="/dashboard/requests" text="Adoption Requests" />
+          {links.map((link) => (
+            <SidebarLink key={link.href} href={link.href} text={link.text} />
+          ))}
         </nav>
       </div>
 

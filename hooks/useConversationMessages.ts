@@ -12,8 +12,7 @@ export function useConversationMessages(conversationId: string) {
         fetcher, // your fetcher function
         { refreshInterval: 3000, // poll every 3 seconds
           revalidateOnFocus: true,
-          revalidateOnReconnect: true,
-          isPaused: () => document.hidden 
+          revalidateOnReconnect: true
         } 
     );
 

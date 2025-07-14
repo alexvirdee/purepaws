@@ -25,8 +25,23 @@ export async function POST(req: NextRequest) {
 
         const client = await clientPromise;
         const db = client.db(DB_NAME);
-
         const breederObjectId = new ObjectId(breederId);
+
+        // Find associated breeder
+        const breeder = await db.collection("breeders").findOne({ _id: breederObjectId });
+
+        if (!breeder) {
+            return NextResponse.json({ error: "Breeder not found." }, { status: 404 });
+        }
+
+        // short-circuit if same status is being set
+        if (breeder.status === status) {
+            return NextResponse.json({ message: "Breeder status already up to date." });
+        }
+
+        if (!breeder?.email) {
+            return NextResponse.json({ error: "Breeder has no associated email." }, { status: 400 });
+        }
 
         let breederUpdateFields: any = { status };
 
@@ -45,19 +60,13 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "Breeder not found or status unchanged." }, { status: 404 });
         }
 
-        // ✅ 2. Find associated user
-        const breeder = await db.collection("breeders").findOne({ _id: breederObjectId });
-        if (!breeder?.email) {
-            return NextResponse.json({ error: "Breeder has no associated email." }, { status: 400 });
-        }
-
         const user = await db.collection("users").findOne({ email: breeder.email });
+
         if (!user) {
             return NextResponse.json({ error: "Associated user not found." }, { status: 404 });
         }
 
-
-        // ✅ 3. Update user role & breederId based on new status
+        // Update user role & breederId based on new status
         let userUpdate = {};
 
         if (user.role !== "admin") {
@@ -68,8 +77,7 @@ export async function POST(req: NextRequest) {
                 };
             } else {
                 userUpdate = {
-                    role: "viewer",
-                    breederId: null // optional: clear if you prefer
+                    role: "viewer"
                 };
             }
         } else {

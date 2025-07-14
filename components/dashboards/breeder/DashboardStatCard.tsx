@@ -1,5 +1,3 @@
-// components/breeder-dashboard/DashboardStatCard.tsx
-
 import { Card, CardHeader, CardContent, CardTitle, CardDescription } from "@/components/ui/card";
 
 interface DashboardStatCardProps {

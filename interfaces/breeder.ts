@@ -7,6 +7,7 @@ export interface IBreeder {
   city: string;
   state: string;
   zip: string;
+  phone: string;
   latitude: number;
   longitude: number;
   website?: string;

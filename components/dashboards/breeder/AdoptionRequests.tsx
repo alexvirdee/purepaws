@@ -16,7 +16,7 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { CheckIcon, MessageCircleIcon } from "lucide-react";
-import ChatWidget from "../ChatWidget";
+import ChatWidget from "@/components/ChatWidget";
 import { useRouter } from "next/navigation";
 
 

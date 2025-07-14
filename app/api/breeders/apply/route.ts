@@ -125,6 +125,12 @@ export async function POST(request: Request) {
 
     const result = await breeders.insertOne(newBreeder);
 
+    // Asign breederId to the user in the users collection
+    await db.collection('users').updateOne(
+      { email: email }, // from session
+      { $set: { breederId: result.insertedId } }
+    );
+
     return NextResponse.json({
       success: true,
       id: result.insertedId,

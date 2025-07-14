@@ -1,4 +1,4 @@
-import BreederDogsTable from "@/components/breeder-dashboard/BreederDogsTable";
+import BreederDogsTable from "@/components/dashboards/breeder/BreederDogsTable";
 import { getBreederDashboardData } from "@/lib/fetchBreederData";
 import AddEditDogDialog from "@/components/dialogs/AddEditDogDialog";
 
