@@ -12,7 +12,6 @@ import { Message } from "@/interfaces/message";
 interface ChatWidgetProps {
     conversationId: string;
     currentUserRole: "breeder" | "buyer";
-    initialMessages?: Message[];
     onSendMessage?: (text: string) => void; // optional callback
     onClose?: () => void;
 }
@@ -20,7 +19,6 @@ interface ChatWidgetProps {
 export default function ChatWidget({
     conversationId,
     currentUserRole,
-    initialMessages = [],
     onSendMessage,
     onClose
 }: ChatWidgetProps) {
@@ -255,6 +253,12 @@ export default function ChatWidget({
                         value={newMessage}
                         onChange={e => setNewMessage(e.target.value)}
                         className="flex-1"
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter" && !e.shiftKey) {
+                                e.preventDefault();
+                                handleSend();
+                            }
+                        }}
                     />
 
                     {/* Send button */}
