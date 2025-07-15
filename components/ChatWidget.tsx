@@ -179,7 +179,7 @@ export default function ChatWidget({
             </div>
 
             <div className="flex flex-col h-[300px]">
-                <ScrollArea className="flex-1 mb-4 p-2 border rounded bg-gray-50 overflow-y-auto">
+                <ScrollArea className="flex-1 mb-4 px-4 py-2 border rounded overflow-y-auto space-y-2">
                     {fetchedMessages.length > 0 ? (
                         fetchedMessages.map((msg: Message) => {
                             const isSender = msg.senderRole === currentUserRole;
@@ -187,12 +187,14 @@ export default function ChatWidget({
                             return (
                                 <div
                                     key={msg._id}
-                                    className={`p-2 mb-1 rounded max-w-[70%] ${isSender
-                                            ? "bg-blue-100 text-right ml-auto"
-                                            : "bg-green-100 text-left mr-auto"
-                                        }`}
+                                    className={`mb-2 relative p-3 rounded-lg max-w-[80%] md:max-w-[70%] text-sm
+                                           ${isSender
+                                            ? "bg-blue-600 text-white ml-auto rounded-br-none shadow-md"
+                                            : "bg-gray-100 text-gray-900 mr-auto rounded-bl-none shadow-sm"
+                                        }
+  `}
                                 >
-                                    <p className="text-sm">{msg.text}</p>
+                                    <p className="whitespace-pre-line">{msg.text}</p>
 
                                     {/* File display */}
                                     {msg.fileUrl && (
@@ -200,14 +202,16 @@ export default function ChatWidget({
                                             href={msg.fileUrl}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="text-blue-600 underline text-xs"
+                                            className={`block mt-2 text-xs underline ${isSender ? "text-white" : "text-blue-600 hover:text-blue-800"}`}
                                         >
                                             📎 {msg.fileName || "View File"}
                                         </a>
                                     )}
-                                    <span className="block text-[10px] text-gray-500">
-                                        {new Date(msg.createdAt).toLocaleTimeString()}
-                                    </span>
+                                    <div className="mt-2">
+                                        <span className={`absolute bottom-1 text-[10px] ${isSender ? "text-white right-2" : "text-gray-500 left-1 pl-2"}`}>
+                                            {new Date(msg.createdAt).toLocaleTimeString()}
+                                        </span>
+                                    </div>
                                 </div>
                             )
                         })
@@ -216,14 +220,13 @@ export default function ChatWidget({
                     )}
                 </ScrollArea>
 
-                <div className="flex flex-row justify-evenly gap-2">
-                    <Input
-                        placeholder="Type a new message"
-                        value={newMessage}
-                        onChange={e => setNewMessage(e.target.value)}
-                    />
-                    {/* File upload */}
-                    <div onClick={handleFileUploadClick} className="cursor-pointer mt-1">
+                <div className="flex items-center gap-2 p-2 border-t">
+                    {/* File upload icon button */}
+                    <button
+                        type="button"
+                        onClick={handleFileUploadClick}
+                        className="text-gray-500 hover:text-blue-600 cursor-pointer p-2 rounded transition"
+                    >
                         <input
                             ref={fileInputRef}
                             type="file"
@@ -231,9 +234,21 @@ export default function ChatWidget({
                             style={{ display: "none" }}
                             onChange={handleFileChange}
                         />
-                        <PaperclipIcon className="w-5 h-5 mt-1" />
-                    </div>
-                    <Button className="cursor-pointer" onClick={handleSend}>Send</Button>
+                        <PaperclipIcon className="w-5 h-5" />
+                    </button>
+
+                    {/* Message input */}
+                    <Input
+                        placeholder="Type a new message"
+                        value={newMessage}
+                        onChange={e => setNewMessage(e.target.value)}
+                        className="flex-1"
+                    />
+
+                    {/* Send button */}
+                    <Button type="button" onClick={handleSend}>
+                        Send
+                    </Button>
                 </div>
             </div>
         </div>
