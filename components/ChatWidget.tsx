@@ -77,6 +77,7 @@ export default function ChatWidget({
                 body: JSON.stringify({
                     text: "",
                     fileUrl,
+                    filePublicId: cloudinaryData.public_id || null,
                     fileName: file.name,
                     fileType: file.type
                 }),
@@ -89,6 +90,7 @@ export default function ChatWidget({
                 senderRole: data.message.senderRole,
                 text: data.message.text,
                 fileUrl: data.message.fileUrl,
+                filePublicId: data.message.filePublicId,
                 fileName: data.message.fileName,
                 fileType: data.message.fileType,
                 createdAt: data.message.createdAt,

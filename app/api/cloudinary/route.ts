@@ -24,6 +24,7 @@ export async function POST(req: Request) {
             .upload_stream(
                 {
                     resource_type: resourceType,
+                    type: "authenticated",
                     public_id: originalName,
                     use_filename: true,
                     unique_filename: true,

@@ -5,6 +5,18 @@ import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 import { DB_NAME } from "@/lib/constants";
 import { Message } from "@/interfaces/message";
+import { v2 as cloudinary } from "cloudinary";
+
+const expiresAt = Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 3; // 3 days
+
+export function generateSignedUrl(publicId: string, resourceType = "raw") {
+  return cloudinary.url(publicId, {
+    type: "authenticated",
+    resource_type: resourceType,
+    sign_url: true,
+    expires_at: expiresAt
+  });
+}
 
 
 export async function GET(
@@ -71,10 +83,12 @@ export async function GET(
       senderId: msg.senderId?.toString(),
       senderRole: msg.senderRole,
       text: msg.text,
-      fileUrl: msg.fileUrl || null,
       fileName: msg.fileName || null,
       fileType: msg.fileType || null,
-      createdAt: msg.createdAt?.toISOString(),
+      filePublicId: msg.filePublicId,
+      fileUrl: msg.filePublicId
+        ? generateSignedUrl(msg.filePublicId, "raw")
+        : null
     }));
 
     return NextResponse.json({ messages: serializedMessages });
@@ -102,7 +116,7 @@ export async function POST(
       return NextResponse.json({ error: "Invalid conversation ID" }, { status: 400 });
     }
 
-    const { text, fileUrl, fileName, fileType } = await req.json();
+    const { text, fileUrl, fileName, fileType, filePublicId } = await req.json();
 
     // Basic validation: must have text OR fileUrl
     if (
@@ -155,6 +169,7 @@ export async function POST(
       fileUrl: fileUrl || null,
       fileName: fileName || null,
       fileType: fileType || null,
+       filePublicId: filePublicId || null,
       createdAt
     });
 
