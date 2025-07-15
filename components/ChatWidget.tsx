@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -29,6 +29,16 @@ export default function ChatWidget({
     const { messages: fetchedMessages, mutate } = useConversationMessages(conversationId);
 
     const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const bottomRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        if (bottomRef.current) {
+            bottomRef.current.scrollIntoView({ 
+                behavior: "smooth",
+                block: "end",
+            });
+        }
+    }, [fetchedMessages])
 
     const handleFileUploadClick = () => {
         fileInputRef.current?.click();
@@ -179,7 +189,7 @@ export default function ChatWidget({
             </div>
 
             <div className="flex flex-col h-[300px]">
-                <ScrollArea className="flex-1 mb-4 px-4 py-2 border rounded overflow-y-auto space-y-2">
+                <ScrollArea className="flex-1 mb-4 px-4 py-2 border rounded space-y-2 overflow-y-auto">
                     {fetchedMessages.length > 0 ? (
                         fetchedMessages.map((msg: Message) => {
                             const isSender = msg.senderRole === currentUserRole;
@@ -218,6 +228,8 @@ export default function ChatWidget({
                     ) : (
                         <p className="text-gray-500 text-sm">No messages yet.</p>
                     )}
+                    {/* Ref for latest messages */}
+                    <div ref={bottomRef} />
                 </ScrollArea>
 
                 <div className="flex items-center gap-2 p-2 border-t">
