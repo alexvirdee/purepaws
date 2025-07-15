@@ -15,7 +15,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import { CheckIcon, MessageCircleIcon } from "lucide-react";
+import { CheckIcon, MessageCircleIcon, BanknoteArrowUpIcon, BanknoteArrowDownIcon, EyeIcon } from "lucide-react";
 // import ChatWidget from "@/components/ChatWidget";
 import { useRouter } from "next/navigation";
 
@@ -163,21 +163,23 @@ export default function AdoptionRequests({
                 // Route breeder to the messages page in their dashboard
                 router.push(`/dashboard/messages?conversation=${data.conversationId}`);
 
-                // Send email notification to buyer
-                const emailRes = await fetch("/api/email/notify-buyer", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        to: data.buyerEmail,
-                        buyerName: data.buyerName,
-                        breederName: data.breederName,
-                        dogName: data.dogName,
-                        conversationId: data.conversationId,
-                    }),
-                });
-
-                if (!emailRes.ok) {
-                    console.error("Failed to send email notification to buyer");
+                // Send email notification to buyer if chat was just created
+                if (data.newlyCreated) {
+                    const emailRes = await fetch("/api/email/notify-buyer", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            to: data.buyerEmail,
+                            buyerName: data.buyerName,
+                            breederName: data.breederName,
+                            dogName: data.dogName,
+                            conversationId: data.conversationId,
+                        }),
+                    });
+    
+                    if (!emailRes.ok) {
+                        console.error("Failed to send email notification to buyer");
+                    }
                 }
             } else {
                 toast.error(data.error || "Failed to start chat");
@@ -187,6 +189,41 @@ export default function AdoptionRequests({
             toast.error("Something went wrong starting the chat");
         }
     };
+
+    const handleApproveBuyer = async (interestId: string) => {
+        try {
+            const res = await fetch(`/api/puppy-interests/${interestId}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    status: "approved",
+                }),
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                toast.success("Buyer approved successfully");
+
+                // Update local state to reflect new status
+                setInterestsState(prev =>
+                    prev.map(req =>
+                        req._id === interestId ? { ...req, status: "approved" } : req
+                    )
+                );
+
+                // Close the modal if open 
+                setReviewBuyer(null);
+            } else {
+                toast.error(data.error || "Failed to approve buyer")
+            }
+        } catch (error) {
+            console.error("error: ", error);
+            toast.error("Something went wrong approving the buyer. Please try again.");
+        }
+    }
 
 
     return (
@@ -215,33 +252,33 @@ export default function AdoptionRequests({
                         <div className="pt-4 md:p-0 flex flex-col md:flex-row gap-2">
                             {/* Breeder must approve buyer before requesting a deposit */}
                             {/* Right: action buttons for each interest */}
-                            <div className="pt-4 md:p-0 flex flex-col md:flex-row gap-2">
+                            <div className="pt-4 md:p-0 flex flex-col gap-2">
                                 {interest.status === "pending" ? (
-                                    // SHOW REVIEW BUTTON
+                                    // Show review button
                                     <Button
-                                        className="bg-green-500 text-white px-2 py-1 rounded text-sm hover:bg-green-600 cursor-pointer"
+                                        size="sm"
+                                        className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded text-sm cursor-pointer"
                                         onClick={() => setReviewBuyer(interest)}
                                     >
-                                        Review Buyer
+                                        <EyeIcon />   Review Buyer
                                     </Button>
                                 ) : (
                                     <>
                                         {/* If NOT cancelled, show request deposit */}
-                                        {interest.status !== "cancelled" && (
+                                        {interest.status === "approved" && (
                                             <Button
-                                                disabled={interest.status === "deposit-requested"}
+                                                size="sm"
                                                 className="bg-blue-500 text-white px-2 py-1 rounded text-sm hover:bg-blue-600 cursor-pointer"
                                                 onClick={() => handleRequestDeposit(interest._id)}
                                             >
-                                                {interest.status === "deposit-requested"
-                                                    ? "Deposit Requested"
-                                                    : "Request Deposit"}
+                                                <BanknoteArrowUpIcon />  Request Deposit
                                             </Button>
                                         )}
 
                                         {/* If deposit requested, show cancel */}
                                         {interest.status === "deposit-requested" && (
                                             <Button
+                                                size="sm"
                                                 className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-sm cursor-pointer"
                                                 onClick={() => {
                                                     if (interest.adoptionRequestId) {
@@ -251,9 +288,18 @@ export default function AdoptionRequests({
                                                     }
                                                 }}
                                             >
-                                                Cancel Deposit Request
+                                                <BanknoteArrowDownIcon />  Cancel Deposit Request
                                             </Button>
                                         )}
+
+                                        {/* Always allow re-review */}
+                                        <Button size="sm" className="bg-green-500 hover:bg-green-600 cursor-pointer" onClick={() => setReviewBuyer(interest)}>
+                                            <EyeIcon />  Review Buyer
+                                        </Button>
+
+                                        <Button size="sm" className="bg-blue-500 hover:bg-blue-600 cursor-pointer" onClick={() => {
+                                            handleStartChat(interest._id, interest.buyer?._id);
+                                        }}><MessageCircleIcon /> Chat with buyer</Button>
                                     </>
                                 )}
                             </div>
@@ -271,7 +317,6 @@ export default function AdoptionRequests({
                         <DialogHeader>
                             <DialogTitle>Buyer Application: {reviewBuyer.buyer?.name}</DialogTitle>
                             <DialogDescription>{reviewBuyer.buyer?.email}
-
                                 {reviewBuyer._id}, {reviewBuyer.buyer?._id}
                             </DialogDescription>
                         </DialogHeader>
@@ -291,12 +336,13 @@ export default function AdoptionRequests({
                         </div>
 
                         <DialogFooter>
-                            <Button className="bg-green-500 hover:bg-green-600 cursor-pointer" onClick={() => {
-                                // call your API to approve puppyInterest
-                                // update status to "approved"
-                                toast.success("Buyer approved!")
-                                setReviewBuyer(null)
-                            }}><CheckIcon />Approve</Button>
+                            {reviewBuyer?.status !== "approved" && (
+                                <Button className="bg-green-500 hover:bg-green-600 cursor-pointer" onClick={() => {
+                                    if (reviewBuyer) {
+                                        handleApproveBuyer(reviewBuyer._id);
+                                    }
+                                }}><CheckIcon />Approve</Button>
+                            )}
                             <Button className="bg-blue-500 hover:bg-blue-600 cursor-pointer" onClick={() => {
                                 handleStartChat(reviewBuyer._id, reviewBuyer.buyer?._id);
                             }}><MessageCircleIcon /> Chat with buyer</Button>
@@ -349,13 +395,6 @@ export default function AdoptionRequests({
                     </DialogContent>
                 </Dialog>
             )}
-
-            {/* {activeConversation && (
-                <ChatWidget
-                    conversationId={activeConversation._id}
-                    onClose={() => setActiveConversation(null)}
-                />
-            )} */}
         </div>
     )
 }

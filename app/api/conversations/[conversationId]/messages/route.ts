@@ -18,7 +18,6 @@ export function generateSignedUrl(publicId: string, resourceType = "raw") {
   });
 }
 
-
 export async function GET(
   req: NextRequest,
   { params }: { params: { conversationId: string } }
@@ -83,6 +82,7 @@ export async function GET(
       senderId: msg.senderId?.toString(),
       senderRole: msg.senderRole,
       text: msg.text,
+      createdAt: msg.createdAt.toISOString(),
       fileName: msg.fileName || null,
       fileType: msg.fileType || null,
       filePublicId: msg.filePublicId,

@@ -90,6 +90,7 @@ export async function POST(req: Request) {
             buyerName: buyer.name,
             breederName: breeder.name,
             dogName: dog.name,
+            newlyCreated: true,
             createdAt: new Date(),
             lastMessageAt: null,
         });

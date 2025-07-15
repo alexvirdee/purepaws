@@ -42,8 +42,29 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
         return NextResponse.json({ error: "No valid update fields provided." }, { status: 400 });
     }
 
+    const interest = await db.collection("puppyInterests").findOne({ _id: new ObjectId(id) });
+    if (!interest) {
+        return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+
+    const userObjectId = user._id instanceof ObjectId ? user._id : new ObjectId(user._id);
+
+    // Auth check:
+    if (user.role === "breeder") {
+        if (!interest.breederId.equals(user.breederId)) {
+            console.log('issue is here..')
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+    } else if (user.role === "buyer") {
+        if (!interest.userId.equals(user._id)) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+    } else {
+        return NextResponse.json({ error: "Unauthorized role" }, { status: 401 });
+    }
+
     const result = await db.collection("puppyInterests").updateOne(
-        { _id: new ObjectId(id), userId: user._id },
+        { _id: new ObjectId(id) },
         { $set: update }
     );
 

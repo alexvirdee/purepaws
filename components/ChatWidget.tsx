@@ -219,7 +219,14 @@ export default function ChatWidget({
                                     )}
                                     <div className="mt-2">
                                         <span className={`absolute bottom-1 text-[10px] ${isSender ? "text-white right-2" : "text-gray-500 left-1 pl-2"}`}>
-                                            {new Date(msg.createdAt).toLocaleTimeString()}
+                                            {new Date(msg.createdAt).toLocaleTimeString(
+                                                "en-US",
+                                                {
+                                                    hour: "2-digit",
+                                                    minute: "2-digit",
+                                                    hour12: true
+                                                }
+                                            )}
                                         </span>
                                     </div>
                                 </div>
