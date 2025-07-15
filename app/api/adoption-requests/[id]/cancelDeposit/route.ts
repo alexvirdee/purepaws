@@ -7,7 +7,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
     try {
         const { id } = await params;
 
-        console.log("[CancelDeposit API] Received ID:", id);
+        // console.log("[CancelDeposit API] Received ID:", id);
 
         if (!ObjectId.isValid(id)) {
             return NextResponse.json({ message: "Invalid adoption request ID" }, { status: 400 });
@@ -16,14 +16,12 @@ export async function POST(req: Request, { params }: { params: { id: string } })
         const client = await clientPromise;
         const db = client.db(DB_NAME);
 
-        console.log('did we get here in the code?')
-
         const adoptionRequest = await db.collection("adoptionRequests").findOne({
             _id: new ObjectId(id)
         });
 
         if (!adoptionRequest) {
-            console.log('adoption request not found')
+            // console.log('adoption request not found')
 
             return NextResponse.json({ message: "Adoption request not found." }, { status: 404 });
         }

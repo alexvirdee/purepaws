@@ -88,15 +88,11 @@ export async function POST(
   try {
     const session = await getServerSession(authOptions);
 
-    console.log('session:', session);
-
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { conversationId } = await params;
-
-    console.log('Received conversationId:', conversationId);
 
     if (!ObjectId.isValid(conversationId)) {
       return NextResponse.json({ error: "Invalid conversation ID" }, { status: 400 });

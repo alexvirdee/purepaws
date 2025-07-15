@@ -77,7 +77,7 @@ export default function AdoptionRequestsSection({
 
   const depositRequests = [...adoptionRequestsActive, ...depositRequestedInterests];
 
-  
+
   useEffect(() => {
     setPuppyInterestsState(puppyInterests);
   }, [puppyInterests])
@@ -242,8 +242,8 @@ function RequestCard({
             {request.dog ? request.dog.name : "Unknown Dog"}
           </h4>
           <Badge>{request.status}</Badge>
-          <p className="text-sm text-gray-500 mb-1">
-            Message: {request.message || "(No message)"}
+          <p className="text-sm text-gray-500 py-2 line-clamp-2 max-w-3/4">
+            Message: {request.message.slice(0, 120) || "(No message)"}
           </p>
           <p className="text-xs text-gray-400 mb-2">
             Submitted:{" "}
@@ -252,18 +252,25 @@ function RequestCard({
               : "Unknown"}
           </p>
           <div className="flex flex-row gap-4">
-          <Link
-            href={`/dogs/${request.dog?._id}`}
-            className="text-blue-600 underline text-sm"
-          >
-            View Dog
-          </Link>
-          <Link
-            href={`/profile/messages?conversation=${request.conversationId}`} 
-            className="text-blue-600 underline text-sm"
-          >
-            Chat with Breeder
-          </Link>
+            <Link
+              href={`/dogs/${request.dog?._id}`}
+              className="text-blue-600 underline text-sm"
+            >
+              View Dog
+            </Link>
+            {request.conversationId ? (
+              <Link
+                href={`/profile/messages?conversation=${request.conversationId}`}
+                className="text-blue-600 underline text-sm"
+              >
+                Chat with Breeder
+              </Link>
+            ) : (
+              <span className="text-gray-400 italic text-sm">
+                Breeder is reviewing your interest
+              </span>
+            )}
+
           </div>
         </div>
 

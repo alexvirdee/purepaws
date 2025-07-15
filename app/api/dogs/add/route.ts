@@ -8,8 +8,6 @@ export async function POST(request: Request) {
         const body = await request.json();
         const { name, litter, breed, dob, gender, status, description, price, photos, breederId } = body;
 
-        console.log("[API] Add Dog Request Body:", JSON.stringify(body, null, 2));
-
         // Collect missing fields in an array for a clear response
         const missingFields = [];
         if (!name) missingFields.push("name");

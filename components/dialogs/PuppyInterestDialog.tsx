@@ -112,7 +112,19 @@ export default function PuppyInterestDialog({
                     router.refresh();
                 }
 
-                toast.success(`Your interest in ${name} has been submitted! 🎉`);
+                toast.success(
+                    <>
+                        <>
+                          Your interest in <strong>{name}</strong> has been submitted 🎉 {" "}
+                            <Link
+                                href="/profile"
+                                className="underline text-blue-600 hover:text-blue-700 ml-1"
+                            >
+                                View it in your profile
+                            </Link>
+                        </>
+                    </>
+                );
 
                 if (data.removedFromFavorites) {
                     toast.info(`${name} has been removed from your favorites to your adoption requests.`);

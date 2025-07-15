@@ -163,14 +163,22 @@ export default function AdoptionRequests({
                 // Route breeder to the messages page in their dashboard
                 router.push(`/dashboard/messages?conversation=${data.conversationId}`);
 
-                // setActiveConversation({
-                //     _id: data.conversationId,
-                //     buyerId: data.buyerId,
-                //     breederId: data.breederId,
-                //     puppyInterestId: data.puppyInterestId,
-                //     createdAt: data.createdAt,
-                // });
-                // console.log("Conversation:", data);
+                // Send email notification to buyer
+                const emailRes = await fetch("/api/email/notify-buyer", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        to: data.buyerEmail,
+                        buyerName: data.buyerName,
+                        breederName: data.breederName,
+                        dogName: data.dogName,
+                        conversationId: data.conversationId,
+                    }),
+                });
+
+                if (!emailRes.ok) {
+                    console.error("Failed to send email notification to buyer");
+                }
             } else {
                 toast.error(data.error || "Failed to start chat");
             }

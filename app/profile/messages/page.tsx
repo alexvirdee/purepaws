@@ -55,8 +55,8 @@ export default async function MessagesPage({ searchParams }: MessagesPageProps) 
   const activeConversationId = (await searchParams).conversation || null;
 
   const valid = groupedConversations.find(
-  (c) => c.conversationId === activeConversationId
-);
+    (c) => c.conversationId === activeConversationId
+  );
 
   return (
     <main className="max-w-6xl mx-auto p-8">
@@ -83,7 +83,7 @@ export default async function MessagesPage({ searchParams }: MessagesPageProps) 
                 <p className="font-semibold text-gray-800">
                   {interest.breederName}
                 </p>
-                 <p className="text-xs text-gray-500">
+                <p className="text-xs text-gray-500">
                   {interest.dogs.length > 0
                     ? `Regarding ${interest.dogs.join(", ")}`
                     : "No dogs specified"}
@@ -103,7 +103,8 @@ export default async function MessagesPage({ searchParams }: MessagesPageProps) 
         </div>
       ) : (
         <p className="text-gray-500">
-          You don’t have any conversations with breeders yet.
+          You don’t have any conversations yet.<br />
+          Once a breeder reaches out to you, they will display here. 
         </p>
       )}
     </main>

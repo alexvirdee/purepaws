@@ -16,6 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function EditRequestMessageDialog({
     request,
@@ -51,7 +52,7 @@ export default function EditRequestMessageDialog({
                         <div className="grid gap-4">
                             <div className="grid gap-3">
                                 <Label htmlFor="message">Message</Label>
-                                <Input
+                                <Textarea
                                     name="message"
                                     value={message}
                                     onChange={(e) => setMessage(e.target.value)}
