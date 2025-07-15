@@ -56,7 +56,7 @@ const Header = async () => {
                 <div className="wrapper flex justify-between items-center py-2">
                     <div className="flex items-center">
                         <Link href="/" className="flex items-center">
-                            <Image height={48} width={48} priority={true} alt="" src="/images/paw-outline.svg" />
+                            <Image height={48} width={45} priority={true} alt="" src="/images/paw-filled.svg" />
                             <span className="hidden lg:block font-bold text-2xl ml-2">
                                 {APP_NAME}
                             </span>

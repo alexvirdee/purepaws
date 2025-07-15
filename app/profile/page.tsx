@@ -35,6 +35,8 @@ export default async function ProfilePage() {
                 <div className="flex items-center gap-2 text-3xl font-bold">
                     <UserIcon className="w-8 text-gray-700" /> Profile
                 </div>
+
+                {/* Top of profile page dashboard/message page links */}
                 {role === "admin" && (
                     <Link className="text-blue-600 flex items-center gap-2" href="/admin">
                         Admin Dashboard
@@ -43,8 +45,8 @@ export default async function ProfilePage() {
                 )}
 
                 {/* Approved or pending breeder */}
-                {breederId !== null && (
-                    <Link className="text-blue-600 flex items-center gap-2" href="/dashboard">  View my Dashboard <ArrowRight className="w-4 h-4 mr-2" /></Link>
+                {role !== "admin" && breederId !== null && (
+                    <Link className="text-blue-600 flex items-center gap-2" href="/dashboard">View my Dashboard <ArrowRight className="w-4 h-4 mr-2" /></Link>
                 )}
 
                 {/* Regular viewer with no breeder application */}

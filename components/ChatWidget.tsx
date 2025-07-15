@@ -1,24 +1,17 @@
 'use client';
 
-import { JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal, useEffect, useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { XIcon } from "lucide-react";
+import { XIcon, PaperclipIcon } from "lucide-react";
 import { toast } from "sonner";
 import { useConversationMessages } from "@/hooks/useConversationMessages";
-
-type ChatMessage = {
-    _id: string;
-    senderRole: "breeder" | "buyer";
-    text: string;
-    createdAt: string;
-};
+import { Message } from "@/interfaces/message";
 
 interface ChatWidgetProps {
     conversationId: string;
-    initialMessages?: ChatMessage[];
+    initialMessages?: Message[];
     onSendMessage?: (text: string) => void; // optional callback
     onClose?: () => void;
 }
@@ -32,6 +25,100 @@ export default function ChatWidget({
     const [newMessage, setNewMessage] = useState("");
 
     const { messages: fetchedMessages, mutate } = useConversationMessages(conversationId);
+
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+    const handleFileUploadClick = () => {
+        fileInputRef.current?.click();
+    }
+
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+
+        if (!file) return;
+
+        try {
+            toast.info("Uploading file...");
+
+            // Upload to the file to cloudinary
+            const formData = new FormData();
+            formData.append("file", file);
+
+            // POST to signed api route
+            const cloudinaryRes = await fetch("/api/cloudinary", {
+                method: "POST",
+                body: formData,
+            })
+
+            if (!cloudinaryRes.ok) {
+                throw new Error("Cloudinary upload failed");
+            }
+
+            // formData.append("upload_preset", process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!);
+
+            // const cloudinaryRes = await fetch(
+            //     `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/auto/upload`, {
+            //     method: "POST",
+            //     body: formData
+            // });
+
+            const cloudinaryData = await cloudinaryRes.json();
+
+            console.log('cloudinaryData:', cloudinaryData);
+            console.log('file type', file.type)
+
+            const fileUrl = cloudinaryData.secure_url;
+
+            // Post new message with the file URL to the api
+            const res = await fetch(`/api/conversations/${conversationId}/messages`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    text: "",
+                    fileUrl,
+                    fileName: file.name,
+                    fileType: file.type
+                }),
+            });
+
+            const data = await res.json();
+
+            const newMessage = {
+                _id: data.message._id,
+                senderRole: data.message.senderRole,
+                text: data.message.text,
+                fileUrl: data.message.fileUrl,
+                fileName: data.message.fileName,
+                fileType: data.message.fileType,
+                createdAt: data.message.createdAt,
+            };
+
+            if (res.ok) {
+                await mutate(
+                    (currentMessages: Message[] | undefined) => {
+                        const safeMessages = Array.isArray(currentMessages)
+                            ? currentMessages
+                            : [];
+                        return [...safeMessages, newMessage];
+                    },
+                    false
+                );
+
+                await mutate();
+
+                toast.success("File uploaded successfully!");
+            } else {
+                toast.error(data.error || "Failed to send file");
+            }
+        } catch (error) {
+            console.error("Error uploading file:", error);
+            toast.error("Failed to upload file");
+        } finally {
+            e.target.value = ""; // Reset file input
+        }
+    }
 
     const handleSend = async () => {
         if (!newMessage.trim()) return;
@@ -52,7 +139,7 @@ export default function ChatWidget({
 
             if (res.ok) {
                 await mutate(
-                    async (currentMessages: ChatMessage[]) => {
+                    async (currentMessages: Message[]) => {
                         const safeMessages = Array.isArray(currentMessages) ? currentMessages : [];
 
                         return [
@@ -103,7 +190,7 @@ export default function ChatWidget({
             <div className="flex flex-col h-[300px]">
                 <ScrollArea className="flex-1 mb-4 p-2 border rounded bg-gray-50 overflow-y-auto">
                     {fetchedMessages.length > 0 ? (
-                        fetchedMessages.map((msg: ChatMessage) => (
+                        fetchedMessages.map((msg: Message) => (
                             <div
                                 key={msg._id}
                                 className={`p-2 mb-1 rounded ${msg.senderRole === "breeder"
@@ -112,6 +199,18 @@ export default function ChatWidget({
                                     }`}
                             >
                                 <p className="text-sm">{msg.text}</p>
+
+                                {/* File display */}
+                                {msg.fileUrl && (
+                                    <a
+                                        href={msg.fileUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-blue-600 underline text-xs"
+                                    >
+                                        📎 {msg.fileName || "View File"}
+                                    </a>
+                                )}
                                 <span className="block text-[10px] text-gray-500">
                                     {new Date(msg.createdAt).toLocaleTimeString()}
                                 </span>
@@ -122,13 +221,24 @@ export default function ChatWidget({
                     )}
                 </ScrollArea>
 
-                <div className="flex gap-2">
+                <div className="flex flex-row justify-evenly gap-2">
                     <Input
                         placeholder="Type a message..."
                         value={newMessage}
                         onChange={e => setNewMessage(e.target.value)}
                     />
-                    <Button onClick={handleSend}>Send</Button>
+                    {/* File upload */}
+                    <div onClick={handleFileUploadClick} className="cursor-pointer mt-1">
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*,application/pdf"
+                            style={{ display: "none" }}
+                            onChange={handleFileChange}
+                        />
+                        <PaperclipIcon />
+                    </div>
+                    <Button className="cursor-pointer" onClick={handleSend}>Send</Button>
                 </div>
             </div>
         </div>

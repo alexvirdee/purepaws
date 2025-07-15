@@ -4,6 +4,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 import { DB_NAME } from "@/lib/constants";
+import { Message } from "@/interfaces/message";
 
 
 export async function GET(
@@ -70,6 +71,9 @@ export async function GET(
       senderId: msg.senderId?.toString(),
       senderRole: msg.senderRole,
       text: msg.text,
+      fileUrl: msg.fileUrl || null,
+      fileName: msg.fileName || null,
+      fileType: msg.fileType || null,
       createdAt: msg.createdAt?.toISOString(),
     }));
 
@@ -98,9 +102,17 @@ export async function POST(
       return NextResponse.json({ error: "Invalid conversation ID" }, { status: 400 });
     }
 
-    const { text } = await req.json();
-    if (!text || typeof text !== "string" || text.trim() === "") {
-      return NextResponse.json({ error: "Message text is required" }, { status: 400 });
+    const { text, fileUrl, fileName, fileType } = await req.json();
+
+    // Basic validation: must have text OR fileUrl
+    if (
+      (!text || text.trim() === "") &&
+      (!fileUrl || fileUrl.trim() === "")
+    ) {
+      return NextResponse.json(
+        { error: "Message must have text or file" },
+        { status: 400 }
+      );
     }
 
     const client = await clientPromise;
@@ -110,7 +122,11 @@ export async function POST(
       _id: new ObjectId(conversationId)
     });
 
-     // Check that the conversation belongs to the user
+    if (!conversation) {
+      return NextResponse.json({ error: "Conversation not found" }, { status: 404 });
+    }
+
+    // Check that the conversation belongs to the user
     if (session?.user?.role === "viewer") {
       if (conversation?.buyerId.toString() !== session.user.id) {
         return NextResponse.json({ errror: "Unauthorized" }, { status: 401 });
@@ -121,10 +137,6 @@ export async function POST(
       }
     }
 
-    if (!conversation) {
-      return NextResponse.json({ error: "Conversation not found" }, { status: 404 });
-    }
-
     // Determine sender role
     const senderRole = session.user?.role || "viewer"; // Default to viewer if no role is provided
 
@@ -132,13 +144,18 @@ export async function POST(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
+    const createdAt = new Date();
+
     // Insert new message
     const result = await db.collection("messages").insertOne({
       conversationId: new ObjectId(conversationId),
       senderId: session.user?.id,
       senderRole: senderRole,
       text: text.trim(),
-      createdAt: new Date(),
+      fileUrl: fileUrl || null,
+      fileName: fileName || null,
+      fileType: fileType || null,
+      createdAt
     });
 
     // Update lastMessageAt on the conversation
@@ -147,16 +164,22 @@ export async function POST(
       { $set: { lastMessageAt: new Date() } }
     );
 
+    // Return response using Message type
+    const message: Message = {
+      _id: result.insertedId.toString(),
+      conversationId,
+      senderId: session.user?.id,
+      senderRole: senderRole,
+      text: text.trim(),
+      fileUrl: fileUrl || null,
+      fileName: fileName || null,
+      fileType: fileType || null,
+      createdAt: new Date().toISOString(),
+    }
+
     return NextResponse.json({
       success: true,
-      message: {
-        _id: result.insertedId.toString(),
-        conversationId,
-        senderId: session.user?.id,
-        senderRole: senderRole,
-        text: text.trim(),
-        createdAt: new Date().toISOString(),
-      },
+      message
     });
   } catch (error) {
     console.error("API error:", error);
