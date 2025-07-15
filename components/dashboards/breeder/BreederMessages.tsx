@@ -6,10 +6,12 @@ import ChatWidget from "../../ChatWidget";
 
 export default function BreederMessages({
     conversations,
-    activeConversationId
+    activeConversationId,
+    currentUserRole
 }: {
     conversations: any[];
     activeConversationId: string | null;
+    currentUserRole: string;
 }) {
     const router = useRouter();
     const [messages, setMessages] = useState([]);
@@ -41,7 +43,7 @@ export default function BreederMessages({
             <div className="flex-1 p-4">
                 {activeConversationId ? (
                     <>
-                        <ChatWidget conversationId={activeConversationId} />
+                        <ChatWidget conversationId={activeConversationId} currentUserRole={currentUserRole} />
                     </>
                 ) : (
                     <p>Select a conversation</p>

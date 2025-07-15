@@ -23,6 +23,8 @@ export default async function MessagesPage({ searchParams }: MessagesPageProps) 
     redirect("/dashboard/messages");
   }
 
+  const currentUserRole = session?.user?.role as "breeder" | "buyer";
+
   // 3) Get user’s profile data (which now includes conversationIds)
   const profile = await getUserProfileData();
 
@@ -95,7 +97,7 @@ export default async function MessagesPage({ searchParams }: MessagesPageProps) 
           {/* Right column: Chat widget */}
           <div className="flex-1 p-4">
             {activeConversationId && valid ? (
-              <ChatWidget conversationId={activeConversationId} />
+              <ChatWidget conversationId={activeConversationId} currentUserRole={currentUserRole} />
             ) : (
               <p className="text-gray-500">Select a conversation</p>
             )}

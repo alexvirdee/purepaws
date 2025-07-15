@@ -16,7 +16,7 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { CheckIcon, MessageCircleIcon } from "lucide-react";
-import ChatWidget from "@/components/ChatWidget";
+// import ChatWidget from "@/components/ChatWidget";
 import { useRouter } from "next/navigation";
 
 
@@ -350,12 +350,12 @@ export default function AdoptionRequests({
                 </Dialog>
             )}
 
-            {activeConversation && (
+            {/* {activeConversation && (
                 <ChatWidget
                     conversationId={activeConversation._id}
                     onClose={() => setActiveConversation(null)}
                 />
-            )}
+            )} */}
         </div>
     )
 }

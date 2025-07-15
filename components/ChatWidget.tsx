@@ -11,6 +11,7 @@ import { Message } from "@/interfaces/message";
 
 interface ChatWidgetProps {
     conversationId: string;
+    currentUserRole: "breeder" | "buyer";
     initialMessages?: Message[];
     onSendMessage?: (text: string) => void; // optional callback
     onClose?: () => void;
@@ -18,6 +19,7 @@ interface ChatWidgetProps {
 
 export default function ChatWidget({
     conversationId,
+    currentUserRole,
     initialMessages = [],
     onSendMessage,
     onClose
@@ -54,18 +56,7 @@ export default function ChatWidget({
                 throw new Error("Cloudinary upload failed");
             }
 
-            // formData.append("upload_preset", process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!);
-
-            // const cloudinaryRes = await fetch(
-            //     `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/auto/upload`, {
-            //     method: "POST",
-            //     body: formData
-            // });
-
             const cloudinaryData = await cloudinaryRes.json();
-
-            console.log('cloudinaryData:', cloudinaryData);
-            console.log('file type', file.type)
 
             const fileUrl = cloudinaryData.secure_url;
 
@@ -190,32 +181,36 @@ export default function ChatWidget({
             <div className="flex flex-col h-[300px]">
                 <ScrollArea className="flex-1 mb-4 p-2 border rounded bg-gray-50 overflow-y-auto">
                     {fetchedMessages.length > 0 ? (
-                        fetchedMessages.map((msg: Message) => (
-                            <div
-                                key={msg._id}
-                                className={`p-2 mb-1 rounded ${msg.senderRole === "breeder"
-                                    ? "bg-green-100 text-right"
-                                    : "bg-blue-100 text-left"
-                                    }`}
-                            >
-                                <p className="text-sm">{msg.text}</p>
+                        fetchedMessages.map((msg: Message) => {
+                            const isSender = msg.senderRole === currentUserRole;
 
-                                {/* File display */}
-                                {msg.fileUrl && (
-                                    <a
-                                        href={msg.fileUrl}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-blue-600 underline text-xs"
-                                    >
-                                        📎 {msg.fileName || "View File"}
-                                    </a>
-                                )}
-                                <span className="block text-[10px] text-gray-500">
-                                    {new Date(msg.createdAt).toLocaleTimeString()}
-                                </span>
-                            </div>
-                        ))
+                            return (
+                                <div
+                                    key={msg._id}
+                                    className={`p-2 mb-1 rounded max-w-[70%] ${isSender
+                                            ? "bg-blue-100 text-right ml-auto"
+                                            : "bg-green-100 text-left mr-auto"
+                                        }`}
+                                >
+                                    <p className="text-sm">{msg.text}</p>
+
+                                    {/* File display */}
+                                    {msg.fileUrl && (
+                                        <a
+                                            href={msg.fileUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-blue-600 underline text-xs"
+                                        >
+                                            📎 {msg.fileName || "View File"}
+                                        </a>
+                                    )}
+                                    <span className="block text-[10px] text-gray-500">
+                                        {new Date(msg.createdAt).toLocaleTimeString()}
+                                    </span>
+                                </div>
+                            )
+                        })
                     ) : (
                         <p className="text-gray-500 text-sm">No messages yet.</p>
                     )}
@@ -223,7 +218,7 @@ export default function ChatWidget({
 
                 <div className="flex flex-row justify-evenly gap-2">
                     <Input
-                        placeholder="Type a message..."
+                        placeholder="Type a new message"
                         value={newMessage}
                         onChange={e => setNewMessage(e.target.value)}
                     />
@@ -236,7 +231,7 @@ export default function ChatWidget({
                             style={{ display: "none" }}
                             onChange={handleFileChange}
                         />
-                        <PaperclipIcon />
+                        <PaperclipIcon className="w-5 h-5 mt-1" />
                     </div>
                     <Button className="cursor-pointer" onClick={handleSend}>Send</Button>
                 </div>

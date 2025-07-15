@@ -15,8 +15,6 @@ export async function POST(req: Request) {
     const isImage = fileType.startsWith("image/");
     const resourceType = isImage ? "image" : "raw";
 
-    console.log('Received file:', file);
-
     const buffer = Buffer.from(await file.arrayBuffer());
 
     const originalName = (file as File).name ? (file as File).name.replace(/\.[^/.]+$/, "") : "file";
