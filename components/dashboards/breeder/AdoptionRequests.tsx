@@ -67,6 +67,15 @@ export default function AdoptionRequests({
 
             if (res.ok) {
                 toast.success("🎉 Deposit request sent!");
+
+                // Correct: match on _id
+                setInterestsState(prev =>
+                    prev.map(req =>
+                        req._id === requestId // requestId is the puppyInterest ID!
+                            ? { ...req, status: "deposit-requested", adoptionRequestId: data.adoptionRequestId }
+                            : req
+                    )
+                );
             } else if (res.status === 400 && data.adoptionRequestId) {
                 setExistingRequestDialog({
                     open: true,
@@ -95,7 +104,7 @@ export default function AdoptionRequests({
                 const data = await res.json();
                 toast.success(`Deposit request re-sent! Expires at ${new Date(data.expiresAt).toLocaleString()}`);
 
-                // Optionally update local state
+                // TODO: handle local state (not added in yet)
                 setInterestsState(prev =>
                     prev.map(req =>
                         req.adoptionRequestId === requestId
@@ -176,7 +185,7 @@ export default function AdoptionRequests({
                             conversationId: data.conversationId,
                         }),
                     });
-    
+
                     if (!emailRes.ok) {
                         console.error("Failed to send email notification to buyer");
                     }

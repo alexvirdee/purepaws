@@ -1,8 +1,8 @@
 'use client';
 
 import PuppyAppPDFDownload from "@/components/PuppyAppPDFDownload";
-import EditPuppyApplicationDialog from "@/components/EditPuppyApplicationDialog";
-import DeletePuppyApplicationDialog from "@/components/DeletePuppyApplicationDialog";
+import EditPuppyApplicationDialog from "@/components/dialogs/EditPuppyApplicationDialog";
+import DeletePuppyApplicationDialog from "@/components/dialogs/DeletePuppyApplicationDialog";
 import { User as UserIcon, Dog as DogIcon, MailIcon, MapIcon, Contact, BabyIcon, DumbbellIcon, Users, Heart, NotebookPenIcon } from "lucide-react";
 
 export default function PuppyApplicationDetails({ data }: { data: any }) {

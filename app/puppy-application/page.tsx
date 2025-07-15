@@ -1,4 +1,4 @@
-import PuppyApplicationForm from "@/components/PuppyApplicationForm";
+import PuppyApplicationForm from "@/components/forms/PuppyApplicationForm";
 import { getServerSession } from "next-auth";
 import { authOptions } from '@/app/api/auth/[...nextauth]/authOptions';
 import clientPromise from '@/lib/mongodb';

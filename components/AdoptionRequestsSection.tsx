@@ -19,7 +19,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import EditRequestMessageDialog from "./EditRequestMessageDialog";
+import EditRequestMessageDialog from "@/components/dialogs/EditRequestMessageDialog";
 import Link from "next/link";
 
 
@@ -243,7 +243,7 @@ function RequestCard({
           </h4>
           <Badge>{request.status}</Badge>
           <p className="text-sm text-gray-500 py-2 line-clamp-2 max-w-3/4">
-            Message: {request.message.slice(0, 120) || "(No message)"}
+            Message: {request?.message?.slice(0, 120) || "(No message)"}
           </p>
           <p className="text-xs text-gray-400 mb-2">
             Submitted:{" "}
@@ -258,7 +258,8 @@ function RequestCard({
             >
               View Dog
             </Link>
-            {request.conversationId ? (
+            {/* If breeder has started conversation or requested a deposit allow user to chat with breeder */}
+            {request.conversationId || request.status === "deposit-requested" ? (
               <Link
                 href={`/profile/messages?conversation=${request.conversationId}`}
                 className="text-blue-600 underline text-sm"

@@ -36,6 +36,25 @@ export async function POST(req: Request, { params }: { params: { id: string } })
   }
 
   // Giving the user 7 days to complete the deposit request so they can ask questions, etc.   
+  // Start a new conversation for the user to contact breeder 
+  let conversation = await db.collection("conversations").findOne({
+    puppyInterestIds: { $in: [interest._id] }
+  });
+
+if (!conversation) {
+    const newConversationRes = await db.collection("conversations").insertOne({
+      breederId: interest.breederId,
+      buyerId: interest.userId,
+      puppyInterestIds: [interest._id],
+      dogId: interest.dogId,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+    conversation = {
+      _id: newConversationRes.insertedId,
+    };
+  }
+
 
   // Create a new adoption request
   const adoptionRequest = {
@@ -69,6 +88,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
     {
       message: "Deposit requested created successfully",
       adoptionRequestId: insertResult.insertedId,
+      conversationId: conversation._id.toString(),
       expiresAt: adoptionRequest.expiresAt,
     },
     { status: 200 });

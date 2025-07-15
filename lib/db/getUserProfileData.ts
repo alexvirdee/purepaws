@@ -61,11 +61,26 @@ export async function getUserProfileData() {
         updatedAt: puppyApplication.updatedAt?.toString(),
     } : null;
 
-    const adoptionRequestsWithDogs = adoptionRequests.map((req) => {
+    const adoptionRequestsWithDogs = await Promise.all(
+        adoptionRequests.map(async (req) => {
         const dog = dogs.find(d => d._id.toString() === req.dogId.toString());
+
+         const conversation = await db.collection("conversations").findOne({
+                 puppyInterestIds: { $in: [new ObjectId(req.interestId)] }
+            });
+    
+
         return {
             ...req,
             _id: req._id.toString(),
+            interestId: req.interestId?.toString() || null,
+            userId: req.userId?.toString(),
+            breederId: req.breederId?.toString() || null,
+            dogId: req.dogId?.toString(),
+            createdAt: req.createdAt?.toString(),
+            expiresAt: req.expiresAt?.toString(),
+            conversationId: conversation?._id?.toString() || null,
+            status: req.status || "deposit-requested",
             dog: dog ? {
                 _id: dog._id.toString(),
                 name: dog.name,
@@ -75,7 +90,8 @@ export async function getUserProfileData() {
                 price: dog.price,
             } : null,
         };
-    });
+    })
+);
 
     // Get unique breederIds from puppyInterests
     const breederIds = puppyInterests.map((p) => p.breederId).filter(Boolean);

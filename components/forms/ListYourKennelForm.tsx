@@ -18,7 +18,7 @@ import { toast } from 'sonner';
 import Link from 'next/link';
 import FileDropzone from '@/components/FileDropzone';
 import { DOG_BREEDS } from '@/lib/constants/dogBreeds';
-import TermsAndConditionsDialog from './dialogs/TermsAndConditionsDialog';
+import TermsAndConditionsDialog from '@/components/dialogs/TermsAndConditionsDialog';
 
 interface FormData {
     name: string;
