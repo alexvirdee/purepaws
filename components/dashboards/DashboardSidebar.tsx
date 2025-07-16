@@ -41,10 +41,10 @@ export default function DashboardSidebar({ links }: DashboardSidebarProps) {
   }
 
   return (
-    <main className="flex min-h-screen">
+    <main className="flex h-screen">
       <div
       ref={sidebarRef}
-      className="relative bg-white border-r h-full transition-all duration-200"
+      className="relative flex flex-col overflow-y-auto bg-white border-r h-full transition-all duration-200"
       style={{ width: `${width}px` }}
     >
       <div className="p-4">

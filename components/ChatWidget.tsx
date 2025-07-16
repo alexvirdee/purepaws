@@ -189,7 +189,7 @@ export default function ChatWidget({
             </div>
 
             <div className="flex flex-col h-[300px]">
-                <ScrollArea className="flex-1 mb-4 px-4 py-2 border rounded space-y-2 overflow-y-auto">
+                <ScrollArea className="flex-1 mb-4 px-4 py-2 border border-gray-100 rounded-lg space-y-2 overflow-y-auto">
                     {fetchedMessages.length > 0 ? (
                         fetchedMessages.map((msg: Message) => {
                             const isSender = msg.senderRole === currentUserRole;
@@ -239,7 +239,7 @@ export default function ChatWidget({
                     <div ref={bottomRef} />
                 </ScrollArea>
 
-                <div className="flex items-center gap-2 p-2 border-t">
+                <div className="flex items-center gap-2 p-2 border-t border-t-gray-200">
                     {/* File upload icon button */}
                     <button
                         type="button"

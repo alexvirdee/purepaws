@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/authOptions"; // adjust path!
 import { redirect } from "next/navigation";
 
-import ListYourKennelForm from "@/components/ListYourKennelForm";
+import ListYourKennelForm from "@/components/forms/ListYourKennelForm";
 import clientPromise from "@/lib/mongodb";
 import { DB_NAME } from "@/lib/constants";
 

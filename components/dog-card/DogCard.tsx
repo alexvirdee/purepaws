@@ -78,7 +78,7 @@ export default function DogCard({// If this is a request card, we can use this p
     return (
         <Card
             key={dog._id.toString()}
-            className="w-full max-w-xs relative overflow-hidden rounded-lg shadow hover:shadow-lg transition pt-0"
+            className="w-full max-w-xs relative overflow-hidden rounded-lg shadow hover:shadow-lg transition pt-0 border border-gray-200"
         >
             {/* Favorite button pinned to card corner */}
             {loggedInUser !== dog.breederId && 

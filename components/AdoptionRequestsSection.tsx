@@ -212,10 +212,8 @@ function RequestCard({
   onUpdateMessage?: (id: string, message: string) => void;
   onCompleteDeposit?: () => void;
 }) {
-  console.log('request', request)
-
   return (
-    <li className="border rounded shadow hover:shadow-md transition flex flex-col md:flex-row gap-4 p-4 relative">
+    <li className="bg-white rounded-lg shadow hover:shadow-md transition flex flex-col md:flex-row gap-4 p-4 relative">
       <div className="flex-shrink-0 w-full md:w-auto md:max-w-[200px] flex justify-center items-center md:justify-start">
         {request.dog ? (
           <Suspense fallback={<Skeleton className="h-28 rounded" />}>

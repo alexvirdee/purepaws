@@ -69,7 +69,7 @@ export default async function BreederDashboardLayout({ children }: { children: R
                     <Link
                         key={link.href}
                         href={link.href}
-                        className="text-sm text-blue-600 hover:text-blue-800 underline"
+                        className="text-sm text-blue-500 hover:text-blue-600"
                     >
                         {link.text}
                     </Link>

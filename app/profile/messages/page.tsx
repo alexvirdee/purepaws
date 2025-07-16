@@ -70,9 +70,9 @@ export default async function MessagesPage({ searchParams }: MessagesPageProps) 
         </Link>
       </div>
       {groupedConversations.length > 0 ? (
-        <div className="flex border rounded-lg shadow overflow-hidden">
+        <div className="flex border border-gray-200 rounded-lg shadow overflow-hidden">
           {/* Left column: Conversations list */}
-          <div className="w-1/3 border-r">
+          <div className="w-1/3 border-r border-r-gray-200">
             {groupedConversations.map((interest, index) => (
               <Link
                 key={index}

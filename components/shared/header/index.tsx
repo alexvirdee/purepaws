@@ -52,7 +52,7 @@ const Header = async () => {
 
 
         return (
-            <header className="w-full border-b">
+            <header className="w-full border-b border-b-gray-200 shadow-sm">
                 <div className="wrapper flex justify-between items-center py-2">
                     <div className="flex items-center">
                         <Link href="/" className="flex items-center">
