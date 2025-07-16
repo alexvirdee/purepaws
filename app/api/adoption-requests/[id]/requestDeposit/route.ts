@@ -73,15 +73,19 @@ if (!conversation) {
   const insertResult = await db.collection("adoptionRequests").insertOne(adoptionRequest);
 
   // Update puppy interest status if you want
-  await db.collection("puppyInterests").updateOne(
-    { _id: interest._id },
-    { $set: { status: "deposit-requested" } }
-  );
+  // Uncomment this if you want to update the interest status to "deposit-requested"
+  // await db.collection("puppyInterests").updateOne(
+  //   { _id: interest._id },
+  //   { $set: { status: "deposit-requested" } }
+  // );
 
-  // Update the dog status to pending-reservation
+  // Update the dog status to reserved if a deposit is requested 
   await db.collection("dogs").updateOne(
     { _id: new ObjectId(interest.dogId) },
-    { $set: { status: "deposit-requested" } }
+    { $set: { 
+      status: "reserved", 
+      reservedAt: new Date(),
+    } }
   );
 
   return NextResponse.json(

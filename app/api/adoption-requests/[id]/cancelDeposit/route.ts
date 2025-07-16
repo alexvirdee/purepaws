@@ -21,8 +21,6 @@ export async function POST(req: Request, { params }: { params: { id: string } })
         });
 
         if (!adoptionRequest) {
-            // console.log('adoption request not found')
-
             return NextResponse.json({ message: "Adoption request not found." }, { status: 404 });
         }
 

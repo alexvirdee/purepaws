@@ -26,6 +26,7 @@ type PuppyInterest = {
     buyer?: any;
     status: string; // status of the interest!
     adoptionRequestId?: string; // NEW: store this if deposit has been requested
+    adoptionRequestStatus?: string; // NEW: store the status of the adoption request
     message?: string;
     createdAt?: string;
 };
@@ -48,6 +49,8 @@ export default function AdoptionRequests({
     const [activeConversation, setActiveConversation] = useState<any>(null);
 
     const router = useRouter();
+
+    console.log('interests', interests)
 
     useEffect(() => {
         // Initialize state with the provided interests prop
@@ -274,7 +277,7 @@ export default function AdoptionRequests({
                                 ) : (
                                     <>
                                         {/* If NOT cancelled, show request deposit */}
-                                        {interest.status === "approved" && (
+                                        {interest.status === "approved" && interest.adoptionRequestStatus !== "deposit-requested" && (
                                             <Button
                                                 size="sm"
                                                 className="bg-blue-500 text-white px-2 py-1 rounded text-sm hover:bg-blue-600 cursor-pointer"
@@ -285,7 +288,7 @@ export default function AdoptionRequests({
                                         )}
 
                                         {/* If deposit requested, show cancel */}
-                                        {interest.status === "deposit-requested" && (
+                                        {interest.status === "approved" && interest.adoptionRequestStatus === "deposit-requested" && (
                                             <Button
                                                 size="sm"
                                                 className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-sm cursor-pointer"

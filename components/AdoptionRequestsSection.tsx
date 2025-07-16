@@ -63,11 +63,17 @@ export default function AdoptionRequestsSection({
   const [puppyInterestsState, setPuppyInterestsState] = useState(puppyInterests || []);
   const [adoptionRequestsState, setAdoptionRequestsState] = useState(adoptionRequests || []);
 
-  const activePuppyInterests = puppyInterestsState.filter(
-    (r) => r.status !== "cancelled" && r.status !== "deposit-requested"
-  );
-
   const adoptionRequestsActive = adoptionRequestsState.filter(r => r.status !== "cancelled");
+
+  const activePuppyInterests = puppyInterestsState.filter((r) => {
+    const isCancelled = r.status === "cancelled";
+    const isDepositRequested = r.status === "deposit-requested";
+    const isCoveredByAdoptionRequest = adoptionRequestsActive.some(
+      (a) => a.dogId === r.dogId
+    );
+
+    return !isCancelled && !isDepositRequested && !isCoveredByAdoptionRequest;
+  });
 
   // Add puppyInterests that are deposit-requested AND don’t already exist in adoptionRequests
   const depositRequestedInterests = puppyInterestsState.filter(
@@ -191,7 +197,7 @@ export default function AdoptionRequestsSection({
         <div>
           <h3 className="text-lg font-bold mb-4">Deposit Requests</h3>
           <ul className="space-y-4">
-            {depositRequests.filter(r => r.status !== "cancelled").map(request => (
+            {depositRequests.map(request => (
               <RequestCard
                 key={request._id}
                 request={request}
@@ -207,7 +213,7 @@ export default function AdoptionRequestsSection({
         <div className="mt-8">
           <h3 className="text-lg font-bold mb-4">Puppy Interests</h3>
           <ul className="space-y-4">
-            {activePuppyInterests.filter(r => r.status !== "cancelled").map(request => (
+            {activePuppyInterests.map((request) => (
               <RequestCard
                 key={request._id}
                 request={request}

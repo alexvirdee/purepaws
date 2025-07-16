@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
                 },
             ],
             metadata: {
-                requestId, // Critical for your webhook to link payment to puppyInterest
+                requestId, // Critical for your webhook to link payment to the adoptionRequest
             },
             success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/success/deposit?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/profile/requests`,
