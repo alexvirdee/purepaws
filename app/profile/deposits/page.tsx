@@ -5,6 +5,8 @@ import { getUserDeposits } from "@/lib/db/getUserDeposits";
 import DepositsList from "@/components/profile/DepositsList";
 import { DB_NAME } from "@/lib/constants";
 import { redirect } from "next/navigation";
+import Link from "next/link";
+import { ArrowLeftIcon } from "lucide-react";
 
 export default async function DepositsPage() {
   const session = await getServerSession();
@@ -28,6 +30,10 @@ export default async function DepositsPage() {
 
   return (
     <div className="max-w-4xl mx-auto py-8 px-4">
+      <Link className="text-blue-500 hover:text-blue-600 flex items-center gap-2 mb-4" href="/profile">
+        <ArrowLeftIcon className="w-4 h-4" />
+        Back to Profile
+      </Link>
       <h1 className="text-2xl font-bold mb-4">Your Reserved Puppies</h1>
       <DepositsList deposits={deposits} />
     </div>

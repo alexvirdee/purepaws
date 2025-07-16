@@ -301,7 +301,7 @@ function RequestCard({
           <div className="flex flex-row gap-4">
             <Link
               href={`/dogs/${request.dog?._id}`}
-              className="text-blue-600 underline text-sm"
+              className="text-blue-600 text-sm hover:underline"
             >
               View Dog
             </Link>
@@ -309,7 +309,7 @@ function RequestCard({
             {request.conversationId || request.status === "deposit-requested" ? (
               <Link
                 href={`/profile/messages?conversation=${request.conversationId}`}
-                className="text-blue-600 underline text-sm"
+                className="text-blue-600 text-sm hover:underline"
               >
                 Chat with Breeder
               </Link>

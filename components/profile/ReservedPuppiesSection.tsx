@@ -28,13 +28,6 @@ export default function ReservedPuppiesSection({
       <p className="text-gray-600 mb-4">
         You’ve completed a deposit for {completedDeposits.length} pupp{completedDeposits.length > 1 ? 'ies' : 'y'}. View with the link below.
       </p>
-      {/* <ul className="space-y-4">
-        {completedDeposits.map((request, index) => (
-          <div>
-            Test
-          </div>
-        ))}
-      </ul> */}
       <div className="mt-4">
         <a
           href="/profile/deposits"

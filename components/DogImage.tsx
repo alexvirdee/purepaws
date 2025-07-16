@@ -26,17 +26,13 @@ export default function DogImage({
   additionalContainerStyles?: string;
 }) {
   return (
-    <div
-      className={`relative w-full overflow-hidden ${additionalContainerStyles ? ` ${additionalContainerStyles}` : ""}`}
-    >
       <Image
         src={src ? src : "/images/purepaws-placeholder.jpg"}
         alt={alt}
         width={width}
         height={height}
-        className={`object-cover block ${aspectRatio ? `${aspectRatio}` : ""}`}
+        className={`object-cover block ${aspectRatio} ${additionalContainerStyles}`}
         loading="lazy"
       />
-    </div>
   );
 }

@@ -25,9 +25,13 @@ export async function getUserDeposits(userId: string) {
 
     const dogIds = deposits.map((d) => d.dogId);
     const dogs = await db.collection("dogs").find({ _id: { $in: dogIds } }).toArray();
+    
+    const breederIds = deposits.map((d) => d.breederId);
+    const breeders = await db.collection("breeders").find({ _id: { $in: breederIds } }).toArray();
 
     return deposits.map((deposit) => {
         const dog = dogs.find((d) => d._id.toString() === deposit.dogId.toString());
+        const breeder = breeders.find((d) => d._id.toString() === deposit.breederId.toString());
 
         return {
             ...deposit,
@@ -48,7 +52,7 @@ export async function getUserDeposits(userId: string) {
                 name: dog?.name || "Unknown",
                 photoUrl: dog?.photos?.[0]?.path || "", // Safely grab first photo if exists
             },
-            breederName: deposit.breederName || "",
+            breederName: breeder?.name || "",
             conversationId: deposit.conversationId || null,
         }
     })
