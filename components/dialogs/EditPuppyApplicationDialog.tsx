@@ -82,7 +82,7 @@ export default function EditPuppyApplicationDialog({ puppyApplication }: {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button className="flex items-center text-sm gap-2 text-white bg-orange-500 hover:bg-orange-600 px-4 py-2 rounded shadow cursor-pointer">
+                <Button size="sm" className="flex items-center text-sm gap-2 text-white bg-orange-500 hover:bg-orange-600 px-4 py-2 rounded shadow cursor-pointer">
                     <Pencil /> Edit
                 </Button>
             </DialogTrigger>

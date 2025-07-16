@@ -12,7 +12,7 @@ export default function SaveAsPDFButton({
 }) {
 
     return (
-        <Button onClick={onClick} className="text-sm cursor-pointer">
+        <Button size="sm" onClick={onClick} className="text-sm cursor-pointer">
             {title}
         </Button>
     )

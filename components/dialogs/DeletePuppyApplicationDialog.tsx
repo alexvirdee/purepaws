@@ -57,7 +57,7 @@ export default function DeletePuppyApplicationDialog({
 
         <AlertDialog open={open} onOpenChange={setOpen}>
             <AlertDialogTrigger asChild>
-                <Button className="text-sm bg-red-500 hover:bg-red-600 cursor-pointer">
+                <Button size="sm" className="text-sm bg-red-500 hover:bg-red-600 cursor-pointer">
                     <CircleX /> Delete
                 </Button>
             </AlertDialogTrigger>

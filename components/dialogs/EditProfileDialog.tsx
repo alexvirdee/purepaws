@@ -46,7 +46,7 @@ export default function EditProfileDialog({ user }: { user: { name: string; emai
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button className="absolute top-4 right-4 flex items-center text-sm gap-2 text-white bg-orange-500 hover:bg-orange-600 px-4 py-2 rounded shadow cursor-pointer">
+                <Button size="sm" className="absolute top-4 right-4 flex items-center text-sm gap-2 text-white bg-orange-500 hover:bg-orange-600 px-4 py-2 rounded shadow cursor-pointer">
                     <Pencil /> Edit
                 </Button>
             </DialogTrigger>

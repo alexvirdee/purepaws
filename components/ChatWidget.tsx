@@ -271,7 +271,7 @@ export default function ChatWidget({
                     />
 
                     {/* Send button */}
-                    <Button type="button" onClick={handleSend}>
+                    <Button className="cursor-pointer" type="button" onClick={handleSend}>
                         Send
                     </Button>
                 </div>
