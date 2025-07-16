@@ -4,8 +4,9 @@ interface DashboardStatCardProps {
   title: string;
   value: string | number;
   description?: string;
-  trend?: string; // optional trend like "+12.5%"
-  textColor?: string; // optional additional styles
+  trend?: string; 
+  textColor?: string; 
+  textSize?: string;
 }
 
 export default function DashboardStatCard({
@@ -13,7 +14,8 @@ export default function DashboardStatCard({
   value,
   description,
   trend,
-  textColor
+  textColor,
+  textSize
 }: DashboardStatCardProps) {
   return (
     <Card className="bg-white shadow rounded-lg p-2 flex flex-col justify-between gap-2 hover:shadow-lg transition-shadow duration-200">
@@ -28,7 +30,7 @@ export default function DashboardStatCard({
         )}
       </CardHeader>
       <CardContent>
-        <CardTitle className={`text-2xl font-bold ${textColor}`}>{value}</CardTitle>
+        <CardTitle className={`text-2xl font-bold ${textColor} ${textSize}`}>{value}</CardTitle>
         {description && (
           <p className="mt-2 text-xs text-gray-500">{description}</p>
         )}

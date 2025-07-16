@@ -47,11 +47,12 @@ export default async function BreederDashboardPage() {
                         description="Follow-ups sent"
                     />
                     <DashboardStatCard
-                        title="Profile Status"
-                        value={breeder?.status}
-                        description="Breeder Profile"
+                        title="Breeder Since"
+                        value={breeder?.city + ", " + breeder?.state}
+                        description="Breeder Location"
                         trend={breederJoinedText}
-                        textColor="text-green-500"
+                        textColor="text-[#0DC0DF]"
+                        textSize="text-[18px]"
                     />
                 </div>
             </section>
