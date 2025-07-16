@@ -31,6 +31,7 @@ const dancingScript = Dancing_Script({
   variable: "--font-dancing",
   subsets: ["latin"],
   weight: ["400", "700"],
+  display: "swap"
 });
 
 export const metadata: Metadata = {

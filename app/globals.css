@@ -133,3 +133,7 @@
   border: none;
   cursor: pointer;
 }
+
+.font-dancing { font-family: var(--font-dancing); }
+.font-merriweather { font-family: var(--font-merriweather); }
+.font-roboto { font-family: var(--font-roboto); }

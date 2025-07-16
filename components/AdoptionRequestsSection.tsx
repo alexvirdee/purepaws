@@ -212,6 +212,26 @@ function RequestCard({
   onUpdateMessage?: (id: string, message: string) => void;
   onCompleteDeposit?: () => void;
 }) {
+
+function getBadgeProps(
+  status: string
+): { variant: "outline" | "success" | "destructive" | "default" | "secondary"; text: string } {
+  switch (status) {
+    case "pending":
+      return { variant: "default", text: "Pending" };
+    case "approved":
+      return { variant: "success", text: "Approved" };
+    case "deposit-requested":
+      return { variant: "success", text: "Deposit Requested" };
+    case "cancelled":
+      return { variant: "destructive", text: "Cancelled" };
+    default:
+      return { variant: "default", text: status };
+  }
+}
+
+const { variant, text } = getBadgeProps(request.status);
+
   return (
     <li className="bg-white rounded-lg shadow hover:shadow-md transition flex flex-col md:flex-row gap-4 p-4 relative">
       <div className="flex-shrink-0 w-full md:w-auto md:max-w-[200px] flex justify-center items-center md:justify-start">
@@ -239,7 +259,7 @@ function RequestCard({
           <h4 className="text-md font-semibold mb-1">
             {request.dog ? request.dog.name : "Unknown Dog"}
           </h4>
-          <Badge>{request.status}</Badge>
+          <Badge variant={variant}>{text}</Badge>
           <p className="text-sm text-gray-500 py-2 line-clamp-2 max-w-3/4">
             Message: {request?.message?.slice(0, 120) || "(No message)"}
           </p>

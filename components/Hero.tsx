@@ -79,7 +79,7 @@ export default function Hero({
                 <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4">
                     Find your best friend with PurePaws
                 </h1>
-                <p className="text-lg text-gray-100 mb-8">
+                <p className="text-lg text-gray-100 mb-8 font-merriweather">
                     Responsible breeders. Loving homes. Happy pups.
                 </p>
 
