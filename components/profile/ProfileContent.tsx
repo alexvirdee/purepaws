@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from "react";
-import AdoptionRequestsSection from "@/components/AdoptionRequestsSection";
+import ReservedPuppiesSection from "./ReservedPuppiesSection";
+import AdoptionRequestsSection from "@/components/profile/AdoptionRequestsSection";
 import FavoriteDogsSection from "@/components/FavoriteDogsSection";
 import { IDog } from "@/interfaces/dog";
 
@@ -31,6 +32,10 @@ export default function ProfileContent({
 
   return (
     <>
+      <ReservedPuppiesSection
+        adoptionRequests={adoptionRequests}
+      />
+
       <AdoptionRequestsSection
         adoptionRequests={adoptionRequests}
         puppyInterests={interestRequests}
@@ -46,7 +51,7 @@ export default function ProfileContent({
             favorites={favoriteDogsState}
             puppyInterests={puppyInterests || []}
             onNewRequest={handleNewRequest}
-            breederId={breederId} 
+            breederId={breederId}
             userId={userId}
           />
         </div>

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { IDog } from "@/interfaces/dog";
 import { Suspense } from "react";
-import DogImage from "./DogImage";
+import DogImage from "../DogImage";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -82,7 +82,7 @@ export default function AdoptionRequestsSection({
       !adoptionRequestsActive.some(a => a.dogId === r.dogId)
   );
 
-  const depositRequests = [...adoptionRequestsActive, ...depositRequestedInterests];
+  const depositRequests = [...adoptionRequestsActive.filter(r => r.status !== "deposit-paid"), ...depositRequestedInterests];
 
 
   useEffect(() => {

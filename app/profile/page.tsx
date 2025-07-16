@@ -3,7 +3,7 @@ import EditProfileDialog from "@/components/dialogs/EditProfileDialog";
 import Link from "next/link";
 import BreederApprovalBanner from "@/components/breeders/BreederApprovalBanner";
 import PuppyApplicationDetails from "@/components/PuppyApplicationDetails";
-import ProfileContent from "@/components/ProfileContent";
+import ProfileContent from "@/components/profile/ProfileContent";
 import { getUserProfileData } from "@/lib/db/getUserProfileData";
 
 
