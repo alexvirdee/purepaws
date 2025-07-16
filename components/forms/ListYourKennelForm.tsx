@@ -145,7 +145,7 @@ const ListYourKennelForm = ({
 
                 toast.success('Application submitted successfully!');
 
-                router.push("/success");
+                router.push("/success/breeder-application");
             } else {
                 setIsSubmitting(false);
                 console.error('Error submitting application');

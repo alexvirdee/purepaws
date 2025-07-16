@@ -26,6 +26,7 @@ import Link from "next/link";
 interface InterestRequest {
   _id: string;
   userId: string;
+  userEmail: string;
   breederId: string;
   puppyApplicationId: string | null; // If this request is linked to a puppy application
   dogId: string;
@@ -146,8 +147,30 @@ export default function AdoptionRequestsSection({
     }
   };
 
-  const handleCompleteDeposit = () => {
-    console.log('Complete deposit button clicked');
+  const handleCompleteDeposit = async () => {
+    try {
+      const res = await fetch(`/api/deposits/create-checkout-session`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          requestId: depositRequests[0]._id,
+          dogName: depositRequests[0].dog.name,
+          amount: 10000, // Example amount in cents ($100.00)
+          buyerEmail: depositRequests[0].userEmail, // Assuming userId is the email
+        }),
+      });
+
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url // Redirect to Stripe checkout
+      } else {
+        toast.error(data.error || "Failed to create checkout session.");
+      }
+    } catch (error) {
+      console.error("Error creating the checkout session");
+    }
   }
 
   const hasActiveInterests = activePuppyInterests.length > 0;
@@ -213,24 +236,24 @@ function RequestCard({
   onCompleteDeposit?: () => void;
 }) {
 
-function getBadgeProps(
-  status: string
-): { variant: "outline" | "success" | "destructive" | "default" | "secondary"; text: string } {
-  switch (status) {
-    case "pending":
-      return { variant: "default", text: "Pending" };
-    case "approved":
-      return { variant: "success", text: "Approved" };
-    case "deposit-requested":
-      return { variant: "success", text: "Deposit Requested" };
-    case "cancelled":
-      return { variant: "destructive", text: "Cancelled" };
-    default:
-      return { variant: "default", text: status };
+  function getBadgeProps(
+    status: string
+  ): { variant: "outline" | "success" | "destructive" | "default" | "secondary"; text: string } {
+    switch (status) {
+      case "pending":
+        return { variant: "default", text: "Pending" };
+      case "approved":
+        return { variant: "success", text: "Approved" };
+      case "deposit-requested":
+        return { variant: "success", text: "Deposit Requested" };
+      case "cancelled":
+        return { variant: "destructive", text: "Cancelled" };
+      default:
+        return { variant: "default", text: status };
+    }
   }
-}
 
-const { variant, text } = getBadgeProps(request.status);
+  const { variant, text } = getBadgeProps(request.status);
 
   return (
     <li className="bg-white rounded-lg shadow hover:shadow-md transition flex flex-col md:flex-row gap-4 p-4 relative">

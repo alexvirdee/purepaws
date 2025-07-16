@@ -29,6 +29,39 @@ Next Auth Generate Secret
 
 `openssl rand -base64 32`
 
+## Stripe Test Sandbox
+
+Stripe needs to send server a webhook to check if payment really happened - on localhost stripe server can't reach localhost directly so need to run the stripe CLI command to open a secure tunnel from stripe to "localhost:{port}/api/deposits/webhook". This will forward real events in real-time and test webhooks as if it was deployed 
+
+First step is installing the Stripe CLI tool
+
+Documentation link: https://docs.stripe.com/stripe-cli
+
+```
+brew install stripe/stripe-cli/stripe
+```
+
+Login to the CLI
+
+```
+stripe login
+```
+
+The pairing code will expire in 90 days and you will need to re-authenticate.
+
+Command to run for stripe testing 
+
+```
+stripe listen --forward-to localhost:3000/api/deposits/webhook
+```
+
+Stripe Test Card Details
+
+`4242 4242 4242 4242`
+
+CV Code - Any Value
+Exp - Any future date 
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

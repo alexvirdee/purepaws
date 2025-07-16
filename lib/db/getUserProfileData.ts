@@ -68,13 +68,17 @@ export async function getUserProfileData() {
          const conversation = await db.collection("conversations").findOne({
                  puppyInterestIds: { $in: [new ObjectId(req.interestId)] }
             });
-    
+        
+         const user = await db.collection("users").findOne({
+      _id: new ObjectId(req.userId)
+    });
 
         return {
             ...req,
             _id: req._id.toString(),
             interestId: req.interestId?.toString() || null,
             userId: req.userId?.toString(),
+            userEmail: user?.email || "",
             breederId: req.breederId?.toString() || null,
             dogId: req.dogId?.toString(),
             createdAt: req.createdAt?.toString(),
