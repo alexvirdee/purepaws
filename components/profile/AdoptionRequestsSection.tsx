@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import EditRequestMessageDialog from "@/components/dialogs/EditRequestMessageDialog";
 import Link from "next/link";
+import CompleteDepositDialog from "../dialogs/CompleteDepositDialog";
 
 
 interface InterestRequest {
@@ -28,6 +29,7 @@ interface InterestRequest {
   userId: string;
   userEmail: string;
   breederId: string;
+  stripeAccountId?: string; // Optional, if breeder has a connected Stripe account
   puppyApplicationId: string | null; // If this request is linked to a puppy application
   dogId: string;
   message: string;
@@ -83,7 +85,6 @@ export default function AdoptionRequestsSection({
   );
 
   const depositRequests = [...adoptionRequestsActive.filter(r => r.status !== "deposit-paid"), ...depositRequestedInterests];
-
 
   useEffect(() => {
     setPuppyInterestsState(puppyInterests);
@@ -153,31 +154,6 @@ export default function AdoptionRequestsSection({
     }
   };
 
-  const handleCompleteDeposit = async () => {
-    try {
-      const res = await fetch(`/api/deposits/create-checkout-session`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          requestId: depositRequests[0]._id,
-          dogName: depositRequests[0].dog.name,
-          amount: 10000, // Example amount in cents ($100.00)
-          buyerEmail: depositRequests[0].userEmail, // Assuming userId is the email
-        }),
-      });
-
-      const data = await res.json();
-      if (data.url) {
-        window.location.href = data.url // Redirect to Stripe checkout
-      } else {
-        toast.error(data.error || "Failed to create checkout session.");
-      }
-    } catch (error) {
-      console.error("Error creating the checkout session");
-    }
-  }
 
   const hasActiveInterests = activePuppyInterests.length > 0;
   const hasActiveAdoptions = depositRequests.length > 0;
@@ -202,7 +178,6 @@ export default function AdoptionRequestsSection({
                 key={request._id}
                 request={request}
                 isDeposit
-                onCompleteDeposit={handleCompleteDeposit}
               />
             ))}
           </ul>
@@ -233,13 +208,11 @@ function RequestCard({
   isDeposit = false,
   onCancel,
   onUpdateMessage,
-  onCompleteDeposit,
 }: {
   request: InterestRequest;
   isDeposit?: boolean;
   onCancel?: (id: string) => void;
   onUpdateMessage?: (id: string, message: string) => void;
-  onCompleteDeposit?: () => void;
 }) {
 
   function getBadgeProps(
@@ -325,9 +298,13 @@ function RequestCard({
         <div className="flex justify-center md:justify-end mt-4 md:mt-0 md:absolute md:right-0 md:top-1/2 md:-translate-y-1/2 gap-2">
           {isDeposit ? (
             <div className="flex flex-col items-start gap-2 max-w-xs text-left">
-              <Button onClick={onCompleteDeposit} className="bg-green-600 text-white hover:bg-green-700">
-                Complete Deposit
-              </Button>
+              <CompleteDepositDialog
+                dogName={request.dog?.name || "Puppy"}
+                requestId={request._id}
+                breederStripeAccountId={request.stripeAccountId || ""}
+                amount={10000} // cents
+                buyerEmail={request.userEmail}
+              />
               <p className="text-xs text-gray-500">
                 Holds {request.dog.name} until your expiration. If you don’t pay, your request will expire.
               </p>

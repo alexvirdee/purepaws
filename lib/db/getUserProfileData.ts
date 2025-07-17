@@ -41,6 +41,7 @@ export async function getUserProfileData() {
     const serializedBreeder = breeder ? {
         ...breeder,
         _id: breeder._id.toString(),
+        stripeAccountId: breeder.stripeAccountId || null,
         status: breeder.status || "pending",
         about: breeder.about || "",
         approvedAt: breeder.approvedAt?.toString() || null,
@@ -63,39 +64,44 @@ export async function getUserProfileData() {
 
     const adoptionRequestsWithDogs = await Promise.all(
         adoptionRequests.map(async (req) => {
-        const dog = dogs.find(d => d._id.toString() === req.dogId.toString());
+            const dog = dogs.find(d => d._id.toString() === req.dogId.toString());
 
-         const conversation = await db.collection("conversations").findOne({
-                 puppyInterestIds: { $in: [new ObjectId(req.interestId)] }
+            const conversation = await db.collection("conversations").findOne({
+                puppyInterestIds: { $in: [new ObjectId(req.interestId)] }
             });
-        
-         const user = await db.collection("users").findOne({
-      _id: new ObjectId(req.userId)
-    });
 
-        return {
-            ...req,
-            _id: req._id.toString(),
-            interestId: req.interestId?.toString() || null,
-            userId: req.userId?.toString(),
-            userEmail: user?.email || "",
-            breederId: req.breederId?.toString() || null,
-            dogId: req.dogId?.toString(),
-            createdAt: req.createdAt?.toString(),
-            expiresAt: req.expiresAt?.toString(),
-            conversationId: conversation?._id?.toString() || null,
-            status: req.status || "deposit-requested",
-            dog: dog ? {
-                _id: dog._id.toString(),
-                name: dog.name,
-                photos: dog.photos || [],
-                breed: dog.breed,
-                status: dog.status,
-                price: dog.price,
-            } : null,
-        };
-    })
-);
+            const user = await db.collection("users").findOne({
+                _id: new ObjectId(req.userId)
+            });
+
+            const breeder = await db.collection("breeders").findOne({
+                _id: new ObjectId(req.breederId)
+            });
+
+            return {
+                ...req,
+                _id: req._id.toString(),
+                interestId: req.interestId?.toString() || null,
+                userId: req.userId?.toString(),
+                userEmail: user?.email || "",
+                breederId: req.breederId?.toString() || null,
+                stripeAccountId: breeder?.stripeAccountId?.toString() || null,
+                dogId: req.dogId?.toString(),
+                createdAt: req.createdAt?.toString(),
+                expiresAt: req.expiresAt?.toString(),
+                conversationId: conversation?._id?.toString() || null,
+                status: req.status || "deposit-requested",
+                dog: dog ? {
+                    _id: dog._id.toString(),
+                    name: dog.name,
+                    photos: dog.photos || [],
+                    breed: dog.breed,
+                    status: dog.status,
+                    price: dog.price,
+                } : null,
+            };
+        })
+    );
 
     // Get unique breederIds from puppyInterests
     const breederIds = puppyInterests.map((p) => p.breederId).filter(Boolean);
@@ -126,6 +132,7 @@ export async function getUserProfileData() {
                 _id: interest._id.toString(),
                 userId: interest.userId?.toString(),
                 breederId: interest.breederId?.toString(),
+                stripeAccountId: interest.stripeAccountId?.toString() || null,
                 breederName: breeder?.name || "Unknown Breeder",
                 puppyApplicationId: interest.puppyApplicationId?.toString(),
                 dogId: interest.dogId?.toString(),
