@@ -46,6 +46,7 @@ export async function POST() {
     }
 
     let stripeAccountId = breeder.stripeAccountId;
+    let payoutsEnabled = breeder.payoutsEnabled;
 
     if (!stripeAccountId) {
         const account = await stripe.accounts.create({
@@ -53,16 +54,38 @@ export async function POST() {
             email: breeder.email,
         });
 
+        // Immediately retrieve to get payouts_enabled
+        const retrievedAccount = await stripe.accounts.retrieve(account.id);
+        payoutsEnabled = account.payouts_enabled;
+
         // Save account ID to breeder record
         await breedersCollection.updateOne(
             { _id: breederObjectId },
-            { $set: { stripeAccountId: account.id } }
+            {
+                $set: {
+                    stripeAccountId: account.id,
+                    payoutsEnabled: retrievedAccount.payouts_enabled,
+                }
+            }
         );
 
         const updatedBreeder = await breedersCollection.findOne({ _id: breederObjectId });
         console.log('Updated breeder:', updatedBreeder);
 
         stripeAccountId = account.id;
+    } else {
+        // Refresh payoutsEnabled status if the account already exists 
+        const account = await stripe.accounts.retrieve(stripeAccountId);
+        payoutsEnabled = account.payouts_enabled;
+
+        await breedersCollection.updateOne(
+            { _id: breederObjectId },
+            { $set: { payoutsEnabled: account.payouts_enabled } }
+        )
+    }
+
+    if (breeder.stripeAccountId && breeder.payoutsEnabled) {
+        return NextResponse.json({ message: 'Account already onboarded' });
     }
 
     const accountLink = await stripe.accountLinks.create({

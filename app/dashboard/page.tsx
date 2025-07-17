@@ -33,7 +33,7 @@ export default async function BreederDashboardPage() {
                     <h2 className="text-xl font-bold">{breeder?.name}</h2>
                     <div className="flex align-end items-center gap-6">
                         {/* Stripe buttons for breeder payout */}
-                        {breeder?.stripeAccountId ? (
+                        {breeder?.stripeAccountId && breeder?.payoutsEnabled ? (
                             <ManageStripeDashboardButton />
                         ) : (
                             <ConnectStripeAccountButton />
