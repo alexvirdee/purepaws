@@ -17,7 +17,7 @@ export default function ReservedPuppiesSection({
     return (
       <div className="bg-white rounded shadow p-6">
         <h2 className="text-lg font-bold mb-4">Reserved Puppies</h2>
-        <p className="text-gray-600">You haven’t completed any deposits yet.</p>
+        <p className="text-gray-500">You haven’t reserved any puppies yet.</p>
       </div>
     );
   }

@@ -56,7 +56,10 @@ export default function ProfileContent({
           />
         </div>
       ) : (
-        <p className="text-gray-500">You have no favorite dogs yet.</p>
+        <div className="bg-white rounded shadow p-6">
+          <h2 className="text-lg font-bold mb-4">Your Favorite Dogs</h2>
+          <p className="text-gray-500">You have no favorites yet.</p>
+        </div>
       )}
     </>
   );
