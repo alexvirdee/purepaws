@@ -1,6 +1,6 @@
 import BreederCalendar from "@/components/dashboards/breeder/BreederCalendar";
 import DashboardStatCard from "@/components/dashboards/breeder/DashboardStatCard";
-import { Button } from "@/components/ui/button";
+import BreederJoinedText from "@/components/dashboards/breeder/BreederJoinedText";
 import { getBreederDashboardData } from "@/lib/fetchBreederData";
 import Link from "next/link";
 import ConnectStripeAccountButton from "@/components/dashboards/breeder/ConnectStripeAccountButton";
@@ -17,14 +17,6 @@ export default async function BreederDashboardPage() {
         totalRequestsSent
     } = await getBreederDashboardData({ includeDogs: true, includeInterests: true });
 
-    // Calculate joined text
-    let breederJoinedText = "Pending Approval";
-    if (breeder?.approvedAt) {
-        const approvedDate = new Date(breeder.approvedAt);
-        const diffInDays = Math.floor((Date.now() - approvedDate.getTime()) / (1000 * 60 * 60 * 24));
-        breederJoinedText = `Joined ${diffInDays} day${diffInDays !== 1 ? "s" : ""} ago`;
-    }
-
     return (
         <main className="flex min-h-screen">
             {/* Main content area */}
@@ -34,7 +26,7 @@ export default async function BreederDashboardPage() {
                     <div className="flex align-end items-center gap-6">
                         {/* Stripe buttons for breeder payout */}
                         {breeder?.stripeAccountId && breeder?.payoutsEnabled ? (
-                            <ManageStripeDashboardButton />
+                            <ManageStripeDashboardButton stripeAccountId={breeder?.stripeAccountId} />
                         ) : (
                             <ConnectStripeAccountButton />
                         )}
@@ -61,7 +53,7 @@ export default async function BreederDashboardPage() {
                         title="Breeder Since"
                         value={breeder?.city + ", " + breeder?.state}
                         description="Breeder Location"
-                        trend={breederJoinedText}
+                        trend={<BreederJoinedText approvedAt={breeder?.approvedAt} />}
                         textColor="text-[#0DC0DF]"
                         textSize="text-[18px]"
                     />

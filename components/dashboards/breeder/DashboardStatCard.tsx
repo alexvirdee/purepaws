@@ -4,7 +4,7 @@ interface DashboardStatCardProps {
   title: string;
   value: string | number;
   description?: string;
-  trend?: string; 
+  trend?: string | React.ReactNode; 
   textColor?: string; 
   textSize?: string;
 }

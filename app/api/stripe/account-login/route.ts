@@ -1,3 +1,6 @@
+// Note - no longer using this route since express dashboards incur a fee of $2 per account per month 
+// If the platform grows can consider using express dashboard but for now just using standard accounts
+
 import Stripe from 'stripe';
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';

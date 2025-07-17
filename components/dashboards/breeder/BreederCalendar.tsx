@@ -5,10 +5,16 @@ import { Calendar } from "@/components/ui/calendar"
 
 export default function BreederCalendar() {
     const [date, setDate] = useState<Date | undefined>(undefined);
+    const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
         setDate(new Date());
+        setMounted(true);
     }, [])
+
+    if (!mounted) {
+        return null; // Prevents hydration mismatch
+    }
 
     return (
         <div className="flex flex-col">

@@ -48,6 +48,10 @@ export async function POST() {
     let stripeAccountId = breeder.stripeAccountId;
     let payoutsEnabled = breeder.payoutsEnabled;
 
+    if (stripeAccountId && payoutsEnabled) {
+        return NextResponse.json({ message: 'Account already onboarded' });
+    }
+
     if (!stripeAccountId) {
         const account = await stripe.accounts.create({
             type: 'standard',
@@ -82,10 +86,6 @@ export async function POST() {
             { _id: breederObjectId },
             { $set: { payoutsEnabled: account.payouts_enabled } }
         )
-    }
-
-    if (breeder.stripeAccountId && breeder.payoutsEnabled) {
-        return NextResponse.json({ message: 'Account already onboarded' });
     }
 
     const accountLink = await stripe.accountLinks.create({

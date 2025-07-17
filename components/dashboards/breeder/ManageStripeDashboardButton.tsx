@@ -1,22 +1,29 @@
+// If the platform grows can consider using express dashboard but for now just using standard accounts
+// Send user to stripe dashboard to manage payouts
+
 'use client';
 
 import { Button } from "@/components/ui/button";
 
-export default function ManageStripeDashboardButton() {
+export default function ManageStripeDashboardButton({ stripeAccountId }: { stripeAccountId: string }) {
 
     const handleManageStripe = async () => {
-        const res = await fetch("/api/stripe/account-login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-        });
+        // Redirect to Stripe dashboard for managing payouts
+        window.location.href = `https://dashboard.stripe.com/account/${stripeAccountId}`;
 
-        const data = await res.json();
+        // Note - no longer using this route since express dashboards incur a fee of $2 per account per month 
+        // const res = await fetch("/api/stripe/account-login", {
+        //     method: "POST",
+        //     headers: {
+        //         "Content-Type": "application/json"
+        //     },
+        // });
 
-        if (data?.url) {
-            window.location.href = data.url;
-        }
+        // const data = await res.json();
+
+        // if (data?.url) {
+        //     window.location.href = data.url;
+        // }
     };
 
     return (
