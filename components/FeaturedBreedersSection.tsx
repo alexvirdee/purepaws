@@ -20,16 +20,18 @@ export default function FeaturedBreedersSection({
 }) {
     return (
         <div className="mt-8">
+            <div className="flex flex-col items-center justify-between">
             <h2 className="text-2xl font-bold mb-4">Featured Breeders</h2>
             <p className="text-gray-600 mb-4">
                 Meet our trusted breeders. New litters, verified reviews, and more!
             </p>
+            </div>
             <div className="w-full max-w-5xl mx-auto px-12">
                 <Carousel className="w-full">
                     <CarouselContent>
                         {breeders.slice(0, 5).map((breeder, index) => (
                             <div key={index}>
-                                <CarouselItem  className="basis-2/3 md:basis-1/3 lg:basis-1/4">
+                                <CarouselItem  className="min-w-[275px] basis-2/3 md:basis-1/3 lg:basis-1/4">
                                     <div className="p-2">
                                         <Link href={`/breeders/${breeder._id}`}  className="no-underline">
                                             <Card className="hover:shadow-lg transition-shadow duration-200 border border-gray-200">

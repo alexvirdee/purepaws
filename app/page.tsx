@@ -2,9 +2,11 @@
 import SignInOutToast from "@/components/SignInOutToast";
 
 import clientPromise from "@/lib/mongodb";
-import FeaturedBreedersSection from "@/components/FeaturedBreedersSection";
-import { DB_NAME } from "@/lib/constants";
 import Hero from "@/components/Hero";
+import FeaturedBreedersSection from "@/components/FeaturedBreedersSection";
+import HowItWorksSection from "@/components/HowItWorks";
+import WhyPurePaws from "@/components/WhyPurePaws";
+import { DB_NAME } from "@/lib/constants";
 
 interface RawBreeder {
   _id: any; // MongoDB ObjectId
@@ -36,18 +38,19 @@ export default async function Home() {
     longitude: breeder.longitude || 0,
     about: breeder.about || "",
     email: breeder.email || "",
+    phone: breeder.phone || "", // Added phone property to match IBreeder
     status: breeder.status || "",
     submittedAt: breeder.submittedAt || null,
   }));
 
   return (
     <>
-      <div>
-        <SignInOutToast />
-        <Hero breeders={breedersData} />
-      </div>
-      <div className="p-4">
+      <SignInOutToast />
+      <Hero breeders={breedersData} />
+      <div className="pb-18">
         <FeaturedBreedersSection breeders={breedersData} />
+        <HowItWorksSection />
+        <WhyPurePaws />
       </div>
     </>
   );
