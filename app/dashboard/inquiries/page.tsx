@@ -9,7 +9,7 @@ export default async function BreederInquiriesPage() {
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-bold">{breeder?.name}</h2>
             </div>
-            <AdoptionRequests interests={interests} />
+            <AdoptionRequests breeder={breeder} interests={interests} />
         </>
     )
 }

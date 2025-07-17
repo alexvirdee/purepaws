@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { LoaderIcon } from "lucide-react";
 
 export default function ConnectStripeAccountButton() {
     const [connecting, setConnecting] = useState(false);
@@ -9,23 +10,40 @@ export default function ConnectStripeAccountButton() {
     const handleStripeConnect = async () => {
         setConnecting(true);
 
-        const res = await fetch("/api/stripe/create-account-link", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-        });
-        const data = await res.json();
+        try {
+            const res = await fetch("/api/stripe/create-account-link", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+            });
+            const data = await res.json();
 
-        if (data?.url) {
-            window.location.href = data.url;
+            if (data?.url) {
+                window.location.href = data.url;
+            }
+        } catch (error) {
+            console.error("Stripe connect error", error);
+        } finally {
+            setConnecting(false);
         }
-        setConnecting(false);
     };
 
     return (
-        <Button disabled={connecting} size="sm" className="bg-[#6772E5]" onClick={handleStripeConnect}>
-           {connecting ? 'Connecting...' : 'Connect With Stripe'} 
+        <Button
+            disabled={connecting}
+            size="sm"
+            className="bg-[#6772E5]"
+            onClick={handleStripeConnect}
+        >
+            {connecting ? (
+                <>
+                    <LoaderIcon className="h-4 w-4 animate-spin" />
+                    Connecting...
+                </>
+            ) : (
+                "Connect With Stripe"
+            )}
         </Button>
     )
 }

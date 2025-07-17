@@ -15,9 +15,10 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import { CheckIcon, MessageCircleIcon, BanknoteArrowUpIcon, BanknoteArrowDownIcon, EyeIcon } from "lucide-react";
+import { CheckIcon, MessageCircleIcon, BanknoteArrowUpIcon, BanknoteArrowDownIcon, EyeIcon, LoaderIcon } from "lucide-react";
 // import ChatWidget from "@/components/ChatWidget";
 import { useRouter } from "next/navigation";
+import { IBreeder } from "@/interfaces/breeder";
 
 
 type PuppyInterest = {
@@ -32,10 +33,12 @@ type PuppyInterest = {
 };
 
 interface AdoptionRequestsProps {
+    breeder: IBreeder;
     interests: PuppyInterest[];
 }
 
 export default function AdoptionRequests({
+    breeder,
     interests,
 }: AdoptionRequestsProps) {
     const [interestsState, setInterestsState] = useState(interests);
@@ -47,6 +50,7 @@ export default function AdoptionRequests({
     } | undefined>(undefined);
     const [reviewBuyer, setReviewBuyer] = useState<PuppyInterest | null>(null);
     const [activeConversation, setActiveConversation] = useState<any>(null);
+    const [requestingDeposit, setRequestingDeposit] = useState<string | null>(null);
 
     const router = useRouter();
 
@@ -58,8 +62,13 @@ export default function AdoptionRequests({
     }, [interests])
 
     const handleRequestDeposit = async (requestId: string) => {
-        console.log(`Requesting deposit for ${requestId}`);
-        // TODO: Call your API route here
+        if (!breeder?.payoutsEnabled) {
+            toast.error("Payouts are not enabled. Please complete your Stripe setup.");
+            return;
+        }
+
+        setRequestingDeposit(requestId);
+
         try {
             const res = await fetch(`/api/adoption-requests/${requestId}/requestDeposit`, {
                 method: "POST",
@@ -92,6 +101,8 @@ export default function AdoptionRequests({
         } catch (error) {
             console.error(error);
             toast.error("Something went wrong. Please try again.");
+        } finally {
+            setRequestingDeposit(null); // Reset requesting state
         }
     };
 
@@ -282,8 +293,16 @@ export default function AdoptionRequests({
                                                 size="sm"
                                                 className="bg-blue-500 text-white px-2 py-1 rounded text-sm hover:bg-blue-600 cursor-pointer"
                                                 onClick={() => handleRequestDeposit(interest._id)}
+                                                disabled={requestingDeposit === interest._id}
                                             >
-                                                <BanknoteArrowUpIcon />  Request Deposit
+                                                {requestingDeposit === interest._id ? (
+                                                    <LoaderIcon className="animate-spin w-4 h-4" />
+                                                ) : (
+                                                    <>
+                                                        <BanknoteArrowUpIcon className="w-4 h-4 mr-1" />
+                                                        Request Deposit
+                                                    </>
+                                                )}
                                             </Button>
                                         )}
 

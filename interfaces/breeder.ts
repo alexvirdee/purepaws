@@ -13,5 +13,7 @@ export interface IBreeder {
   website?: string;
   about: string;
   status: "pending" | "approved" | "rejected"; // If you have fixed statuses
-  submittedAt: string;      // Or Date if you parse it as Date
+  submittedAt: string;    
+  payoutsEnabled?: boolean;
+  stripeAccountId?: string; // Stripe account ID if applicable
 }
