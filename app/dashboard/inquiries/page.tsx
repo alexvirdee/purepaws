@@ -1,7 +1,7 @@
 import { getBreederDashboardData } from "@/lib/fetchBreederData";
 import AdoptionRequests from "@/components/dashboards/breeder/AdoptionRequests";
 
-export default async function BreederRequestsPage() {
+export default async function BreederInquiriesPage() {
     const { breeder, interests } = await getBreederDashboardData({ includeInterests: true });
 
     return (

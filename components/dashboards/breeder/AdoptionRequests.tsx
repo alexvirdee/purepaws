@@ -240,7 +240,7 @@ export default function AdoptionRequests({
 
     return (
         <div className="bg-white rounded-lg shadow p-6 flex flex-col gap-4">
-            <h2 className="text-xl font-bold mb-2">Adoption Requests</h2>
+            <h2 className="text-xl font-bold mb-2">Inquiries</h2>
             {interestsState.length > 0 ? (
                 interestsState.map((interest, index) => (
                     <div key={index} className="md:flex md:justify-between items-start border p-4 rounded">

@@ -3,14 +3,25 @@
 import { useState } from "react";
 import { SidebarLink } from "./SidebarLink";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { SidebarDropdown } from "./SidebarDropdown";
 
-type SidebarLinkProps = {
+type SidebarLinkItem = {
+  type: "link";
   href: string;
   text: string;
 };
 
+type SidebarDropdownItem = {
+  type: "dropdown";
+  triggerName: string;
+  label: string;
+  items: { href: string; text: string }[];
+};
+
+type SidebarItem = SidebarLinkItem | SidebarDropdownItem;
+
 interface DashboardSidebarProps {
-  links: SidebarLinkProps[];
+  links: SidebarItem[];
 }
 
 export default function DashboardSidebar({ links }: DashboardSidebarProps) {
@@ -33,9 +44,31 @@ export default function DashboardSidebar({ links }: DashboardSidebarProps) {
       </div>
 
       <nav className="mt-6 flex flex-col gap-4 px-4">
-        {links.map((link) => (
-          <SidebarLink key={link.href} href={link.href} text={collapsed ? "" : link.text} />
-        ))}
+        {links.map((item) => {
+          if (item.type === "link") {
+            return (
+              <SidebarLink
+                key={item.href}
+                href={item.href}
+                text={collapsed ? "" : item.text}
+              />
+            );
+          }
+
+          if (item.type === "dropdown") {
+            return (
+              <SidebarDropdown
+                key={item.triggerName}
+                triggerName={item.triggerName}
+                label={item.label}
+                items={item.items}
+                collapsed={collapsed}
+              />
+            );
+          }
+
+          return null;
+        })}
       </nav>
     </div>
   );

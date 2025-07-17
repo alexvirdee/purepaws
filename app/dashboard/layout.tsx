@@ -47,11 +47,18 @@ export default async function BreederDashboardLayout({ children }: { children: R
             <div className="hidden md:block">
                 <DashboardSidebar
                     links={[
-                        { href: "/dashboard", text: "Dashboard" },
-                        { href: "/dashboard/messages", text: "Messages" },
-                        { href: "/dashboard/dogs", text: "Dogs" },
-                        { href: "/dashboard/litters", text: "Litters" },
-                        { href: "/dashboard/requests", text: "Adoption Requests" },
+                        { type: "link", href: "/dashboard", text: "Dashboard" },
+                        { type: "link", href: "/dashboard/dogs", text: "Our Dogs" },
+                        { type: "link", href: "/dashboard/litters", text: "Our Litters" },
+                        {
+                            type: "dropdown",
+                            triggerName: "Clients",
+                            label: "Client Center",
+                            items: [
+                                { href: "/dashboard/messages", text: "Messages" },
+                                { href: "/dashboard/inquiries", text: "Inquiries" },
+                            ],
+                        },
                     ]}
                 />
             </div>
@@ -60,10 +67,10 @@ export default async function BreederDashboardLayout({ children }: { children: R
             <nav className="flex flex-wrap justify-center gap-4 p-4 border-b md:hidden bg-white shadow-sm">
                 {[
                     { href: "/dashboard", text: "Dashboard" },
-                    { href: "/dashboard/messages", text: "Messages" },
                     { href: "/dashboard/dogs", text: "Dogs" },
                     { href: "/dashboard/litters", text: "Litters" },
-                    { href: "/dashboard/requests", text: "Adoption Requests" },
+                    { href: "/dashboard/messages", text: "Messages" },
+                    { href: "/dashboard/inquiries", text: "Inquiries" },
                 ].map(link => (
                     <Link
                         key={link.href}
