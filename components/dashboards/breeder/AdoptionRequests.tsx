@@ -319,7 +319,7 @@ export default function AdoptionRequests({
                     </div>
                 ))
             ) : (
-                <p className="text-gray-500">No adoption requests yet.</p>
+                <p className="text-gray-500">No inquiries yet.</p>
             )}
 
             {/* Review Buyer Dialog */}

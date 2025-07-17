@@ -10,7 +10,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SidebarLink } from "./SidebarLink";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 
 type sidebarDropdownProps = {
     triggerName: string;
@@ -32,11 +32,12 @@ export function SidebarDropdown({ triggerName, label, items, collapsed = false }
                         }`}
                 >
                     {collapsed ? null : triggerName}
-                    {!collapsed && (open ? (
-                        <ChevronDown className="h-4 w-4" />
-                    ) : (
-                        <ChevronRight className="h-4 w-4" />
-                    ))}
+                    {!collapsed && (
+                        <ChevronRight
+                            className={`h-4 w-4 transform origin-center transition-transform duration-200 ${open ? "rotate-90" : ""
+                                }`}
+                        />
+                    )}
                 </button>
             </DropdownMenuTrigger>
 
