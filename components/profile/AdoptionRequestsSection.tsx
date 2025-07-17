@@ -69,22 +69,34 @@ export default function AdoptionRequestsSection({
 
   const activePuppyInterests = puppyInterestsState.filter((r) => {
     const isCancelled = r.status === "cancelled";
-    const isDepositRequested = r.status === "deposit-requested";
-    const isCoveredByAdoptionRequest = adoptionRequestsActive.some(
-      (a) => a.dogId === r.dogId
+
+    const hasPaidDeposit = adoptionRequestsState.some(
+      (a) => a.dogId === r.dogId && a.status === "deposit-paid"
     );
 
-    return !isCancelled && !isDepositRequested && !isCoveredByAdoptionRequest;
+    const hasActiveAdoptionRequest = adoptionRequestsState.some(
+      (a) =>
+        a.dogId === r.dogId &&
+        !["cancelled", "cancelled-deposit", "deposit-paid"].includes(a.status)
+    );
+
+    return !isCancelled && !hasActiveAdoptionRequest && !hasPaidDeposit;
   });
 
   // Add puppyInterests that are deposit-requested AND don’t already exist in adoptionRequests
   const depositRequestedInterests = puppyInterestsState.filter(
     r =>
       r.status === "deposit-requested" &&
-      !adoptionRequestsActive.some(a => a.dogId === r.dogId)
+      !adoptionRequestsState.some(
+        a =>
+          a.dogId === r.dogId &&
+          !["cancelled", "cancelled-deposit"].includes(a.status)
+      )
   );
 
-  const depositRequests = [...adoptionRequestsActive.filter(r => r.status !== "deposit-paid"), ...depositRequestedInterests];
+  const depositRequests = [...adoptionRequestsActive.filter(
+    r => !["deposit-paid", "cancelled-deposit"].includes(r.status)
+  ), ...depositRequestedInterests];
 
   useEffect(() => {
     setPuppyInterestsState(puppyInterests);

@@ -52,11 +52,11 @@ export default async function BreederDashboardLayout({ children }: { children: R
                         { type: "link", href: "/dashboard/litters", text: "Our Litters" },
                         {
                             type: "dropdown",
-                            triggerName: "Clients",
-                            label: "Client Center",
+                            triggerName: "Adoption Center",
+                            label: "Adoption Center",
                             items: [
-                                { href: "/dashboard/messages", text: "Messages" },
-                                { href: "/dashboard/inquiries", text: "Inquiries" },
+                                { href: "/dashboard/clients/messages", text: "Messages" },
+                                { href: "/dashboard/clients/adoptions", text: "Adoptions" },
                             ],
                         },
                     ]}
@@ -69,8 +69,8 @@ export default async function BreederDashboardLayout({ children }: { children: R
                     { href: "/dashboard", text: "Dashboard" },
                     { href: "/dashboard/dogs", text: "Dogs" },
                     { href: "/dashboard/litters", text: "Litters" },
-                    { href: "/dashboard/messages", text: "Messages" },
-                    { href: "/dashboard/inquiries", text: "Inquiries" },
+                    { href: "/dashboard/clients/messages", text: "Messages" },
+                    { href: "/dashboard/clients/adoptions", text: "Adoptions" },
                 ].map(link => (
                     <Link
                         key={link.href}

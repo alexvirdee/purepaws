@@ -4,7 +4,7 @@ import { ObjectId } from "mongodb";
 import { DB_NAME } from "@/lib/constants";
 
 export async function POST(req: Request, { params }: { params: { id: string } }) {
-  const { id } = params;
+  const { id } = await params;
 
   if (!ObjectId.isValid(id)) {
     return NextResponse.json({ message: "Invalid adoption request ID" }, { status: 400 });
@@ -33,15 +33,15 @@ export async function POST(req: Request, { params }: { params: { id: string } })
   );
 
   // Also update related puppy interest if needed
-  await db.collection("puppyInterests").updateOne(
-    { _id: adoptionRequest.interestId },
-    { $set: { status: "deposit-requested" } }
-  );
+  // await db.collection("puppyInterests").updateOne(
+  //   { _id: adoptionRequest.interestId },
+  //   { $set: { status: "deposit-requested" } }
+  // );
 
   // Also update dog status if needed
   await db.collection("dogs").updateOne(
     { _id: adoptionRequest.dogId },
-    { $set: { status: "deposit-requested" } }
+    { $set: { status: "reserved" } }
   );
 
   return NextResponse.json({

@@ -27,7 +27,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
         // Option 1: Soft-cancel → mark status
         await db.collection("adoptionRequests").updateOne(
             { _id: adoptionRequest._id },
-            { $set: { status: "cancelled", cancelledAt: new Date() } }
+            { $set: { status: "cancelled-deposit", cancelledDepositAt: new Date() } }
         );
 
         // Option 2: If you prefer to fully delete:
@@ -36,7 +36,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
         // Restore puppy interest to "pending"
         await db.collection("puppyInterests").updateOne(
             { _id: adoptionRequest.interestId },
-            { $set: { status: "pending" } }
+            { $set: { status: "approved" } }
         );
 
         // Restore dog status to "available"

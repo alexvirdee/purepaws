@@ -51,6 +51,7 @@ export default function AdoptionRequests({
     const [reviewBuyer, setReviewBuyer] = useState<PuppyInterest | null>(null);
     const [activeConversation, setActiveConversation] = useState<any>(null);
     const [requestingDeposit, setRequestingDeposit] = useState<string | null>(null);
+    const [cancellingDeposit, setCancellingDeposit] = useState<string | null>(null);
 
     const router = useRouter();
 
@@ -80,11 +81,18 @@ export default function AdoptionRequests({
             if (res.ok) {
                 toast.success("🎉 Deposit request sent!");
 
+                router.refresh
+
                 // Correct: match on _id
                 setInterestsState(prev =>
                     prev.map(req =>
                         req._id === requestId // requestId is the puppyInterest ID!
-                            ? { ...req, status: "deposit-requested", adoptionRequestId: data.adoptionRequestId }
+                            ? {
+                                ...req,
+                                adoptionRequestId: data.adoptionRequestId,
+                                adoptionRequestStatus: undefined,
+                                status: "approved"
+                            }
                             : req
                     )
                 );
@@ -118,11 +126,18 @@ export default function AdoptionRequests({
                 const data = await res.json();
                 toast.success(`Deposit request re-sent! Expires at ${new Date(data.expiresAt).toLocaleString()}`);
 
+                router.refresh();
+
                 // TODO: handle local state (not added in yet)
                 setInterestsState(prev =>
                     prev.map(req =>
                         req.adoptionRequestId === requestId
-                            ? { ...req, status: "deposit-requested" }
+                            ? {
+                                ...req,
+                                adoptionRequestId: data.adoptionRequestId,
+                                adoptionRequestStatus: "deposit-requested",
+                                status: "approved",
+                            }
                             : req
                     )
                 );
@@ -141,7 +156,9 @@ export default function AdoptionRequests({
 
     const handleCancelDeposit = async (requestId: string) => {
         console.log(`Canceling deposit request for ${requestId}`);
-        // TODO: Call your API route here
+
+        setCancellingDeposit(requestId);
+
         try {
             const res = await fetch(`/api/adoption-requests/${requestId}/cancelDeposit`, {
                 method: "POST",
@@ -153,7 +170,12 @@ export default function AdoptionRequests({
 
                 setInterestsState(prev =>
                     prev.map(req =>
-                        req.adoptionRequestId === requestId ? { ...req, status: "cancelled", adoptionRequestId: undefined } : req
+                        req.adoptionRequestId === requestId ? {
+                            ...req,
+                            adoptionRequestId: undefined,
+                            adoptionRequestStatus: undefined,
+                            status: "approved" // Reset status to approved
+                        } : req
                     )
                 );
 
@@ -163,6 +185,8 @@ export default function AdoptionRequests({
         } catch (error) {
             console.error(error);
             toast.error("Something went wrong. Please try again.");
+        } finally {
+            setCancellingDeposit(null); // Reset cancel state
         }
     };
 
@@ -319,7 +343,13 @@ export default function AdoptionRequests({
                                                     }
                                                 }}
                                             >
-                                                <BanknoteArrowDownIcon />  Cancel Deposit Request
+                                                {cancellingDeposit === interest.adoptionRequestId ? (
+                                                    <LoaderIcon className="animate-spin w-4 h-4" />
+                                                ) : (
+                                                    <>
+                                                        <BanknoteArrowDownIcon />  Cancel Deposit Request
+                                                    </>
+                                                )}
                                             </Button>
                                         )}
 
