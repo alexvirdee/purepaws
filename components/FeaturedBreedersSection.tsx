@@ -32,7 +32,7 @@ export default function FeaturedBreedersSection({
                                 <CarouselItem  className="basis-2/3 md:basis-1/3 lg:basis-1/4">
                                     <div className="p-2">
                                         <Link href={`/breeders/${breeder._id}`}  className="no-underline">
-                                            <Card className="hover:shadow-lg transition-shadow duration-200">
+                                            <Card className="hover:shadow-lg transition-shadow duration-200 border border-gray-200">
                                                 <CardContent className="flex flex-col items-start justify-start p-4">
                                                     <h3 className="text-lg font-semibold">{breeder.name}</h3>
                                                     <p className="text-sm text-gray-500">

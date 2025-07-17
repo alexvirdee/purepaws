@@ -1,10 +1,14 @@
 'use client';
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Calendar } from "@/components/ui/calendar"
 
 export default function BreederCalendar() {
-    const [date, setDate] = useState<Date | undefined>(new Date());
+    const [date, setDate] = useState<Date | undefined>(undefined);
+
+    useEffect(() => {
+        setDate(new Date());
+    }, [])
 
     return (
         <div className="flex flex-col">

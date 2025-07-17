@@ -303,7 +303,7 @@ function RequestCard({
               href={`/dogs/${request.dog?._id}`}
               className="text-blue-600 text-sm hover:underline"
             >
-              View Dog
+              View Puppy
             </Link>
             {/* If breeder has started conversation or requested a deposit allow user to chat with breeder */}
             {request.conversationId || request.status === "deposit-requested" ? (

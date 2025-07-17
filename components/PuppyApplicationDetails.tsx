@@ -12,7 +12,7 @@ export default function PuppyApplicationDetails({ data }: { data: any }) {
         <div className="bg-white rounded-lg shadow p-6 relative">
             <div className="flex justify-between items-start mb-6">
                 <div>
-                    <h2 className="text-2xl font-bold text-gray-800 mb-2">🐶 Your Puppy Application</h2>
+                    <h2 className="text-2xl font-bold text-gray-800 mb-2">Your Puppy Application</h2>
                     <p className="text-sm text-gray-500">Here’s what you’ve submitted.</p>
                     <div className="flex flex-col sm:flex-row gap-2 mt-4 md:absolute md:top-4 md:right-4">
                         <PuppyAppPDFDownload data={data} />

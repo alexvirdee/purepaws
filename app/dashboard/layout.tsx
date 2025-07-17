@@ -56,7 +56,6 @@ export default async function BreederDashboardLayout({ children }: { children: R
                 />
             </div>
 
-
             {/* Mobile nav links */}
             <nav className="flex flex-wrap justify-center gap-4 p-4 border-b md:hidden bg-white shadow-sm">
                 {[
