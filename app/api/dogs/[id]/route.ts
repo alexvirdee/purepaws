@@ -136,7 +136,10 @@ export async function DELETE(
     context: { params: { id: string } }
 ) {
     try {
-        const dogId = context.params.id;
+        let param;
+        param = await context.params;
+
+        const dogId = param.id;
 
         if (!ObjectId.isValid(dogId)) {
             return NextResponse.json({ error: "Invalid dog ID" }, { status: 400 });
@@ -144,6 +147,19 @@ export async function DELETE(
 
         const client = await clientPromise;
         const db = client.db(DB_NAME);
+
+        // Stop with delete if the puppy has an in-progress adoption request
+        const hasActiveRequests = await db.collection("adoptionRequests").findOne({
+            dogId: new ObjectId(dogId),
+            status: { $in: ["deposit-requested", "deposit-paid"] },
+        });
+
+        if (hasActiveRequests) {
+            return NextResponse.json(
+                { error: "Cannot delete this dog. There are active adoption requests or a deposit has been paid." },
+                { status: 400 }
+            );
+        }
 
         // Collections
         const dogs = db.collection("dogs");

@@ -40,6 +40,8 @@ export default function DeleteDogDialog({
                 method: 'DELETE'
             });
 
+            const data = await res.json();
+
             if (res.ok) {
                 toast.success(`Deleted ${dogName} successfully!`);
                 onOpenChange?.(false);
@@ -47,7 +49,7 @@ export default function DeleteDogDialog({
 
                 router.refresh();
             } else {
-                toast.error('Failed to delete dog. Please try again.')
+                toast.error(`Failed to delete dog. ${data.error || 'Please try again.'}`);
             }
         } catch (error) {
             console.error(error);

@@ -5,17 +5,14 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
     apiVersion: "2025-06-30.basil",
 });
 
+
 export async function POST(req: NextRequest) {
     try {
         const { requestId, dogName, amount, buyerEmail, breederStripeAccountId } = await req.json();
 
-        console.log("Creating checkout session with data:", {
-            requestId,
-            dogName,
-            amount,
-            buyerEmail,
-            breederStripeAccountId
-        });
+        const PLATFORM_FEE_PERCENT = 0; // Update to 0.05 when ready to charge platform fee of 5%
+        // Calculate the application fee if platform fee is enabled
+        const applicationFee = Math.round(amount * PLATFORM_FEE_PERCENT);
 
         if (!requestId || !dogName || !amount || !buyerEmail) {
             return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -42,7 +39,8 @@ export async function POST(req: NextRequest) {
                 requestId, // Critical for your webhook to link payment to the adoptionRequest
             },
             payment_intent_data: {
-                application_fee_amount: Math.round(amount * 0.05), // 5% platform fee
+                ...(PLATFORM_FEE_PERCENT > 0 && { application_fee_amount: applicationFee }),
+                //  Always required to route the funds to the breeders account
                 transfer_data: {
                     destination: breederStripeAccountId, // Breeder's Stripe account ID
                 }
