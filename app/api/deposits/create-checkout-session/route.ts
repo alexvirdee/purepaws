@@ -42,12 +42,13 @@ export async function POST(req: NextRequest) {
                 requestId, // Critical for your webhook to link payment to the adoptionRequest
             },
             payment_intent_data: {
-                application_fee_amount: 2500, // 5% of $500
+                application_fee_amount: Math.round(amount * 0.05), // 5% platform fee
+                transfer_data: {
+                    destination: breederStripeAccountId, // Breeder's Stripe account ID
+                }
             },
             success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/success/deposit?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/profile/requests`,
-        }, {
-            stripeAccount: breederStripeAccountId,
         });
 
         console.log("Created Checkout Session:", session.id);

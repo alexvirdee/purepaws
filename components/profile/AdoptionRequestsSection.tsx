@@ -320,7 +320,7 @@ function RequestCard({
                 breederStripeAccountId={request.stripeAccountId || ""}
                 breederName={request.breederName || "Unknown Breeder"}
                 breederNote={request.breederNote || ""}
-                amount={amountInCents} // cents
+                amount={amountInCents} 
                 buyerEmail={request.userEmail}
               />
               <p className="text-xs text-gray-500">

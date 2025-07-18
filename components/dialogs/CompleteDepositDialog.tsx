@@ -85,18 +85,31 @@ export default function CompleteDepositDialog({
                 <AlertDialogHeader>
                     <AlertDialogTitle>Confirm Deposit Payment</AlertDialogTitle>
                     <AlertDialogDescription className="space-y-4">
-                        <p>
-                            You’re about to pay a <span className="font-semibold text-red-500">non-refundable</span> deposit for <span className="font-semibold">{dogName}</span>.
-                            Please ensure you've reviewed all terms with the breeder before proceeding.
-                        </p>
+                        <div>
+                            You’re about to pay a{" "}
+                            <span className="font-semibold text-red-500">non-refundable</span> deposit
+                            for <span className="font-semibold">{dogName}</span>. Please ensure
+                            you've reviewed all terms with the breeder before proceeding.
+                        </div>
 
                         <div className="bg-gray-50 p-4 rounded-md border space-y-2">
-                            <h4 className="text-md font-semibold text-gray-800 border-b pb-2">Payment Summary</h4>
-                            <div className="text-sm text-gray-700">
-                                <p><span className="font-medium">Puppy:</span> {dogName}</p>
-                                <p><span className="font-medium">Breeder:</span> {breederName}</p>
-                                <p><span className="font-medium">Deposit Amount:</span> ${amount / 100}</p>
-                                <p><span className="font-medium">Note from breeder:</span>{breederNote}</p>
+                            <h4 className="text-md font-semibold text-gray-800 border-b pb-2">
+                                Payment Summary
+                            </h4>
+                            <div className="text-sm text-gray-700 space-y-1">
+                                <div>
+                                    <span className="font-medium">Puppy:</span> {dogName}
+                                </div>
+                                <div>
+                                    <span className="font-medium">Breeder:</span> {breederName}
+                                </div>
+                                <div>
+                                    <span className="font-medium">Deposit Amount:</span> ${amount / 100}
+                                </div>
+                                <div>
+                                    <span className="font-medium">Note from breeder:</span>{" "}
+                                    {breederNote || "None provided"}
+                                </div>
                             </div>
                         </div>
                     </AlertDialogDescription>
