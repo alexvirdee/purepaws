@@ -48,16 +48,6 @@ export default function RequestDepositDialog({
 
     const router = useRouter();
 
-    console.log("RequestDepositDialog rendered");
-
-    console.log('Which mode:', mode);
-    console.log('Initial deposit amount:', initialDepositAmount);
-    console.log('Initial expiration date:', initialExpirationDate);
-
-    console.log('interestId:', interestId);
-    console.log('adoptionRequestId:', adoptionRequestId);
-    console.log('initial note:', initialNote);
-
     const handleRequestDeposit = async () => {
         if (!depositAmount || !expirationDate) {
             toast.error("Please provide deposit amount and expiration date.");
@@ -96,8 +86,6 @@ export default function RequestDepositDialog({
     };
 
     const resendDepositRequest = async (requestId: string) => {
-        console.log(`Re-sending deposit request for ${requestId}`);
-
         setResendingDeposit(true);
 
         try {
@@ -114,27 +102,11 @@ export default function RequestDepositDialog({
             if (res.ok) {
                 const data = await res.json();
 
-                console.log("Re-sent deposit request:", data);
-
                 toast.success(`Deposit request re-sent! Expires on ${new Date(data.expiresAt).toUTCString()}`);
 
                 router.refresh();
                 setOpen(false);
                 onSubmitted?.();
-
-                // TODO: handle local state (not added in yet)
-                // setInterestsState(prev =>
-                //     prev.map(req =>
-                //         req.adoptionRequestId === requestId
-                //             ? {
-                //                 ...req,
-                //                 adoptionRequestId: data.adoptionRequestId,
-                //                 adoptionRequestStatus: "deposit-requested",
-                //                 status: "approved",
-                //             }
-                //             : req
-                //     )
-                // );
             } else {
                 toast.error("Failed to re-send deposit request.");
             }

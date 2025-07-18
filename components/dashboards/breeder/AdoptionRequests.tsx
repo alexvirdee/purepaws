@@ -80,6 +80,8 @@ export default function AdoptionRequests({
             if (res.ok) {
                 toast.success("Deposit request has been cancelled successfully.");
 
+                router.refresh(); // Refresh the page to get updated data
+
                 setInterestsState(prev =>
                     prev.map(req =>
                         req.adoptionRequestId === requestId ? {
@@ -187,7 +189,6 @@ export default function AdoptionRequests({
 
     return (
         <div className="bg-white rounded-lg shadow p-6 flex flex-col gap-4">
-            <h2 className="text-xl font-bold mb-2">Inquiries</h2>
             {interestsState.length > 0 ? (
                 interestsState.map((interest, index) => {
                     const hasDepositBeenRequested = interest.adoptionRequestStatus === "deposit-requested" || interest.adoptionRequestStatus === "cancelled-deposit";
@@ -309,7 +310,7 @@ export default function AdoptionRequests({
                     );
                 })
             ) : (
-                <p className="text-gray-500">No inquiries yet.</p>
+                <p className="text-gray-500">No data yet.</p>
             )}
 
             {/* Review Buyer Dialog */}

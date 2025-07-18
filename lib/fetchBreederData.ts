@@ -8,9 +8,11 @@ import { DB_NAME } from "@/lib/constants";
 export async function getBreederDashboardData({
     includeDogs = false,
     includeInterests = false,
+    interestFilter = "all", // "inquiries" | "active" | "all"
 }: {
     includeDogs?: boolean;
     includeInterests?: boolean;
+    interestFilter?: "inquiries" | "active" | "all";
 } = {}) {
     const session = await getServerSession(authOptions);
     if (!session) redirect("/auth/signin");
@@ -75,7 +77,10 @@ export async function getBreederDashboardData({
             .find({ userId: { $in: puppyInterestUserIds } })
             .toArray();
 
-        const interests = puppyInterests.map((interest) => {
+        // Only include non cancelled interests
+        const validPuppyInterests = puppyInterests.filter((interest) => interest.status !== "cancelled");
+
+        const interests = validPuppyInterests.map((interest) => {
             const dog = dogsForInterests.find((d) => d._id.toString() === interest.dogId.toString());
 
             const buyerInterest = usersForInterests.find((u) => u._id.toString() === interest.userId.toString());
@@ -127,7 +132,23 @@ export async function getBreederDashboardData({
             };
         });
 
-        result.interests = interests;
+        let filteredInterests = interests;
+
+        if (interestFilter === "inquiries") {
+            filteredInterests = interests.filter(
+                (i) =>
+                    i.adoptionRequestStatus !== "deposit-requested" &&
+                    i.adoptionRequestStatus !== "deposit-paid"
+            );
+        } else if (interestFilter === "active") {
+            filteredInterests = interests.filter(
+                (i) =>
+                    i.adoptionRequestStatus === "deposit-requested" ||
+                    i.adoptionRequestStatus === "deposit-paid"
+            );
+        }
+
+        result.interests = filteredInterests;
         result.totalPuppyInterests = puppyInterests.length;
         result.totalRequestsSent = adoptionRequests.length;
     }
