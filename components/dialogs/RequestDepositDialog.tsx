@@ -20,6 +20,7 @@ import { Textarea } from "@/components/ui/textarea";
 
 type RequestDepositDialogProps = {
     dogName: string;
+    adoptionRequestId?: string; // Optional for re-sending TODO: Check if needs to be required
     interestId: string;
     mode?: "new" | "resend";
     initialDepositAmount?: number;
@@ -30,6 +31,7 @@ type RequestDepositDialogProps = {
 
 export default function RequestDepositDialog({
     dogName,
+    adoptionRequestId,
     interestId,
     mode,
     initialDepositAmount,
@@ -39,13 +41,18 @@ export default function RequestDepositDialog({
 }: RequestDepositDialogProps) {
     const [requestingDeposit, setRequestingDeposit] = useState(false);
     const [depositAmount, setDepositAmount] = useState(initialDepositAmount?.toString() || '');
-    const [expirationDate, setExpirationDate] = useState(initialExpirationDate || '');
+    const [expirationDate, setExpirationDate] = useState(initialExpirationDate ? initialExpirationDate.slice(0, 10) : '');
     const [note, setNote] = useState(initialNote || '');
     const router = useRouter();
 
     console.log("RequestDepositDialog rendered");
 
     console.log('Which mode:', mode);
+    console.log('Initial deposit amount:', initialDepositAmount);
+    console.log('Initial expiration date:', initialExpirationDate);
+
+    console.log('interestId:', interestId);
+    console.log('adoptionRequestId:', adoptionRequestId);
 
     const handleRequestDeposit = async () => {
         if (!depositAmount || !expirationDate) {
@@ -82,22 +89,69 @@ export default function RequestDepositDialog({
         }
     };
 
+    const resendDepositRequest = async (requestId: string) => {
+        console.log(`Re-sending deposit request for ${requestId}`);
+
+        try {
+            const res = await fetch(`/api/adoption-requests/${requestId}/resendDepositRequest`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                 body: JSON.stringify({
+                    depositAmount: Number(depositAmount),
+                    expiresAt: expirationDate,
+                    note,
+                }),
+            });
+            if (res.ok) {
+                const data = await res.json();
+                toast.success(`Deposit request re-sent! Expires at ${new Date(data.expiresAt).toLocaleString()}`);
+
+                router.refresh();
+
+                // TODO: handle local state (not added in yet)
+                // setInterestsState(prev =>
+                //     prev.map(req =>
+                //         req.adoptionRequestId === requestId
+                //             ? {
+                //                 ...req,
+                //                 adoptionRequestId: data.adoptionRequestId,
+                //                 adoptionRequestStatus: "deposit-requested",
+                //                 status: "approved",
+                //             }
+                //             : req
+                //     )
+                // );
+            } else {
+                toast.error("Failed to re-send deposit request.");
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error("Something went wrong while re-sending.");
+        }
+
+    }
+
     return (
         <AlertDialog>
             <AlertDialogTrigger asChild>
                 <Button
                     size="sm"
-                    className="bg-blue-500 text-white hover:bg-blue-600"
+                    className={`${mode === "resend" ? "bg-yellow-500 hover:bg-yellow-600" : "bg-blue-500 hover:bg-blue-600"
+                        } text-white`}
                 >
-                    Request Deposit
+                    {mode === "resend" ? "Re-Send Deposit" : "Request Deposit"}
                 </Button>
             </AlertDialogTrigger>
 
             <AlertDialogContent className="border border-gray-200">
                 <AlertDialogHeader>
-                    <AlertDialogTitle>Request Deposit for {dogName}</AlertDialogTitle>
+                    <AlertDialogTitle>
+                        {mode === "resend" ? "Re-Send Deposit Request" : `Request Deposit for ${dogName}`}
+                    </AlertDialogTitle>
                     <AlertDialogDescription>
-                        Set the deposit amount and expiration date for this adoption request.
+                        {mode === "resend"
+                            ? "Update and re-send the deposit request to the buyer."
+                            : "Set the deposit amount and expiration date for this adoption request."}
                     </AlertDialogDescription>
                 </AlertDialogHeader>
 
@@ -136,14 +190,18 @@ export default function RequestDepositDialog({
                     <AlertDialogCancel asChild>
                         <Button variant="outline">Cancel</Button>
                     </AlertDialogCancel>
-                    <Button onClick={handleRequestDeposit} disabled={requestingDeposit}>
+                    <Button onClick={() =>
+                        mode === "resend"
+                            ? resendDepositRequest(adoptionRequestId || "")
+                            : handleRequestDeposit()
+                    } disabled={requestingDeposit}>
                         {requestingDeposit ? (
                             <>
                                 <LoaderIcon className="mr-2 h-4 w-4 animate-spin" />
-                                Sending...
+                                {mode === "resend" ? "Re-Sending..." : "Sending..."}
                             </>
                         ) : (
-                            "Send Deposit Request"
+                            mode === "resend" ? "Re-Send Deposit Request" : "Send Deposit Request"
                         )}
                     </Button>
                 </AlertDialogFooter>

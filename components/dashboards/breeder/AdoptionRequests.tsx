@@ -28,6 +28,9 @@ type PuppyInterest = {
     status: string; // status of the interest!
     adoptionRequestId?: string; // NEW: store this if deposit has been requested
     adoptionRequestStatus?: string; // NEW: store the status of the adoption request
+    depositAmount?: number; // NEW: store the deposit amount if requested
+    expiresAt?: string; // NEW: store the expiration date of the deposit request
+    note?: string; // NEW: store any note from the breeder
     message?: string;
     createdAt?: string;
 };
@@ -50,6 +53,15 @@ export default function AdoptionRequests({
         depositAmount?: number;
         note?: string;
     } | undefined>(undefined);
+    const [activeDepositDialog, setActiveDepositDialog] = useState<{
+        open: boolean;
+        mode: "new" | "resend";
+        dogName: string;
+        interestId: string;
+        depositAmount?: number;
+        expiresAt?: string;
+        note?: string;
+    } | null>(null);
     const [reviewBuyer, setReviewBuyer] = useState<PuppyInterest | null>(null);
     const [cancellingDeposit, setCancellingDeposit] = useState<string | null>(null);
 
@@ -61,47 +73,6 @@ export default function AdoptionRequests({
         // Initialize state with the provided interests prop
         setInterestsState(interests);
     }, [interests])
-
-
-    const resendDepositRequest = async (requestId: string) => {
-        console.log(`Re-sending deposit request for ${requestId}`);
-
-        try {
-            const res = await fetch(`/api/adoption-requests/${requestId}/resendDepositRequest`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-            });
-            if (res.ok) {
-                const data = await res.json();
-                toast.success(`Deposit request re-sent! Expires at ${new Date(data.expiresAt).toLocaleString()}`);
-
-                router.refresh();
-
-                // TODO: handle local state (not added in yet)
-                setInterestsState(prev =>
-                    prev.map(req =>
-                        req.adoptionRequestId === requestId
-                            ? {
-                                ...req,
-                                adoptionRequestId: data.adoptionRequestId,
-                                adoptionRequestStatus: "deposit-requested",
-                                status: "approved",
-                            }
-                            : req
-                    )
-                );
-
-                // Close the dialog
-                setExistingRequestDialog(undefined);
-            } else {
-                toast.error("Failed to re-send deposit request.");
-            }
-        } catch (error) {
-            console.error(error);
-            toast.error("Something went wrong while re-sending.");
-        }
-
-    }
 
     const handleCancelDeposit = async (requestId: string) => {
         console.log(`Canceling deposit request for ${requestId}`);
@@ -226,87 +197,125 @@ export default function AdoptionRequests({
         <div className="bg-white rounded-lg shadow p-6 flex flex-col gap-4">
             <h2 className="text-xl font-bold mb-2">Inquiries</h2>
             {interestsState.length > 0 ? (
-                interestsState.map((interest, index) => (
-                    <div key={index} className="md:flex md:justify-between items-start border p-4 rounded">
-                        {/* Left photo and info */}
-                        <div className="flex items-center gap-4">
-                            <img src={interest.dog?.photos && interest.dog.photos.length > 0 && interest.dog.photos[0].path
-                                ? interest.dog.photos[0].path
-                                : "/images/purepaws-placeholder.jpg"} alt={interest.dog?.name || "Puppy"} className="w-20 h-20 object-cover rounded" />
-                            <div>
-                                <h3 className="font-semibold">{interest.dog?.name}</h3>
-                                <div className="pl-[2px]">
-                                    <p className="text-sm text-gray-500">From: {interest.buyer?.name} ({interest.buyer?.email})</p>
-                                    <p className="text-sm text-gray-500">Message: {interest.message ? interest.message : "No additional message"}</p>
-                                    <p className="text-xs text-gray-400">Submitted: {interest.createdAt?.split('T')[0]}</p>
-                                    <Badge variant="outline">Status is {interest.status}</Badge>
+                interestsState.map((interest, index) => {
+                    const hasDepositBeenRequested = interest.adoptionRequestStatus === "deposit-requested" || interest.adoptionRequestStatus === "cancelled-deposit";
+                    const showNewDialog = interest.status === "approved" && !hasDepositBeenRequested;
+
+                    console.log('interest:', interest);
+
+                    return (
+                        <div key={index} className="md:flex md:justify-between items-start border p-4 rounded">
+                            {/* Left photo and info */}
+                            <div className="flex items-center gap-4">
+                                <img
+                                    src={
+                                        interest.dog?.photos && interest.dog.photos.length > 0 && interest.dog.photos[0].path
+                                            ? interest.dog.photos[0].path
+                                            : "/images/purepaws-placeholder.jpg"
+                                    }
+                                    alt={interest.dog?.name || "Puppy"}
+                                    className="w-20 h-20 object-cover rounded"
+                                />
+                                <div>
+                                    <h3 className="font-semibold">{interest.dog?.name}</h3>
+                                    <div className="pl-[2px]">
+                                        <p className="text-sm text-gray-500">
+                                            From: {interest.buyer?.name} ({interest.buyer?.email})
+                                        </p>
+                                        <p className="text-sm text-gray-500">
+                                            Message: {interest.message ? interest.message : "No additional message"}
+                                        </p>
+                                        <p className="text-xs text-gray-400">
+                                            Submitted: {interest.createdAt?.split("T")[0]}
+                                        </p>
+                                        <Badge variant="outline">Status is {interest.status}</Badge>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        {/* Right: action buttons for deposit request */}
-                        <div className="pt-4 md:p-0 flex flex-col md:flex-row gap-2">
-                            {/* Breeder must approve buyer before requesting a deposit */}
-                            {/* Right: action buttons for each interest */}
-                            <div className="pt-4 md:p-0 flex flex-col gap-2">
-                                {interest.status === "pending" ? (
-                                    // Show review button
-                                    <Button
-                                        size="sm"
-                                        className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded text-sm cursor-pointer"
-                                        onClick={() => setReviewBuyer(interest)}
-                                    >
-                                        <EyeIcon />   Review Buyer
-                                    </Button>
-                                ) : (
-                                    <>
-                                        {/* If NOT cancelled, show request deposit */}
-                                        {interest.status === "approved" && interest.adoptionRequestStatus !== "deposit-requested" && (
-                                            <>
+                            {/* Right: action buttons for deposit request */}
+                            <div className="pt-4 md:p-0 flex flex-col md:flex-row gap-2">
+                                <div className="pt-4 md:p-0 flex flex-col gap-2">
+                                    {interest.status === "pending" ? (
+                                        <Button
+                                            size="sm"
+                                            className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded text-sm cursor-pointer"
+                                            onClick={() => setReviewBuyer(interest)}
+                                        >
+                                            <EyeIcon /> Review Buyer
+                                        </Button>
+                                    ) : (
+                                        <>
+                                            {showNewDialog && (
                                                 <RequestDepositDialog
                                                     dogName={interest.dog?.name || "Puppy"}
                                                     interestId={interest._id}
+                                                    mode="new"
                                                 />
-                                            </>
-                                        )}
+                                            )}
 
-                                        {/* If deposit requested, show cancel */}
-                                        {interest.status === "approved" && interest.adoptionRequestStatus === "deposit-requested" && (
+                                            {!showNewDialog && (
+                                                    <RequestDepositDialog
+                                                        dogName={interest.dog?.name || "Puppy"}
+                                                        adoptionRequestId={interest.adoptionRequestId}
+                                                        interestId={interest._id}
+                                                        mode="resend"
+                                                        initialDepositAmount={interest.depositAmount}
+                                                        initialExpirationDate={interest.expiresAt}
+                                                        initialNote={interest.note}
+                                                        onSubmitted={() => setActiveDepositDialog(null)}
+                                                    />
+                                                )}
+
+                                            {/* If deposit requested, show cancel */}
+                                            {interest.status === "approved" &&
+                                                interest.adoptionRequestStatus === "deposit-requested" && (
+                                                    <Button
+                                                        size="sm"
+                                                        className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-sm cursor-pointer"
+                                                        onClick={() => {
+                                                            if (interest.adoptionRequestId) {
+                                                                handleCancelDeposit(interest.adoptionRequestId);
+                                                            } else {
+                                                                toast.error("Issue finding the request ID.");
+                                                            }
+                                                        }}
+                                                    >
+                                                        {cancellingDeposit === interest.adoptionRequestId ? (
+                                                            <LoaderIcon className="animate-spin w-4 h-4" />
+                                                        ) : (
+                                                            <>
+                                                                <BanknoteArrowDownIcon /> Cancel Deposit Request
+                                                            </>
+                                                        )}
+                                                    </Button>
+                                                )}
+
+                                            {/* Always allow re-review */}
                                             <Button
                                                 size="sm"
-                                                className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-sm cursor-pointer"
+                                                className="bg-green-500 hover:bg-green-600 cursor-pointer"
+                                                onClick={() => setReviewBuyer(interest)}
+                                            >
+                                                <EyeIcon /> Review Buyer
+                                            </Button>
+
+                                            <Button
+                                                size="sm"
+                                                className="bg-blue-500 hover:bg-blue-600 cursor-pointer"
                                                 onClick={() => {
-                                                    if (interest.adoptionRequestId) {
-                                                        handleCancelDeposit(interest.adoptionRequestId);
-                                                    } else {
-                                                        toast.error("Issue finding the request ID.");
-                                                    }
+                                                    handleStartChat(interest._id, interest.buyer?._id);
                                                 }}
                                             >
-                                                {cancellingDeposit === interest.adoptionRequestId ? (
-                                                    <LoaderIcon className="animate-spin w-4 h-4" />
-                                                ) : (
-                                                    <>
-                                                        <BanknoteArrowDownIcon />  Cancel Deposit Request
-                                                    </>
-                                                )}
+                                                <MessageCircleIcon /> Chat with buyer
                                             </Button>
-                                        )}
-
-                                        {/* Always allow re-review */}
-                                        <Button size="sm" className="bg-green-500 hover:bg-green-600 cursor-pointer" onClick={() => setReviewBuyer(interest)}>
-                                            <EyeIcon />  Review Buyer
-                                        </Button>
-
-                                        <Button size="sm" className="bg-blue-500 hover:bg-blue-600 cursor-pointer" onClick={() => {
-                                            handleStartChat(interest._id, interest.buyer?._id);
-                                        }}><MessageCircleIcon /> Chat with buyer</Button>
-                                    </>
-                                )}
+                                        </>
+                                    )}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                ))
+                    );
+                })
             ) : (
                 <p className="text-gray-500">No inquiries yet.</p>
             )}
@@ -351,63 +360,6 @@ export default function AdoptionRequests({
                     </DialogContent>
                 </Dialog>
             )}
-
-            {/* Existing deposit found - render deposit request dialog in "resend" mode */}
-            {existingRequestDialog?.open && existingRequestDialog.adoptionRequestId && (
-                <RequestDepositDialog
-                    dogName="Unknown Dog" // or get dog name from map state if needed
-                    interestId={existingRequestDialog.adoptionRequestId}
-                    mode="resend"
-                    initialDepositAmount={existingRequestDialog.depositAmount}
-                    initialExpirationDate={existingRequestDialog.expiresAt}
-                    initialNote={existingRequestDialog.note}
-                    onSubmitted={() => setExistingRequestDialog(undefined)}
-                />
-            )}
-
-            {/* {existingRequestDialog?.open && (
-                <Dialog open={existingRequestDialog.open} onOpenChange={(open) => {
-                    if (!open) {
-                        setExistingRequestDialog(undefined); // close dialog
-                    }
-                }}>
-                    <DialogContent className="sm:max-w-[425px]">
-                        <DialogHeader>
-                            <DialogTitle>Deposit Already Requested</DialogTitle>
-                            <DialogDescription>
-                                Looks like you’ve already requested a deposit for this buyer.
-                            </DialogDescription>
-                        </DialogHeader>
-                        <div className="grid gap-2 text-sm text-gray-600">
-                            {existingRequestDialog.expiresAt && (
-                                <p>Expires at: {new Date(existingRequestDialog.expiresAt).toLocaleString()}</p>
-                            )}
-                            <p>Status: {existingRequestDialog.status || "N/A"}</p>
-                        </div>
-                        <DialogFooter>
-                            <DialogClose asChild>
-                                <Button
-                                    variant="outline"
-                                    onClick={() => setExistingRequestDialog(undefined)}
-                                >
-                                    Close
-                                </Button>
-                            </DialogClose>
-                            <Button
-                                onClick={() => {
-                                    if (existingRequestDialog?.adoptionRequestId) {
-                                        resendDepositRequest(existingRequestDialog.adoptionRequestId);
-                                    } else {
-                                        toast.error("No adoption request ID found.");
-                                    }
-                                }}
-                            >
-                                Re-Send Anyway
-                            </Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
-            )} */}
         </div>
     )
 }

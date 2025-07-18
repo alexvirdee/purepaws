@@ -6,12 +6,22 @@ import { DB_NAME } from "@/lib/constants";
 export async function POST(req: Request, { params }: { params: { id: string } }) {
   const { id } = await params;
 
+  const client = await clientPromise;
+  const db = client.db(DB_NAME);
+
   if (!ObjectId.isValid(id)) {
     return NextResponse.json({ message: "Invalid adoption request ID" }, { status: 400 });
   }
 
-  const client = await clientPromise;
-  const db = client.db(DB_NAME);
+  const body = await req.json();
+  const { depositAmount, expiresAt, note } = body;
+
+  if (!depositAmount || !expiresAt) {
+    return NextResponse.json(
+      { message: "Deposit amount and expiration date are required." },
+      { status: 400 }
+    );
+  }
 
   const adoptionRequest = await db.collection("adoptionRequests").findOne({
     _id: new ObjectId(id)
@@ -24,7 +34,10 @@ export async function POST(req: Request, { params }: { params: { id: string } })
   // Update the existing request (or create a new one if you prefer)
   const updatedFields = {
     status: "deposit-requested",
-    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // TODO: Update this to be dynamic
+    depositAmount,
+    expiresAt: new Date(expiresAt),
+    note: note || "",
+    updatedAt: new Date(),
   };
 
   await db.collection("adoptionRequests").updateOne(
@@ -41,7 +54,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
   // Also update dog status if needed
   await db.collection("dogs").updateOne(
     { _id: adoptionRequest.dogId },
-    { $set: { status: "reserved" } }
+    { $set: { status: "reserved", reservedAt: new Date() } }
   );
 
   return NextResponse.json({
