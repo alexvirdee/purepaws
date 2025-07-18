@@ -29,8 +29,11 @@ interface InterestRequest {
   userId: string;
   userEmail: string;
   breederId: string;
+  breederName?: string;
+  breederNote?: string;
   stripeAccountId?: string; // Optional, if breeder has a connected Stripe account
   puppyApplicationId: string | null; // If this request is linked to a puppy application
+  depositAmount: number; // in cents
   dogId: string;
   message: string;
   status: string;
@@ -245,6 +248,7 @@ function RequestCard({
   }
 
   const { variant, text } = getBadgeProps(request.status);
+  const amountInCents = Math.round(Number(request.depositAmount) * 100);
 
   return (
     <li className="bg-white rounded-lg shadow hover:shadow-md transition flex flex-col md:flex-row gap-4 p-4 relative">
@@ -314,7 +318,9 @@ function RequestCard({
                 dogName={request.dog?.name || "Puppy"}
                 requestId={request._id}
                 breederStripeAccountId={request.stripeAccountId || ""}
-                amount={10000} // cents
+                breederName={request.breederName || "Unknown Breeder"}
+                breederNote={request.breederNote || ""}
+                amount={amountInCents} // cents
                 buyerEmail={request.userEmail}
               />
               <p className="text-xs text-gray-500">

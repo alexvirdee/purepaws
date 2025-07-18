@@ -20,6 +20,8 @@ type CompleteDepositDialogProps = {
     dogName: string;
     requestId: string;
     breederStripeAccountId: string;
+    breederName?: string; // Optional, if you want to display breeder name
+    breederNote?: string; // Optional, if you want to display a note from the breeder
     amount: number; // in cents
     buyerEmail: string;
     open?: boolean;
@@ -29,6 +31,8 @@ type CompleteDepositDialogProps = {
 export default function CompleteDepositDialog({
     dogName,
     requestId,
+    breederName,
+    breederNote,
     breederStripeAccountId,
     amount,
     buyerEmail,
@@ -80,12 +84,21 @@ export default function CompleteDepositDialog({
             <AlertDialogContent className="border border-gray-200">
                 <AlertDialogHeader>
                     <AlertDialogTitle>Confirm Deposit Payment</AlertDialogTitle>
-                    <AlertDialogDescription>
-                        You’re about to pay a non-refundable deposit for <strong>{dogName}</strong>.
-                        <br />
-                        Please ensure you've reviewed everything with the breeder.
-                        <br /><br />
-                        <span className="text-red-500 font-medium">This deposit is non-refundable.</span>
+                    <AlertDialogDescription className="space-y-4">
+                        <p>
+                            You’re about to pay a <span className="font-semibold text-red-500">non-refundable</span> deposit for <span className="font-semibold">{dogName}</span>.
+                            Please ensure you've reviewed all terms with the breeder before proceeding.
+                        </p>
+
+                        <div className="bg-gray-50 p-4 rounded-md border space-y-2">
+                            <h4 className="text-md font-semibold text-gray-800 border-b pb-2">Payment Summary</h4>
+                            <div className="text-sm text-gray-700">
+                                <p><span className="font-medium">Puppy:</span> {dogName}</p>
+                                <p><span className="font-medium">Breeder:</span> {breederName}</p>
+                                <p><span className="font-medium">Deposit Amount:</span> ${amount / 100}</p>
+                                <p><span className="font-medium">Note from breeder:</span>{breederNote}</p>
+                            </div>
+                        </div>
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -95,7 +108,7 @@ export default function CompleteDepositDialog({
                     <Button onClick={handleCompleteDeposit} className="bg-green-600 hover:bg-green-700">
                         {sendingDeposit ? (
                             <>
-                                <LoaderIcon className="mr-2 h-4 w-4 animate-spin" /> 
+                                <LoaderIcon className="mr-2 h-4 w-4 animate-spin" />
                             </>
                         )
                             : (

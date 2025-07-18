@@ -85,7 +85,10 @@ export async function getUserProfileData() {
                 userId: req.userId?.toString(),
                 userEmail: user?.email || "",
                 breederId: req.breederId?.toString() || null,
+                breederName: breeder?.name || "Unknown Breeder",
+                breederNote: req.note || "",
                 stripeAccountId: breeder?.stripeAccountId?.toString() || null,
+                depositAmount: req.depositAmount, // in cents
                 dogId: req.dogId?.toString(),
                 createdAt: req.createdAt?.toString(),
                 expiresAt: req.expiresAt?.toString(),

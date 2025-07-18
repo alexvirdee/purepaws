@@ -20,7 +20,7 @@ export default async function MessagesPage({ searchParams }: MessagesPageProps) 
 
   // 2) If they’re a breeder, redirect them back to dashboard
   if (session.user?.role === "breeder") {
-    redirect("/dashboard/messages");
+    redirect("/dashboard/clients/messages");
   }
 
   const currentUserRole = session?.user?.role as "breeder" | "buyer";

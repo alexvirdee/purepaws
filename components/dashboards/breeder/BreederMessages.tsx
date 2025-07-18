@@ -26,7 +26,7 @@ export default function BreederMessages({
                     <div
                         key={c._id}
                         onClick={() =>
-                            router.push(`/dashboard/messages?conversation=${c._id}`)
+                            router.push(`/dashboard/clients/messages?conversation=${c._id}`)
                         }
                         className={`p-4 cursor-pointer ${activeConversationId === c._id ? "bg-gray-100" : ""
                             }`}

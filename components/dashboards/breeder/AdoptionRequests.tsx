@@ -120,7 +120,7 @@ export default function AdoptionRequests({
                 setReviewBuyer(null);
 
                 // Route breeder to the messages page in their dashboard
-                router.push(`/dashboard/messages?conversation=${data.conversationId}`);
+                router.push(`/dashboard/clients/messages?conversation=${data.conversationId}`);
 
                 // Send email notification to buyer if chat was just created
                 if (data.newlyCreated) {
