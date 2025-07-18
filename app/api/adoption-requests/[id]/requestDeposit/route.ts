@@ -35,6 +35,21 @@ export async function POST(req: Request, { params }: { params: { id: string } })
     );
   }
 
+  const body = await req.json();
+
+  const { depositAmount, expiresAt, note } = body;
+
+  console.log('depositAmount:', depositAmount);
+  console.log('expiresAt:', expiresAt);
+  console.log('note:', note);
+
+  if (!depositAmount || !expiresAt) {
+    return NextResponse.json(
+      { message: "Deposit amount and expiration date are required." },
+      { status: 400 }
+    );
+  }
+
   // Giving the user 7 days to complete the deposit request so they can ask questions, etc.   
   // Start a new conversation for the user to contact breeder 
   let conversation = await db.collection("conversations").findOne({
@@ -63,11 +78,13 @@ if (!conversation) {
     breederId: interest.breederId,
     userId: interest.userId,
     status: "deposit-requested",
-    depositAmount: 200, // placeholder! TODO: replace with actual deposit amount
-    paymentIntentId: null, // TODO: Once stripe implemented, this will be set
-    paymentMethod: null, // TODO: Once stripe implemented, this will be set
+    depositAmount,
+    paymentIntentId: null, 
+    paymentMethod: null, 
+    conversationId: conversation._id,
+    note: note || "",
     createdAt: new Date(),
-    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // expires in 7 days TODO: Can make this configurable based on breeder settings
+    expiresAt: new Date(expiresAt),
   };
 
   const insertResult = await db.collection("adoptionRequests").insertOne(adoptionRequest);

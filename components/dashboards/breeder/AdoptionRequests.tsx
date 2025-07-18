@@ -16,9 +16,9 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { CheckIcon, MessageCircleIcon, BanknoteArrowUpIcon, BanknoteArrowDownIcon, EyeIcon, LoaderIcon } from "lucide-react";
-// import ChatWidget from "@/components/ChatWidget";
 import { useRouter } from "next/navigation";
 import { IBreeder } from "@/interfaces/breeder";
+import RequestDepositDialog from "@/components/dialogs/RequestDepositDialog";
 
 
 type PuppyInterest = {
@@ -47,72 +47,21 @@ export default function AdoptionRequests({
         expiresAt?: string;
         adoptionRequestId?: string;
         status?: string;
+        depositAmount?: number;
+        note?: string;
     } | undefined>(undefined);
     const [reviewBuyer, setReviewBuyer] = useState<PuppyInterest | null>(null);
-    const [activeConversation, setActiveConversation] = useState<any>(null);
-    const [requestingDeposit, setRequestingDeposit] = useState<string | null>(null);
     const [cancellingDeposit, setCancellingDeposit] = useState<string | null>(null);
 
     const router = useRouter();
 
-    console.log('interests', interests)
+    console.log('interests', interests);
 
     useEffect(() => {
         // Initialize state with the provided interests prop
         setInterestsState(interests);
     }, [interests])
 
-    const handleRequestDeposit = async (requestId: string) => {
-        if (!breeder?.payoutsEnabled) {
-            toast.error("Payouts are not enabled. Please complete your Stripe setup.");
-            return;
-        }
-
-        setRequestingDeposit(requestId);
-
-        try {
-            const res = await fetch(`/api/adoption-requests/${requestId}/requestDeposit`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-            });
-
-            const data = await res.json();
-
-            if (res.ok) {
-                toast.success("🎉 Deposit request sent!");
-
-                router.refresh
-
-                // Correct: match on _id
-                setInterestsState(prev =>
-                    prev.map(req =>
-                        req._id === requestId // requestId is the puppyInterest ID!
-                            ? {
-                                ...req,
-                                adoptionRequestId: data.adoptionRequestId,
-                                adoptionRequestStatus: undefined,
-                                status: "approved"
-                            }
-                            : req
-                    )
-                );
-            } else if (res.status === 400 && data.adoptionRequestId) {
-                setExistingRequestDialog({
-                    open: true,
-                    expiresAt: data.expiresAt,
-                    adoptionRequestId: data.adoptionRequestId,
-                    status: data.status,
-                });
-            } else {
-                toast.error("Failed to request deposit");
-            }
-        } catch (error) {
-            console.error(error);
-            toast.error("Something went wrong. Please try again.");
-        } finally {
-            setRequestingDeposit(null); // Reset requesting state
-        }
-    };
 
     const resendDepositRequest = async (requestId: string) => {
         console.log(`Re-sending deposit request for ${requestId}`);
@@ -313,21 +262,12 @@ export default function AdoptionRequests({
                                     <>
                                         {/* If NOT cancelled, show request deposit */}
                                         {interest.status === "approved" && interest.adoptionRequestStatus !== "deposit-requested" && (
-                                            <Button
-                                                size="sm"
-                                                className="bg-blue-500 text-white px-2 py-1 rounded text-sm hover:bg-blue-600 cursor-pointer"
-                                                onClick={() => handleRequestDeposit(interest._id)}
-                                                disabled={requestingDeposit === interest._id}
-                                            >
-                                                {requestingDeposit === interest._id ? (
-                                                    <LoaderIcon className="animate-spin w-4 h-4" />
-                                                ) : (
-                                                    <>
-                                                        <BanknoteArrowUpIcon className="w-4 h-4 mr-1" />
-                                                        Request Deposit
-                                                    </>
-                                                )}
-                                            </Button>
+                                            <>
+                                                <RequestDepositDialog
+                                                    dogName={interest.dog?.name || "Puppy"}
+                                                    interestId={interest._id}
+                                                />
+                                            </>
                                         )}
 
                                         {/* If deposit requested, show cancel */}
@@ -412,8 +352,20 @@ export default function AdoptionRequests({
                 </Dialog>
             )}
 
-            {/* Existing deposit request dialog */}
-            {existingRequestDialog?.open && (
+            {/* Existing deposit found - render deposit request dialog in "resend" mode */}
+            {existingRequestDialog?.open && existingRequestDialog.adoptionRequestId && (
+                <RequestDepositDialog
+                    dogName="Unknown Dog" // or get dog name from map state if needed
+                    interestId={existingRequestDialog.adoptionRequestId}
+                    mode="resend"
+                    initialDepositAmount={existingRequestDialog.depositAmount}
+                    initialExpirationDate={existingRequestDialog.expiresAt}
+                    initialNote={existingRequestDialog.note}
+                    onSubmitted={() => setExistingRequestDialog(undefined)}
+                />
+            )}
+
+            {/* {existingRequestDialog?.open && (
                 <Dialog open={existingRequestDialog.open} onOpenChange={(open) => {
                     if (!open) {
                         setExistingRequestDialog(undefined); // close dialog
@@ -455,7 +407,7 @@ export default function AdoptionRequests({
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>
-            )}
+            )} */}
         </div>
     )
 }
