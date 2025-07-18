@@ -70,7 +70,7 @@ export default function RequestDepositDialog({
             const data = await res.json();
 
             if (res.ok) {
-                toast.success("🎉 Deposit request sent!");
+                toast.success("🎉 Deposit request sent! View it in adoptions tab");
                 router.refresh();
                 setOpen(false);
                 onSubmitted?.();

@@ -38,6 +38,7 @@ interface InterestRequest {
   message: string;
   status: string;
   createdAt: string | null;
+  expiresAt: string | null; // When the request expires
   conversationId?: string | null; // Conversation ID for this request
   dog: any | IDog | null; // Dog data, can be null if not available
   onNewRequest?: (request: {
@@ -320,11 +321,11 @@ function RequestCard({
                 breederStripeAccountId={request.stripeAccountId || ""}
                 breederName={request.breederName || "Unknown Breeder"}
                 breederNote={request.breederNote || ""}
-                amount={amountInCents} 
+                amount={amountInCents}
                 buyerEmail={request.userEmail}
               />
               <p className="text-xs text-gray-500">
-                Holds {request.dog.name} until your expiration. If you don’t pay, your request will expire.
+                 {request.dog.name} is currently reserved for you! Please complete your deposit by {request.expiresAt ? new Date(request.expiresAt).toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' }) : "an unknown date"} to secure your pup. If not paid, the reservation will expire.
               </p>
             </div>
           ) : (

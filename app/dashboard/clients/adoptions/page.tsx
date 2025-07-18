@@ -10,6 +10,9 @@ export default async function BreederAdoptionsPage() {
         interestFilter: "active"
     });
 
+    const numberOfInquiries = interests.length;
+    const numberOfAdoptionsInProgress = adoptionsInProgress.length;
+
     return (
         <>
             <div className="flex justify-between items-center mb-6">
@@ -17,8 +20,8 @@ export default async function BreederAdoptionsPage() {
             </div>
             <Tabs defaultValue="inquiries" className="">
                 <TabsList className="mb-2">
-                    <TabsTrigger value="inquiries">Inquiries</TabsTrigger>
-                    <TabsTrigger value="adoptions">Adoptions in progress</TabsTrigger>
+                    <TabsTrigger className="cursor-pointer" value="inquiries">Inquiries ({numberOfInquiries})</TabsTrigger>
+                    <TabsTrigger className="cursor-pointer" value="adoptions">Adoptions in progress ({numberOfAdoptionsInProgress})</TabsTrigger>
                 </TabsList>
                 <TabsContent value="inquiries">
                     <div>

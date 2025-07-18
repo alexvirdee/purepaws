@@ -8,6 +8,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             links={[
                 { type: "link", href: "/admin", text: "Dashboard" },
                 { type: "link", href: "/admin/breeders", text: "Breeders" },
+                { type: "link", href: "/admin/adoption-requests", text: "Adoption Requests" },
                 { type: "link", href: "/admin/dogs", text: "Dogs" },
                 { type: "link", href: "/admin/litters", text: "Litters" },
             ]}

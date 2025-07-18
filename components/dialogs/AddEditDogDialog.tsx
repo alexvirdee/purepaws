@@ -70,7 +70,7 @@ export default function AddEditDogDialog({
     }
 
     useEffect(() => {
-        if (mode === 'edit' && initialData) {
+        if (initialData) {
             setFormData({
                 name: initialData.name || '',
                 litter: initialData.litter || '',

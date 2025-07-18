@@ -39,6 +39,17 @@ export async function POST(req: Request, { params }: { params: { id: string } })
 
   const { depositAmount, expiresAt, note } = body;
 
+  const expirationDate = new Date(expiresAt);
+  const now = new Date();
+
+  // Ensure expiresAt is in the future
+  if (expirationDate <= now) {
+    return NextResponse.json(
+      { message: "Invalid expiration date. Please provide a future date." },
+      { status: 400 }
+    );
+  }
+
   console.log('depositAmount:', depositAmount);
   console.log('expiresAt:', expiresAt);
   console.log('note:', note);

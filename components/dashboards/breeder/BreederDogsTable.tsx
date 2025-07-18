@@ -38,6 +38,7 @@ interface BreederDogTableProps {
 
 export default function BreederDogsTable({ breederName, dogs }: BreederDogTableProps) {
     const [editDog, setEditDog] = useState<IDog | null>(null);
+    const [duplicateDog, setDuplicateDog] = useState<IDog | null>(null);
     const [deleteDog, setDeleteDog] = useState<IDog | null>(null);
 
 
@@ -94,14 +95,14 @@ export default function BreederDogsTable({ breederName, dogs }: BreederDogTableP
                                     {dog.status && (
                                         <span
                                             className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${dog.status === 'pending-reservation'
-                                                    ? 'bg-yellow-100 text-yellow-800'
-                                                    : dog.status === 'deposit-requested'
-                                                        ? 'bg-yellow-200 text-yellow-800'
-                                                        : dog.status === 'reserved'
-                                                            ? 'bg-blue-100 text-blue-800'
-                                                            : dog.status === 'sold'
-                                                                ? 'bg-green-100 text-green-800'
-                                                                : 'bg-gray-100 text-gray-800'
+                                                ? 'bg-yellow-100 text-yellow-800'
+                                                : dog.status === 'deposit-requested'
+                                                    ? 'bg-yellow-200 text-yellow-800'
+                                                    : dog.status === 'reserved'
+                                                        ? 'bg-blue-100 text-blue-800'
+                                                        : dog.status === 'sold'
+                                                            ? 'bg-green-100 text-green-800'
+                                                            : 'bg-gray-100 text-gray-800'
                                                 }`}
                                         >
                                             {dog.status.replace(/-/g, ' ')}
@@ -121,6 +122,16 @@ export default function BreederDogsTable({ breederName, dogs }: BreederDogTableP
                                             <DropdownMenuGroup>
                                                 <DropdownMenuItem onClick={() => setEditDog(dog)}>
                                                     Edit
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem onClick={() => {
+                                                    const { _id, createdAt, updatedAt, ...rest } = dog;
+                                                    setDuplicateDog({
+                                                        ...rest,
+                                                        name: `${dog.name} (Copy)`,
+                                                        status: 'available',
+                                                    } as IDog);
+                                                }}>
+                                                    Duplicate
                                                 </DropdownMenuItem>
                                                 <DropdownMenuItem onClick={() => setDeleteDog(dog)}>
                                                     Delete
@@ -142,6 +153,17 @@ export default function BreederDogsTable({ breederName, dogs }: BreederDogTableP
                     open={!!editDog}
                     onOpenChange={(v) => { if (!v) setEditDog(null) }}
                     onSubmitSuccess={() => setEditDog(null)}
+                />
+            )}
+            {/* Duplicate dog */}
+            {duplicateDog && (
+                <AddEditDogDialog
+                    mode="add"
+                    breederId={duplicateDog.breederId?.toString()}
+                    initialData={duplicateDog}
+                    open={!!duplicateDog}
+                    onOpenChange={(v) => { if (!v) setDuplicateDog(null) }}
+                    onSubmitSuccess={() => setDuplicateDog(null)}
                 />
             )}
             {deleteDog && (

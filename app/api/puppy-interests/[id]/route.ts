@@ -54,28 +54,18 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
 
     const userObjectId = user._id instanceof ObjectId ? user._id : new ObjectId(user._id);
 
-    console.log('interest.userId:', interest.userId, typeof interest.userId);
-console.log('user._id:', user._id, typeof user._id);
-
     // Auth check:
     if (user.role === "breeder") {
         if (!interest.breederId.equals(user.breederId)) {
-            console.log('issue is here..')
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
     } else if (user.role === "viewer") {
-        console.log('buyer role check', interest.userId, userObjectId)
-
        if (!interest.userId.equals(userObjectId)) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
     } else {
-        console.log('unauthorized role', user.role)
-
         return NextResponse.json({ error: "Unauthorized role" }, { status: 401 });
     }
-
-    console.log('update', update)
 
     const result = await db.collection("puppyInterests").updateOne(
         { _id: new ObjectId(id) },
