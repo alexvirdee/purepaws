@@ -45,14 +45,6 @@ export default function AdoptionRequests({
     interests,
 }: AdoptionRequestsProps) {
     const [interestsState, setInterestsState] = useState(interests);
-    const [existingRequestDialog, setExistingRequestDialog] = useState<{
-        open: boolean;
-        expiresAt?: string;
-        adoptionRequestId?: string;
-        status?: string;
-        depositAmount?: number;
-        note?: string;
-    } | undefined>(undefined);
     const [activeDepositDialog, setActiveDepositDialog] = useState<{
         open: boolean;
         mode: "new" | "resend";
@@ -246,15 +238,15 @@ export default function AdoptionRequests({
                                         </Button>
                                     ) : (
                                         <>
-                                            {showNewDialog && (
-                                                <RequestDepositDialog
-                                                    dogName={interest.dog?.name || "Puppy"}
-                                                    interestId={interest._id}
-                                                    mode="new"
-                                                />
-                                            )}
-
-                                            {!showNewDialog && (
+                                            {/* Only show deposit request/resend button if deposit is NOT already requested */}
+                                            {interest.adoptionRequestStatus !== "deposit-requested" && (
+                                                showNewDialog ? (
+                                                    <RequestDepositDialog
+                                                        dogName={interest.dog?.name || "Puppy"}
+                                                        interestId={interest._id}
+                                                        mode="new"
+                                                    />
+                                                ) : (
                                                     <RequestDepositDialog
                                                         dogName={interest.dog?.name || "Puppy"}
                                                         adoptionRequestId={interest.adoptionRequestId}
@@ -265,8 +257,8 @@ export default function AdoptionRequests({
                                                         initialNote={interest.note}
                                                         onSubmitted={() => setActiveDepositDialog(null)}
                                                     />
-                                                )}
-
+                                                )
+                                            )}
                                             {/* If deposit requested, show cancel */}
                                             {interest.status === "approved" &&
                                                 interest.adoptionRequestStatus === "deposit-requested" && (
