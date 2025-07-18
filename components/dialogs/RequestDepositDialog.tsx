@@ -40,9 +40,12 @@ export default function RequestDepositDialog({
     onSubmitted,
 }: RequestDepositDialogProps) {
     const [requestingDeposit, setRequestingDeposit] = useState(false);
+    const [resendingDeposit, setResendingDeposit] = useState(false);
     const [depositAmount, setDepositAmount] = useState(initialDepositAmount?.toString() || '');
     const [expirationDate, setExpirationDate] = useState(initialExpirationDate ? initialExpirationDate.slice(0, 10) : '');
     const [note, setNote] = useState(initialNote || '');
+    const [open, setOpen] = useState(false);
+
     const router = useRouter();
 
     console.log("RequestDepositDialog rendered");
@@ -53,6 +56,7 @@ export default function RequestDepositDialog({
 
     console.log('interestId:', interestId);
     console.log('adoptionRequestId:', adoptionRequestId);
+    console.log('initial note:', initialNote);
 
     const handleRequestDeposit = async () => {
         if (!depositAmount || !expirationDate) {
@@ -78,6 +82,8 @@ export default function RequestDepositDialog({
             if (res.ok) {
                 toast.success("🎉 Deposit request sent!");
                 router.refresh();
+                setOpen(false);
+                onSubmitted?.();
             } else {
                 toast.error(data.message || "Failed to request deposit.");
             }
@@ -92,6 +98,8 @@ export default function RequestDepositDialog({
     const resendDepositRequest = async (requestId: string) => {
         console.log(`Re-sending deposit request for ${requestId}`);
 
+        setResendingDeposit(true);
+
         try {
             const res = await fetch(`/api/adoption-requests/${requestId}/resendDepositRequest`, {
                 method: "POST",
@@ -102,11 +110,17 @@ export default function RequestDepositDialog({
                     note,
                 }),
             });
+
             if (res.ok) {
                 const data = await res.json();
-                toast.success(`Deposit request re-sent! Expires at ${new Date(data.expiresAt).toLocaleString()}`);
+
+                console.log("Re-sent deposit request:", data);
+
+                toast.success(`Deposit request re-sent! Expires on ${new Date(data.expiresAt).toUTCString()}`);
 
                 router.refresh();
+                setOpen(false);
+                onSubmitted?.();
 
                 // TODO: handle local state (not added in yet)
                 // setInterestsState(prev =>
@@ -127,12 +141,14 @@ export default function RequestDepositDialog({
         } catch (error) {
             console.error(error);
             toast.error("Something went wrong while re-sending.");
+        } finally {
+            setResendingDeposit(false);
         }
 
     }
 
     return (
-        <AlertDialog>
+        <AlertDialog open={open} onOpenChange={setOpen}>
             <AlertDialogTrigger asChild>
                 <Button
                     size="sm"
@@ -194,8 +210,8 @@ export default function RequestDepositDialog({
                         mode === "resend"
                             ? resendDepositRequest(adoptionRequestId || "")
                             : handleRequestDeposit()
-                    } disabled={requestingDeposit}>
-                        {requestingDeposit ? (
+                    } disabled={requestingDeposit || resendingDeposit}>
+                        {requestingDeposit || resendingDeposit ? (
                             <>
                                 <LoaderIcon className="mr-2 h-4 w-4 animate-spin" />
                                 {mode === "resend" ? "Re-Sending..." : "Sending..."}

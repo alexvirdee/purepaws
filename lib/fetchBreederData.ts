@@ -94,6 +94,7 @@ export async function getBreederDashboardData({
                 adoptionRequestStatus: adoptionRequest?.status || null,
                 depositAmount: adoptionRequest?.depositAmount || null,
                 expiresAt: adoptionRequest?.expiresAt ? new Date(adoptionRequest.expiresAt).toISOString() : null,
+                note: adoptionRequest?.note || "",
                 conversationId: adoptionRequest?.conversationId ? adoptionRequest.conversationId.toString() : null,
                 dog: dog
                     ? {

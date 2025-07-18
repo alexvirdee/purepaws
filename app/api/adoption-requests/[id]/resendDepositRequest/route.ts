@@ -59,6 +59,6 @@ export async function POST(req: Request, { params }: { params: { id: string } })
 
   return NextResponse.json({
     message: "Deposit request re-sent successfully",
-    expiresAt: updatedFields.expiresAt
+    expiresAt: updatedFields.expiresAt.toISOString(),
   }, { status: 200 });
 }
