@@ -2,10 +2,10 @@
 import SignInOutToast from "@/components/SignInOutToast";
 
 import clientPromise from "@/lib/mongodb";
-import Hero from "@/components/Hero";
-import FeaturedBreedersSection from "@/components/FeaturedBreedersSection";
-import HowItWorksSection from "@/components/HowItWorks";
-import WhyPurePaws from "@/components/WhyPurePaws";
+import Hero from "@/components/landing/Hero";
+import FeaturedBreedersSection from "@/components/landing/FeaturedBreedersSection";
+import HowItWorksSection from "@/components/landing/HowItWorks";
+import WhyPurePaws from "@/components/landing/WhyPurePaws";
 import { DB_NAME } from "@/lib/constants";
 
 interface RawBreeder {

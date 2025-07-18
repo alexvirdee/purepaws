@@ -1,57 +1,39 @@
-'use client';
 
-import { signIn } from 'next-auth/react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from "@/components/ui/label";
-import { toast } from 'sonner';
+
 import Link from 'next/link';
+import { LoginForm } from '@/components/forms/auth/LoginForm';
+import Image from 'next/image';
 
 export default function SignIn() {
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        const form = new FormData(e.currentTarget);
-        const email = form.get('email') as string;
-        const password = form.get('password') as string;
-
-        const result = await signIn('credentials', {
-            email,
-            password,
-            redirect: false, // Prevent automatic redirect
-            callbackUrl: '/', // Specify the callback URL
-        });
-
-        if (result?.error) {
-            toast.error(`Error signing in please try again.`);
-        } else {
-            localStorage.setItem('signin-success', "true");
-            // Redirect to the home page or any other page
-            window.location.href = "/";
-        }
-    };
-
     return (
-        <section className="flex flex-col items-center justify-center min-h-[40vh] px-4">
-            <div className="w-full max-w-sm space-y-6">
-                <h1 className="text-xl font-semibold text-center mb-4">Sign In</h1>
-                <form onSubmit={handleSubmit} className="max-w-sm mx-auto">
-                    <div className="mb-4">
-                        <Label className="pb-2" htmlFor="email">Email</Label>
-                        <Input name="email" type="email" placeholder="you@example.com" required className="border mb-2 p-2 w-full" />
+        <div className="grid min-h-svh lg:grid-cols-2">
+            <div className="flex flex-col gap-4 p-6 md:p-10">
+                <div className="flex justify-center gap-2 ">
+                    <Link href="/" className="flex items-center gap-2">
+                        <Image
+                            src="/images/purepaws-logo-transparent.png"
+                            alt="Pure Paws Logo"
+                            width={150}
+                            height={100}
+                        />
+                    </Link>
+                </div>
+                <div className="flex flex-1 justify-center">
+                    <div className="w-full max-w-xs">
+                        <LoginForm />
                     </div>
-                    <div className="mb-4">
-                        <Label className="pb-2" htmlFor="password">Password</Label>
-                        <Input name="password" type="password" placeholder="********" required className="border mb-2 p-2 w-full" />
-                    </div>
-                    <Button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer">Sign In</Button>
-                </form>
+                </div>
             </div>
-            <p className="mt-4 text-sm text-center">
-                Don&apos;t have an account yet?{" "}
-                <Link href="/auth/signup" className="text-blue-600 hover:underline">
-                    Sign up here
-                </Link>
-            </p>
-        </section>
+            <div className="bg-muted relative hidden lg:block">
+                <Image
+                    src="/images/auth-pup.jpg"
+                    priority={true}
+                    width={800}
+                    height={800}
+                    alt="Golden puppy"
+                    className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+                />
+            </div>
+        </div>
     )
 }
