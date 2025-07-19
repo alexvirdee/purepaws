@@ -5,6 +5,7 @@ import { getUserProfileData } from "@/lib/db/getUserProfileData"; // assuming yo
 import ChatWidget from "@/components/ChatWidget";
 import Link from "next/link";
 import { ArrowLeftIcon } from "lucide-react";
+import ReopenConversationButton from "@/components/ReopenConversationButton";
 
 interface MessagesPageProps {
   searchParams: {
@@ -28,37 +29,55 @@ export default async function MessagesPage({ searchParams }: MessagesPageProps) 
   // 3) Get user’s profile data (which now includes conversationIds)
   const profile = await getUserProfileData();
 
+  // Step 1: Include all puppyInterests with valid conversations
   const puppyInterestsWithConversations = profile.puppyInterests.filter(
-    (pi) => typeof pi.conversationId === "string" && pi.conversationId
+    (pi) =>
+      typeof pi.conversation?._id === "string" &&
+      pi.conversation?._id // include both open and closed here
   );
 
-  // Group puppyInterests by conversationId
-  const grouped = new Map<string, { conversationId: string; dogs: string[]; breederName: string }>();
+  // Step 2: Group by conversationId and track `closed` status
+  const grouped = new Map<string, {
+    conversationId: string;
+    dogs: string[];
+    breederName: string;
+    closed: boolean;
+  }>();
 
   for (const pi of puppyInterestsWithConversations) {
-    if (!pi.conversationId) continue;
+    if (!pi.conversation?._id) continue;
 
-    if (!grouped.has(pi.conversationId)) {
-      grouped.set(pi.conversationId, {
-        conversationId: pi.conversationId,
+    if (!grouped.has(pi.conversation?._id)) {
+      grouped.set(pi.conversation?._id, {
+        conversationId: pi.conversation?._id,
         dogs: [],
         breederName: pi.breederName || "Unknown Breeder",
+        closed: pi.conversation?.closed || false, // ✅ Include closed flag
       });
     }
 
-    const entry = grouped.get(pi.conversationId);
+    const entry = grouped.get(pi?.conversation?._id);
     if (pi.dog?.name && !entry!.dogs.includes(pi.dog.name)) {
       entry!.dogs.push(pi.dog.name);
     }
   }
 
+  // Step 3: Convert map to array
   const groupedConversations = Array.from(grouped.values());
 
+  // Step 4: Determine which conversation is currently active via URL
   const activeConversationId = (await searchParams).conversation || null;
 
+  // Step 5: Determine if the active conversation is valid (not closed)
   const valid = groupedConversations.find(
+    (c) => c.conversationId === activeConversationId && !c.closed
+  );
+
+  // Step 6: Track selected regardless of status (for "closed" messaging)
+  const selected = groupedConversations.find(
     (c) => c.conversationId === activeConversationId
   );
+
 
   return (
     <main className="max-w-6xl mx-auto p-8">
@@ -97,7 +116,15 @@ export default async function MessagesPage({ searchParams }: MessagesPageProps) 
           {/* Right column: Chat widget */}
           <div className="flex-1 p-4">
             {activeConversationId && valid ? (
-              <ChatWidget conversationId={activeConversationId} currentUserRole={currentUserRole} />
+              <ChatWidget
+                conversationId={activeConversationId}
+                currentUserRole={currentUserRole}
+              />
+            ) : selected?.closed ? (
+              <div className="text-gray-500 italic space-y-2">
+                <p>This conversation has been closed by the breeder.</p>
+                <ReopenConversationButton conversationId={selected?.conversationId} />
+              </div>
             ) : (
               <p className="text-gray-500">Select a conversation</p>
             )}
@@ -106,7 +133,7 @@ export default async function MessagesPage({ searchParams }: MessagesPageProps) 
       ) : (
         <p className="text-gray-500">
           You don’t have any conversations yet.<br />
-          Once a breeder reaches out to you, they will display here. 
+          Once a breeder reaches out to you, they will display here.
         </p>
       )}
     </main>

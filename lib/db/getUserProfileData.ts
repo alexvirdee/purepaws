@@ -130,6 +130,8 @@ export async function getUserProfileData() {
                 b => b._id.toString() === interest.breederId?.toString()
             );
 
+            console.log('conversation', conversation);
+
             return {
                 ...interest,
                 _id: interest._id.toString(),
@@ -141,7 +143,13 @@ export async function getUserProfileData() {
                 dogId: interest.dogId?.toString(),
                 createdAt: interest.createdAt?.toString(),
                 updatedAt: interest.updatedAt?.toString(),
-                conversationId: conversation?._id.toString() || null,
+                conversation: conversation
+                    ? {
+                        _id: conversation._id.toString(),
+                        closed: conversation.closed || false,
+                        closedAt: conversation.closedAt?.toString() || null,
+                    }
+                    : null,
                 dog: dog ? {
                     _id: dog._id.toString(),
                     name: dog.name,
