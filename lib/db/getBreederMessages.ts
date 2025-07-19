@@ -58,7 +58,8 @@ export async function getBreederMessages() {
             puppyInterestIds: (c.puppyInterestIds || []).map((id: { toString: () => any; }) => id.toString()),
             createdAt: c.createdAt?.toISOString() || null,
             lastMessageAt: c.lastMessageAt?.toISOString() || null,
-
+            closed: c.closed || false,
+            closedAt: c.closedAt ? new Date(c.closedAt).toISOString() : null,
             puppyInterests: interests.map((pi: { _id: { toString: () => any; }; dogId: { toString: () => any; }; message: any; status: any; }) => ({
                 _id: pi._id.toString(),
                 dogId: pi.dogId.toString(),

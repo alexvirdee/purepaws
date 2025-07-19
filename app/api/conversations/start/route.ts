@@ -36,26 +36,48 @@ export async function POST(req: Request) {
         });
 
         if (existing) {
-            // Only add puppyInterestId if it's not already in the array
+            const updates: any = {};
+
+            // Reopen conversation if previously closed
+            if (existing.closed) {
+                updates.closed = false;
+                updates.closedAt = null;
+            }
+
+            // Add puppyInterestId if not already present
             const alreadyLinked = existing.puppyInterestIds?.some(
                 (id: ObjectId) => id.toString() === puppyInterestId
             );
 
             if (!alreadyLinked) {
+                updates.$addToSet = {
+                    puppyInterestIds: new ObjectId(puppyInterestId),
+                };
+            }
+
+            if (Object.keys(updates).length > 0) {
                 await db.collection("conversations").updateOne(
                     { _id: existing._id },
-                    { $addToSet: { puppyInterestIds: new ObjectId(puppyInterestId) } }
+                    {
+                        ...(updates.closed !== undefined && {
+                            $set: {
+                                closed: updates.closed,
+                                closedAt: null,
+                            },
+                        }),
+                        ...(updates.$addToSet && { $addToSet: updates.$addToSet }),
+                    }
                 );
-                return NextResponse.json({
-                    conversationId: existing._id.toString(),
-                    message: "Conversation already exists. Added new puppy interest.",
-                });
-            } else {
-                return NextResponse.json({
-                    conversationId: existing._id.toString(),
-                    message: "Conversation already exists for this puppy interest.",
-                });
             }
+
+            return NextResponse.json({
+                conversationId: existing._id.toString(),
+                message: existing.closed
+                    ? "Conversation was reopened."
+                    : alreadyLinked
+                        ? "Conversation already exists for this puppy interest."
+                        : "Conversation already exists. Added new puppy interest.",
+            });
         }
 
         // 1. Lookup buyer
