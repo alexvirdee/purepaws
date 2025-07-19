@@ -20,6 +20,9 @@
   - Display application on user’s profile page
   - Add ability to update application (optional)
 
+  - [ ] **Puppy Shower**
+  - Allow users to invite family and friends to a party to welcome their new family member 
+
 - [ ] **Browser Issue**
   - Ensure fallback with WebGL - Map currently doesn't work on Brave browser 
 

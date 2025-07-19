@@ -84,7 +84,6 @@ export default function CompleteDepositDialog({
             <AlertDialogContent className="border border-gray-200">
                 <AlertDialogHeader>
                     <AlertDialogTitle>Confirm Deposit Payment</AlertDialogTitle>
-                    <AlertDialogDescription className="space-y-4">
                         <div>
                             You’re about to pay a{" "}
                             <span className="font-semibold text-red-500">non-refundable</span> deposit
@@ -112,7 +111,6 @@ export default function CompleteDepositDialog({
                                 </div>
                             </div>
                         </div>
-                    </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel asChild>
